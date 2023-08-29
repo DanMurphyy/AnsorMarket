@@ -1,24 +1,27 @@
 package com.hfad.ansormarket.logInScreens
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.hfad.ansormarket.databinding.FragmentIntroBinding
+import com.hfad.ansormarket.firebase.FirebaseViewModel
 
 class IntroFragment : Fragment() {
 
     private var _binding: FragmentIntroBinding? = null
     private val binding get() = _binding!!
+    private val mFirebaseViewModel: FirebaseViewModel by viewModels()
 
     companion object {
         private const val SIGN_IN_VIEW = "SIGN_IN_VIEW"
         private const val SIGN_UP_VIEW = "SIGN_UP_VIEW"
     }
-
 
     private var currentVisibleView: String = SIGN_IN_VIEW
 
@@ -30,16 +33,50 @@ class IntroFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         makeUnitsVisible()
 
-        binding.btnIntroIn.setOnClickListener {
-            Toast.makeText(requireContext(), "Successful IN", Toast.LENGTH_SHORT).show()
+
+        mFirebaseViewModel.registrationResult.observe(viewLifecycleOwner) { isSuccess ->
+            if (isSuccess) {
+                Toast.makeText(requireContext(), "Registration Successful", Toast.LENGTH_SHORT)
+                    .show()
+                // Perform navigation or any other action on success
+            } else {
+                Toast.makeText(requireContext(), "Registration Failed", Toast.LENGTH_SHORT).show()
+                // Handle registration failure
+            }
         }
 
+        mFirebaseViewModel.signInResult.observe(viewLifecycleOwner) { isSuccess ->
+            if (isSuccess) {
+                success()
+            } else {
+                // Show error message
+                mFirebaseViewModel.showErrorSnackBar(requireView(), "Authentication failed.")
+            }
+        }
+
+
         binding.btnIntroUp.setOnClickListener {
-            Toast.makeText(requireContext(), "Successful UP", Toast.LENGTH_SHORT).show()
+            val name = binding.etNameUp.text.toString()
+            val login = binding.etLoginUp.text.toString() + "@market.com"
+            val password = binding.etPasswordUp.text.toString()
+
+            Log.d(
+                "IntroFragment",
+                "btnIntroUp clicked. Name: $name, Login: $login, Password: $password"
+            )
+            mFirebaseViewModel.registerUser(requireView(), name, login, password)
+        }
+
+        binding.btnIntroIn.setOnClickListener {
+            val email: String = binding.etLoginIn.text.toString().trim { it <= ' ' } + "@market.com"
+            val password: String = binding.etPasswordIn.text.toString().trim { it <= ' ' }
+
+            mFirebaseViewModel.signInUser(requireView(), email, password)
         }
 
         return (binding.root)
     }
+
 
     private fun makeUnitsVisible() {
         binding.rgSignings.setOnCheckedChangeListener { _, checkedId ->
@@ -78,10 +115,14 @@ class IntroFragment : Fragment() {
         return true
     }
 
+    private fun success() {
+        if (activity is LogMainActivity) {
+            (activity as LogMainActivity).intentLog()
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (requireActivity() as AppCompatActivity).supportActionBar?.show()
         _binding = null
     }
 

@@ -1,9 +1,11 @@
 package com.hfad.ansormarket
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.hfad.ansormarket.databinding.ActivityMainBinding
+import com.hfad.ansormarket.logInScreens.LogMainActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,4 +18,6 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
     }
+
+
 }
