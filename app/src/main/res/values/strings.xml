@@ -18,7 +18,25 @@
     <string name="name">Ismingiz</string>
     <string name="login">Login</string>
     <string name="password">Parol</string>
-    <string name="phone">Telefon raqamizngiz</string>
+    <string name="phone">Telefon raqamingiz</string>
     <string name="submit">Tasdiqlash</string>
+    <string name="registration_successful"> Ro\'yxatdan o\'tildi!</string>
+    <string name="registration_failed">Xatolik ro\'y berdi \nIltimos, Login ni o\'gartiring </string>
+    <string name="authentication_failed">Login yoki parol noto\'g\'ri.</string>
+    <string name="login_successful">Kirish muvaffaqiyatli bajarildi</string>
+    <string name="please_enter_name">Iltimos, Ism kiriting</string>
+    <string name="please_enter_login">Iltimos, Login  kiriting</string>
+    <string name="please_enter_password">Iltimos, parol kiriting</string>
+    <string name="please_enter_log_password">Iltimos, Login va Parol kiriting</string>
+    <string name="please_minimum_password">Kamida 6 ta raqam</string>
+    <string name="please_click_back_again_to_exit">Chiqish uchun orqaga qaytish tugmasini yana bosing</string>
+    <string name="goods">Mahsulotlar</string>
+    <string name="cart">Xarid savati</string>
+    <string name="profile">Profilim</string>
+    <string name="myOrders">Buyurtmalarim</string>
+    <string name="address">Manzil</string>
+    <string name="update">Tahrirlash</string>
+    <string name="logout">chiqish</string>
+    <string name="denied_permission">"Siz xotiraga kirishga ruxsatini rad etdingiz, bunga Telefon sozlamalaridan ham ruxsat berishingiz mumkin."</string>
 
 </resources>

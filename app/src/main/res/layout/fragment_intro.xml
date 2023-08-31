@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:padding="5dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="5dp">
 
         <TextView
             android:id="@+id/tv_app_name_intro"
@@ -144,6 +144,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
+                                android:backgroundTint="@android:color/transparent"
                                 android:hint="@string/login"
                                 android:inputType="textEmailAddress"
                                 android:maxLength="25" />
@@ -160,6 +161,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
+                                android:backgroundTint="@android:color/transparent"
                                 android:hint="@string/password"
                                 android:inputType="numberPassword" />
 
@@ -207,6 +209,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
+                                android:backgroundTint="@android:color/transparent"
                                 android:hint="@string/name"
                                 android:inputType="textPersonName"
                                 android:maxLength="25" />
@@ -223,6 +226,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
+                                android:backgroundTint="@android:color/transparent"
                                 android:hint="@string/login"
                                 android:inputType="textEmailAddress"
                                 android:maxLength="25" />
@@ -239,6 +243,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
+                                android:backgroundTint="@android:color/transparent"
                                 android:hint="@string/password"
                                 android:inputType="numberPassword" />
 

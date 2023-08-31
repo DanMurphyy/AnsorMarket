@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/mainPageFragment"
+        android:icon="@drawable/shelves1"
+        tools:ignore="MenuTitle" />
+    <item
+        android:id="@+id/cartFragment"
+        android:icon="@drawable/basket2"
+        tools:ignore="MenuTitle" />
+    <item
+        android:id="@+id/ordersFragment"
+        android:icon="@drawable/motorbike"
+        tools:ignore="MenuTitle" />
+    <item
+        android:id="@+id/myProfileFragment"
+        android:icon="@drawable/user"
+        tools:ignore="MenuTitle" />
+
+</menu>

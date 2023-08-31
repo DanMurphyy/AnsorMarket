@@ -1,7 +1,6 @@
 package com.hfad.ansormarket.logInScreens
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.hfad.ansormarket.R
 import com.hfad.ansormarket.databinding.FragmentIntroBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
 
@@ -36,11 +36,16 @@ class IntroFragment : Fragment() {
 
         mFirebaseViewModel.registrationResult.observe(viewLifecycleOwner) { isSuccess ->
             if (isSuccess) {
-                Toast.makeText(requireContext(), "Registration Successful", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(
+                    requireContext(), getString(R.string.registration_successful),
+                    Toast.LENGTH_SHORT
+                ).show()
                 // Perform navigation or any other action on success
             } else {
-                Toast.makeText(requireContext(), "Registration Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(), getString(R.string.registration_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
                 // Handle registration failure
             }
         }
@@ -50,7 +55,10 @@ class IntroFragment : Fragment() {
                 success()
             } else {
                 // Show error message
-                mFirebaseViewModel.showErrorSnackBar(requireView(), "Authentication failed.")
+                mFirebaseViewModel.showErrorSnackBar(
+                    requireView(),
+                    getString(R.string.authentication_failed)
+                )
             }
         }
 
@@ -59,12 +67,15 @@ class IntroFragment : Fragment() {
             val name = binding.etNameUp.text.toString()
             val login = binding.etLoginUp.text.toString() + "@market.com"
             val password = binding.etPasswordUp.text.toString()
-
-            Log.d(
-                "IntroFragment",
-                "btnIntroUp clicked. Name: $name, Login: $login, Password: $password"
-            )
-            mFirebaseViewModel.registerUser(requireView(), name, login, password)
+            if (name.isNotEmpty() && password.length < 6) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.please_minimum_password),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                mFirebaseViewModel.registerUser(requireView(), name, login, password)
+            }
         }
 
         binding.btnIntroIn.setOnClickListener {
@@ -115,7 +126,7 @@ class IntroFragment : Fragment() {
         return true
     }
 
-    private fun success() {
+     fun success() {
         if (activity is LogMainActivity) {
             (activity as LogMainActivity).intentLog()
         }

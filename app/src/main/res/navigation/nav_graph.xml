@@ -8,16 +8,21 @@
     <fragment
         android:id="@+id/mainPageFragment"
         android:name="com.hfad.ansormarket.mainFragments.MainPageFragment"
-        android:label="fragment_main_page"
+        android:label="@string/goods"
         tools:layout="@layout/fragment_main_page" />
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.hfad.ansormarket.mainFragments.CartFragment"
-        android:label="fragment_cart"
+        android:label="@string/cart"
         tools:layout="@layout/fragment_cart" />
     <fragment
         android:id="@+id/myProfileFragment"
         android:name="com.hfad.ansormarket.mainFragments.MyProfileFragment"
-        android:label="fragment_my_profile"
+        android:label="@string/profile"
         tools:layout="@layout/fragment_my_profile" />
+    <fragment
+        android:id="@+id/ordersFragment"
+        android:name="com.hfad.ansormarket.mainFragments.OrdersFragment"
+        android:label="@string/myOrders"
+        tools:layout="@layout/fragment_orders" />
 </navigation>

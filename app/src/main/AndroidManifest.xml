@@ -20,7 +20,7 @@
         <activity
             android:name=".logInScreens.SplashActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,6 +31,7 @@
         <activity
             android:name=".logInScreens.LogMainActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.AnsorMarkeSign">
         </activity>
 

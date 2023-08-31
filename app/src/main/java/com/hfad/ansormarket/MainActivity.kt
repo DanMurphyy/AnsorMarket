@@ -1,11 +1,12 @@
 package com.hfad.ansormarket
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.hfad.ansormarket.databinding.ActivityMainBinding
-import com.hfad.ansormarket.logInScreens.LogMainActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,8 +17,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
+
+        setSupportActionBar(binding.toolbar)
         setContentView(view)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        val builder = AppBarConfiguration.Builder(navController.graph)
+        val appBarConfiguration = builder.build()
+        binding.toolbar.setupWithNavController(navController, appBarConfiguration)
+        binding.bottomNav.setupWithNavController(navController)
     }
-
-
 }
