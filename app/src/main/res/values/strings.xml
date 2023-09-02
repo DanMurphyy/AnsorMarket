@@ -38,5 +38,10 @@
     <string name="update">Tahrirlash</string>
     <string name="logout">chiqish</string>
     <string name="denied_permission">"Siz xotiraga kirishga ruxsatini rad etdingiz, bunga Telefon sozlamalaridan ham ruxsat berishingiz mumkin."</string>
+    <string name="image_uploaded">Rasm muvaffaqiyatli yuklandi</string>
+    <string name="image_error">Rasmni yuklashda xatolik!</string>
+    <string name="denied_permissions">Ilovaga kerakli ruxsatlar berilmagan, Iltimos, sozlamalarga kirib ruxsat bering.</string>
+    <string name="go_to_settings">Sozlamalarga o\'tish</string>
+    <string name="close_dialog_perm">Bekor qilish</string>
 
 </resources>

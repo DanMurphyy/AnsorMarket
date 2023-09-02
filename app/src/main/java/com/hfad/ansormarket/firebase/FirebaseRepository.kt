@@ -7,7 +7,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.hfad.ansormarket.models.Constants
-import com.hfad.ansormarket.models.Item
 import com.hfad.ansormarket.models.User
 import kotlinx.coroutines.tasks.await
 
@@ -55,33 +54,15 @@ class FirebaseRepository {
         return userDocument.toObject(User::class.java) ?: User()
     }
 
-    suspend fun createBoard(item: Item): Boolean {
-        return try {
-            mfireStore.collection(Constants.ITEMS)
-                .document()
-                .set(item, SetOptions.merge())
+    suspend fun updateUserData(userId: String, user: User) {
+        try {
+            mfireStore.collection(Constants.USERS)
+                .document(userId)
+                .set(user, SetOptions.merge())
                 .await()
-            true
         } catch (e: Exception) {
-            Log.e("FirestoreRepository", "Error while creating a board.", e)
-            false
-        }
-    }
-
-    suspend fun getItemList(): List<Item> {
-        return try {
-            val querySnapshot = mfireStore.collection(Constants.ITEMS)
-                .get()
-                .await()
-
-            querySnapshot.documents.mapNotNull { documentSnapshot ->
-                val item = documentSnapshot.toObject(Item::class.java)
-                item?.documentId = documentSnapshot.id
-                item
-            }
-        } catch (e: Exception) {
-            Log.e("FirestoreRepository", "Error reading documents", e)
-            emptyList()
+            Log.e("FirebaseRepository", "Error updating user profile data", e)
+            throw e  // Rethrow the exception to handle it in the calling code
         }
     }
 
@@ -98,6 +79,7 @@ class FirebaseRepository {
             throw e
         }
     }
+
 
     fun getCurrentUserId(): String {
         val currentUser = FirebaseAuth.getInstance().currentUser

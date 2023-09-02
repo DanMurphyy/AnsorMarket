@@ -9,10 +9,13 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.*
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
@@ -34,11 +37,11 @@ class MyProfileFragment : Fragment() {
     private val mFirebaseViewModel: FirebaseViewModel by viewModels()
     private val mSharedViewModel: SharedViewModel by viewModels()
     private var mSelectedImageFileUri: Uri? = null
+    val TAG = "MyProfileLog"
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (!isGranted)
-                showImageChooserPermissionDeniedDialog()
+            if (!isGranted) showImageChooserPermissionDeniedDialog()
         }
 
 
@@ -48,17 +51,8 @@ class MyProfileFragment : Fragment() {
     ): View {
         _binding = FragmentMyProfileBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-
         mFirebaseViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
             setUserDataInUI(user)
-        }
-
-        mFirebaseViewModel.imageUploadResult.observe(viewLifecycleOwner) { imageUrl ->
-            if (imageUrl != null) {
-                Toast.makeText(requireContext(), "Good!!", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "Bad!!", Toast.LENGTH_SHORT).show()
-            }
         }
 
         mFirebaseViewModel.showProgress(requireContext())
@@ -69,10 +63,8 @@ class MyProfileFragment : Fragment() {
                     requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                // Permission is already granted, show image chooser
                 mSharedViewModel.showImageChooser(this)
             } else {
-                // Request permission using the Activity Result API
                 permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
@@ -80,10 +72,25 @@ class MyProfileFragment : Fragment() {
         binding.btnUpdateProfile.setOnClickListener {
             if (mSelectedImageFileUri != null) {
                 mFirebaseViewModel.uploadImage(requireContext(), mSelectedImageFileUri!!)
+                mFirebaseViewModel.imageUploadResult.observe(viewLifecycleOwner) { imageUrl ->
+                    if (imageUrl != null) {
+                        Toast.makeText(
+                            requireContext(), getString(R.string.image_uploaded), Toast.LENGTH_SHORT
+                        ).show()
+                        updateUserProfileData()
+                    } else {
+                        Toast.makeText(
+                            requireContext(), getString(R.string.image_error), Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } else {
+                updateUserProfileData()
             }
         }
 
-
+        binding.lifecycleOwner = viewLifecycleOwner // Important for LiveData binding
+        binding.viewModel = mFirebaseViewModel // Set the ViewModel
         return (binding.root)
     }
 
@@ -105,31 +112,29 @@ class MyProfileFragment : Fragment() {
     }
 
     private fun setUserDataInUI(user: User) {
-        Glide
-            .with(requireContext())
-            .load(user.image)
-            .centerCrop()
-            .placeholder(R.drawable.ic_user_place_holder)
-            .into(binding.imageUser)
-
-        binding.etUserName.setText(user.name)
         val loginUser = user.login
         val userLogin = loginUser.replace("@market.com", "").trim()
         binding.etUserLogin.setText(userLogin)
-        binding.etAddressName.setText(user.address)
+    }
 
-        val mobileUser = user.mobile.toString()
-        if (mobileUser.length == 1 && mobileUser.contains('0')) {
-            binding.etMobileName.setText("")
-        } else {
-            binding.etMobileName.setText(user.mobile.toString())
-        }
+    private fun updateUserProfileData() {
+        val mProfileImageUrl = mFirebaseViewModel.imageUploadResult
+        val updatedUser = User(
+            name = binding.etUserName.text.toString(),
+            address = binding.etAddressName.text.toString(),
+            mobile = binding.etMobileNumber.text.toString().toLong(),
+            image = mProfileImageUrl.value.toString()
+        )
+
+        // Call the ViewModel function to update the user profile data
+        mFirebaseViewModel.updateUserProfileData(requireView(), updatedUser)
+        Log.d(TAG, "User data updated")
     }
 
     private fun showImageChooserPermissionDeniedDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage("Ilovaga kerakli ruxsatlar berilmagan, Iltimos, sozlamalarga kirib ruxsat bering.")
-        builder.setPositiveButton("Sozlamalarga o'tish") { _, _ ->
+        builder.setMessage(getString(R.string.denied_permissions))
+        builder.setPositiveButton(getString(R.string.go_to_settings)) { _, _ ->
             try {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri = Uri.fromParts("package", requireContext().packageName, null)
@@ -139,7 +144,7 @@ class MyProfileFragment : Fragment() {
                 e.printStackTrace()
             }
         }
-        builder.setNegativeButton("Bekor qilish") { dialog, _ ->
+        builder.setNegativeButton(getString(R.string.close_dialog_perm)) { dialog, _ ->
             dialog.dismiss()
         }
         builder.show()
@@ -162,6 +167,25 @@ class MyProfileFragment : Fragment() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         activity?.finish()
+    }
+
+    companion object {
+        @JvmStatic
+        @BindingAdapter("imageUrl")
+        fun loadImage(view: ImageView, imageUrl: String?) {
+            if (!imageUrl.isNullOrEmpty()) {
+                Glide.with(view.context)
+                    .load(imageUrl)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_user_place_holder)
+                    .into(view)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

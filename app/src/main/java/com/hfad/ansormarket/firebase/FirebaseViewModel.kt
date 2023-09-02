@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.core.content.ContextCompat
@@ -15,7 +14,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.logInScreens.IntroFragment
-import com.hfad.ansormarket.models.Item
 import com.hfad.ansormarket.models.User
 import kotlinx.coroutines.launch
 
@@ -29,6 +27,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val userLiveData: MutableLiveData<User> = MutableLiveData()
     val imageUploadResult: MutableLiveData<String?> = MutableLiveData()
 
+
     init {
         repository = FirebaseRepository()
     }
@@ -38,23 +37,82 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val validation = validateForm(view, name, login, password)
             if (validation) {
-                Log.d("FirebaseViewModel", "Validation passed")
                 try {
                     val isSuccess = repository.registerUser(name, login, password)
                     if (isSuccess) {
-                        // Automatically sign in the registered user
-                        signInUser(view, login, password)
-                        // Call the success function for navigation
-                        IntroFragment().success()
+                        signInUser(
+                            view,
+                            login,
+                            password
+                        )  // Automatically sign in the registered user
+                        IntroFragment().success() // Call the success function for navigation
                     } else {
                         hideProgress()
                         registrationResult.value = false
                     }
                 } catch (e: Exception) {
-                    // Handle exceptions here
-                    hideProgress()
+                    hideProgress()    // Handle exceptions here
                     registrationResult.value = false
                 }
+                hideProgress()
+            }
+            hideProgress()
+        }
+    }
+
+    fun loadUserData() {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                val user = repository.getUserData(userId)
+                userLiveData.postValue(user)
+            } catch (e: Exception) {
+            }
+            hideProgress()
+        }
+    }
+
+    fun signInUser(view: View, login: String, password: String) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            val validation = validateSignInForm(view, login, password)
+            if (validation) {
+                try {
+                    val isSuccess = repository.signInUser(login, password)
+                    loadUserData()
+                    hideProgress()
+                    signInResult.value = isSuccess
+                } catch (e: Exception) {
+                    hideProgress()
+                    signInResult.value = false
+                }
+            }
+            hideProgress()
+        }
+    }
+
+    fun updateUserProfileData(view: View, updatedUser: User) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                val user = userLiveData.value
+
+                // Check if the user object is not null
+                if (user != null) {
+                    // Update the user object fields based on the updatedUser object
+                    user.name = updatedUser.name
+                    user.address = updatedUser.address
+                    user.mobile = updatedUser.mobile
+                    if (updatedUser.image.isNotEmpty() && updatedUser.image != user.image) {
+                        user.image = updatedUser.image
+                    }
+
+                    repository.updateUserData(userId, user)
+                    userLiveData.postValue(user!!)
+                }
+                hideProgress()
+            } catch (e: Exception) {
                 hideProgress()
             }
         }
@@ -82,50 +140,16 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun signInUser(view: View, login: String, password: String) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            val validation = validateSignInForm(view, login, password)
-            if (validation) {
-                try {
-                    val isSuccess = repository.signInUser(login, password)
-                    loadUserData()
-                    hideProgress()
-                    signInResult.value = isSuccess
-                } catch (e: Exception) {
-                    hideProgress()
-                    signInResult.value = false
-                }
-            }
-            hideProgress()
-        }
+    fun getFileExtension(uri: Uri?): String? {
+        return MimeTypeMap.getSingleton()
+            .getExtensionFromMimeType(context.contentResolver?.getType(uri!!))
     }
 
-    fun loadUserData() {
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                val user = repository.getUserData(userId)
-                userLiveData.postValue(user)
-                hideProgress()
-            } catch (e: Exception) {
-                hideProgress()
-            }
-        }
-    }
-
-
-    suspend fun createBoard(item: Item): Boolean {
-        return repository.createBoard(item)
-    }
-
-    suspend fun getBoardsList(): List<Item> {
-        return repository.getItemList()
-    }
 
     fun getCurrentUserId(): String {
         return repository.getCurrentUserId()
     }
+
 
     private fun validateForm(view: View, name: String, login: String, password: String): Boolean {
         return when {
@@ -170,7 +194,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         mProgressDialog?.show()
     }
 
-    fun hideProgress() {
+    private fun hideProgress() {
         mProgressDialog!!.dismiss()
     }
 
@@ -185,11 +209,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         )
         //        snackBar.animationMode = BaseTransientBottomBar.ANIMATION_MODE_SLIDE
         snackBar.show()
-    }
-
-    fun getFileExtension(uri: Uri?): String? {
-        return MimeTypeMap.getSingleton()
-            .getExtensionFromMimeType(context.contentResolver?.getType(uri!!))
     }
 
 }

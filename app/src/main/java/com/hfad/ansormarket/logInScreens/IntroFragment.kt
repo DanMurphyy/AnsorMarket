@@ -46,7 +46,6 @@ class IntroFragment : Fragment() {
                     requireContext(), getString(R.string.registration_failed),
                     Toast.LENGTH_SHORT
                 ).show()
-                // Handle registration failure
             }
         }
 
@@ -54,14 +53,11 @@ class IntroFragment : Fragment() {
             if (isSuccess) {
                 success()
             } else {
-                // Show error message
                 mFirebaseViewModel.showErrorSnackBar(
-                    requireView(),
-                    getString(R.string.authentication_failed)
+                    requireView(), getString(R.string.authentication_failed)
                 )
             }
         }
-
 
         binding.btnIntroUp.setOnClickListener {
             val name = binding.etNameUp.text.toString()
@@ -70,8 +66,7 @@ class IntroFragment : Fragment() {
             if (name.isNotEmpty() && password.length < 6) {
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.please_minimum_password),
-                    Toast.LENGTH_SHORT
+                    getString(R.string.please_minimum_password), Toast.LENGTH_SHORT
                 ).show()
             } else {
                 mFirebaseViewModel.registerUser(requireView(), name, login, password)
@@ -84,7 +79,6 @@ class IntroFragment : Fragment() {
 
             mFirebaseViewModel.signInUser(requireView(), email, password)
         }
-
         return (binding.root)
     }
 
@@ -126,7 +120,7 @@ class IntroFragment : Fragment() {
         return true
     }
 
-     fun success() {
+    fun success() {
         if (activity is LogMainActivity) {
             (activity as LogMainActivity).intentLog()
         }

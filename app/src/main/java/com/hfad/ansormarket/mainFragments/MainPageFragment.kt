@@ -18,7 +18,6 @@ class MainPageFragment : Fragment() {
 
     private var _binding: FragmentMainPageBinding? = null
     private val binding get() = _binding!!
-
     private val mFirebaseViewModel: FirebaseViewModel by viewModels()
 
 
@@ -29,20 +28,21 @@ class MainPageFragment : Fragment() {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
+        mFirebaseViewModel.showProgress(requireContext())
+        mFirebaseViewModel.loadUserData()
+
         mFirebaseViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
             Glide
                 .with(requireContext())
-                .load(user.image)
+                .load(user!!.image)
                 .centerCrop()
                 .placeholder(R.drawable.ic_user_place_holder)
                 .into(binding.userImage)
-            binding.name.text = user.name
+            binding.name.text = user!!.name
             val loginUser = user.login
             val userLogin = loginUser.replace("@market.com", "").trim()
             binding.login.text = userLogin
         }
-        mFirebaseViewModel.showProgress(requireContext())
-        mFirebaseViewModel.loadUserData()
 
         binding.logout.setOnClickListener {
             FirebaseAuth.getInstance().signOut()

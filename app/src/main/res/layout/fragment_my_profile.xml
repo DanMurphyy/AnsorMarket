@@ -1,134 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_white"
-    android:fillViewport="true"
-    android:orientation="vertical"
-    tools:context=".mainFragments.MyProfileFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.hfad.ansormarket.firebase.FirebaseViewModel" />
+    </data>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_height="match_parent"
+        android:background="@color/background_white"
+        android:fillViewport="true"
         android:orientation="vertical"
-        android:padding="5dp">
+        tools:context=".mainFragments.MyProfileFragment">
 
-        <androidx.cardview.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="15dp"
-            android:background="@color/white"
-            android:elevation="10dp"
-            app:cardCornerRadius="15dp">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="15dp">
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="15dp"
+                android:background="@color/white"
+                android:elevation="10dp"
+                app:cardCornerRadius="15dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/image_user"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:contentDescription="@string/image_content"
-                    android:src="@drawable/ic_user_place_holder"
-                    app:civ_border_color="@android:color/holo_red_dark"
-                    app:civ_border_width="2dp" />
-
-                <com.google.android.material.textfield.TextInputLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/et_user_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:backgroundTint="@android:color/transparent"
-                        android:hint="@string/name"
-                        android:inputType="textPersonName"
-                        android:maxLength="25"
-                        android:textSize="@dimen/progress_text_size" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/et_user_login"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textStyle="italic|bold"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:hint="@string/login"
-                        android:inputType="textEmailAddress"
-                        android:maxLength="25"
-                        android:textSize="@dimen/progress_text_size" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/et_address_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@android:color/transparent"
-                        android:hint="@string/address"
-                        android:inputType="text"
-                        android:maxLength="100"
-                        android:textSize="@dimen/progress_text_size" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/et_mobile_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@android:color/transparent"
-                        android:hint="@string/phone"
-                        android:inputType="phone"
-                        android:textSize="@dimen/progress_text_size" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <Button
-                    android:id="@+id/btn_update_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="25dp"
-                    android:background="@drawable/white_border_shape_button_rounded"
-                    android:foreground="@drawable/custom_ripple"
+                    android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="@string/update"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/progress_text_size"
-                    app:backgroundTint="@null" />
+                    android:orientation="vertical"
+                    android:padding="15dp">
 
-            </LinearLayout>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/image_user"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:contentDescription="@string/image_content"
+                        android:src="@drawable/ic_user_place_holder"
+                        app:civ_border_color="@color/background_white"
+                        app:civ_border_width="2dp"
+                        app:imageUrl="@{viewModel.userLiveData.image}" />
 
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
 
-</ScrollView>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/et_user_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:backgroundTint="@android:color/transparent"
+                            android:hint="@string/name"
+                            android:inputType="textPersonName"
+                            android:maxLength="25"
+                            android:text="@{viewModel.userLiveData.name}"
+                            android:textSize="@dimen/progress_text_size" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/et_user_login"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:hint="@string/login"
+                            android:inputType="textEmailAddress"
+                            android:maxLength="25"
+                            android:textSize="@dimen/progress_text_size"
+                            android:textStyle="italic|bold" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/et_address_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@android:color/transparent"
+                            android:hint="@string/address"
+                            android:inputType="text"
+                            android:maxLength="100"
+                            android:text="@{viewModel.userLiveData.address}"
+                            android:textSize="@dimen/progress_text_size" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/et_mobile_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@android:color/transparent"
+                            android:hint="@string/phone"
+                            android:inputType="phone"
+                            android:text='@{String.valueOf(viewModel.userLiveData.mobile)}'
+                            android:textSize="@dimen/progress_text_size" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btn_update_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="25dp"
+                        android:background="@drawable/white_border_shape_button_rounded"
+                        android:foreground="@drawable/custom_ripple"
+                        android:gravity="center"
+                        android:text="@string/update"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="@dimen/progress_text_size"
+                        app:backgroundTint="@null" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
