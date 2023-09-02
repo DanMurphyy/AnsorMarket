@@ -115,6 +115,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             } catch (e: Exception) {
                 hideProgress()
             }
+            hideProgress()
         }
     }
 
