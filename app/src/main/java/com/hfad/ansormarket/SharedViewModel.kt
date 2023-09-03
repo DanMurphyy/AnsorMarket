@@ -73,25 +73,25 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             .getExtensionFromMimeType(context.contentResolver?.getType(uri!!))
     }
 
-    fun parseItemType(itemType: String): ItemType? {
-        return when (itemType) {
-            "Ichimliklar" -> ItemType.DRINK
-            "Qandolat mahsulotlari" -> ItemType.CANDY
-            "Sut Mahsulotlari" -> ItemType.DAIRY
-            "Tortlar va Pishiriqlar" -> ItemType.CAKE
-            "Konservalar" -> ItemType.CANNED
-            "Snaklar" -> ItemType.SNACK
-            "Mevalar" -> ItemType.FRUIT
-            "Bolalar Ovqatlari" -> ItemType.BABYFOOD
-            "Un Mahsulotlari" -> ItemType.FLOUR
-            "Souslar" -> ItemType.SAUCE
-            "Go\'sht" -> ItemType.MEAT
-            "Gigiena vositalari" -> ItemType.HYGIENE
-            "Oshxona" -> ItemType.KITCHEN
-            "Yog\'lar" -> ItemType.OIL
-            else -> ItemType.DRINK
-        }
-    }
+//    fun parseItemType(itemType: String): ItemType? {
+//        return when (itemType) {
+//            "Ichimliklar" -> ItemType.DRINK
+//            "Qandolat mahsulotlari" -> ItemType.CANDY
+//            "Sut Mahsulotlari" -> ItemType.DAIRY
+//            "Tortlar va Pishiriqlar" -> ItemType.CAKE
+//            "Konservalar" -> ItemType.CANNED
+//            "Snaklar" -> ItemType.SNACK
+//            "Mevalar" -> ItemType.FRUIT
+//            "Bolalar Ovqatlari" -> ItemType.BABYFOOD
+//            "Un Mahsulotlari" -> ItemType.FLOUR
+//            "Souslar" -> ItemType.SAUCE
+//            "Go\'sht" -> ItemType.MEAT
+//            "Gigiena vositalari" -> ItemType.HYGIENE
+//            "Oshxona" -> ItemType.KITCHEN
+//            "Yog\'lar" -> ItemType.OIL
+//            else -> ItemType.DRINK
+//        }
+//    }
 
 
 //    fun parsePriorityToInt(priority: Priority): Int {

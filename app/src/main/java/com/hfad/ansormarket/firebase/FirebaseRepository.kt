@@ -13,7 +13,7 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository {
 
-    private val mfireStore = FirebaseFirestore.getInstance()
+    private val mFireStore = FirebaseFirestore.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
 
@@ -26,7 +26,7 @@ class FirebaseRepository {
             // User registration in Firestore
             val userId = authResult.user?.uid ?: ""
             val user = User(userId, name, login)
-            mfireStore.collection(Constants.USERS)
+            mFireStore.collection(Constants.USERS)
                 .document(userId)
                 .set(user, SetOptions.merge())
                 .await()
@@ -39,7 +39,7 @@ class FirebaseRepository {
 
     suspend fun createItem(item: Item): Boolean {
         return try {
-            mfireStore.collection(Constants.ITEMS)
+            mFireStore.collection(Constants.ITEMS)
                 .document()
                 .set(item, SetOptions.merge())
                 .await()
@@ -61,16 +61,35 @@ class FirebaseRepository {
     }
 
     suspend fun getUserData(userId: String): User {
-        val userDocument = mfireStore.collection(Constants.USERS)
+        val userDocument = mFireStore.collection(Constants.USERS)
             .document(userId)
             .get()
             .await()
         return userDocument.toObject(User::class.java) ?: User()
     }
 
+    suspend fun getAllItems(): List<Item> {
+        try {
+            val itemsCollection = mFireStore.collection(Constants.ITEMS)
+            val querySnapshot = itemsCollection.get().await()
+            val itemList = mutableListOf<Item>()
+
+            for (document in querySnapshot.documents) {
+                val item = document.toObject(Item::class.java)
+                item?.documentId = document.id
+                item?.let { itemList.add(it) }
+            }
+            Log.d("FirebaseRepository", "getAllItems: Successful. ${itemList.size} items fetched.")
+            return itemList
+        } catch (e: Exception) {
+            Log.e("FirebaseRepository", "Error retrieving items: ${e.message}", e)
+            throw e
+        }
+    }
+
     suspend fun updateUserData(userId: String, user: User) {
         try {
-            mfireStore.collection(Constants.USERS)
+            mFireStore.collection(Constants.USERS)
                 .document(userId)
                 .set(user, SetOptions.merge())
                 .await()

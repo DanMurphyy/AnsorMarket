@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.core.content.ContextCompat
@@ -68,6 +69,8 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             try {
                 repository.createItem(item)
+                val items = repository.getAllItems()
+                itemList.postValue(items)
                 createItemLiveData.postValue(true) // Set the value to true when item is created successfully
                 hideProgress()
             } catch (e: Exception) {
@@ -75,6 +78,21 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 hideProgress()
             }
             hideProgress()
+        }
+    }
+
+    fun fetchAllItems() {
+        viewModelScope.launch {
+            try {
+                val items = repository.getAllItems()
+                itemList.postValue(items)
+                Log.d("FirebaseViewModel", "fetchAllItems: Items fetched successfully.")
+
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
+
+            }
         }
     }
 

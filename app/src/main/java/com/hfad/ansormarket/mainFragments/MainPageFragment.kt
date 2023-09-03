@@ -18,17 +18,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.firebase.auth.FirebaseAuth
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
+import com.hfad.ansormarket.adapters.ItemListAdapter
 import com.hfad.ansormarket.databinding.FragmentItemCreateBinding
 import com.hfad.ansormarket.databinding.FragmentMainPageBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
-import com.hfad.ansormarket.logInScreens.LogMainActivity
 import com.hfad.ansormarket.models.Constants
 import com.hfad.ansormarket.models.Item
+import jp.wasabeef.recyclerview.animators.LandingAnimator
 import java.io.IOException
 
 class MainPageFragment : Fragment() {
@@ -40,7 +41,7 @@ class MainPageFragment : Fragment() {
     private var mSelectedImageFileUri: Uri? = null
     private var itemCreateBinding: FragmentItemCreateBinding? = null
     private var bottomSheetDialog: BottomSheetDialog? = null
-
+    private val adapter: ItemListAdapter by lazy { ItemListAdapter() }
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -48,39 +49,38 @@ class MainPageFragment : Fragment() {
                 showImageChooserPermissionDeniedDialog()
         }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-
         mFirebaseViewModel.showProgress(requireContext())
         mFirebaseViewModel.loadUserData()
 
-        mFirebaseViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
-            Glide
-                .with(requireContext())
-                .load(user!!.image)
-                .centerCrop()
-                .placeholder(R.drawable.ic_user_place_holder)
-                .into(binding.userImage)
-            binding.name.text = user!!.name
-            val loginUser = user.login
-            val userLogin = loginUser.replace("@market.com", "").trim()
-            binding.login.text = userLogin
+        showRecyclerView()
+        mFirebaseViewModel.itemList.observe(viewLifecycleOwner) { itemList ->
+            adapter.setItems(itemList)
+            Log.d(
+                "MainPageFragment",
+                "onCreateView: Item list updated with ${itemList.size} items."
+            )
         }
 
-        binding.logout.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            val intent = Intent(requireContext(), LogMainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-            activity?.finish()
-        }
+        mFirebaseViewModel.fetchAllItems()
+
 
         return (binding.root)
+    }
+
+    private fun showRecyclerView() {
+        val recyclerView = binding.recyclerViewList
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager =
+            StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
+        recyclerView.itemAnimator = LandingAnimator().apply {
+            addDuration = 200
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -126,10 +126,9 @@ class MainPageFragment : Fragment() {
                 0 // You can change this default value to another suitable value or handle it as needed
             }
 
-            val category = mSharedViewModel.parseItemType(mItemType)
             val userLogin = mFirebaseViewModel.userLiveData.value!!.login.toString()
 
-            if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || category == null || TextUtils.isEmpty(
+            if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || mItemType == null || TextUtils.isEmpty(
                     userLogin
                 )
             ) {
@@ -192,11 +191,12 @@ class MainPageFragment : Fragment() {
             0 // You can change this default value to another suitable value or handle it as needed
         }
 
-        val category = mSharedViewModel.parseItemType(mItemType)
         val mItemImageUrl = mFirebaseViewModel.imageUploadResult.value.toString()
         val userLogin = mFirebaseViewModel.userLiveData.value!!.login.toString()
 
-        if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || category == null || TextUtils.isEmpty(
+        if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || TextUtils.isEmpty(
+                mItemType
+            ) || TextUtils.isEmpty(
                 userLogin
             )
         ) {
@@ -215,7 +215,7 @@ class MainPageFragment : Fragment() {
                 nameItem = nameItem,
                 weight = weight,
                 price = price,
-                category = category,
+                category = mItemType,
                 createdBy = userLogin,
             )
 
@@ -238,7 +238,6 @@ class MainPageFragment : Fragment() {
             }
         }
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

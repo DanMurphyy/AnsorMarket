@@ -13,6 +13,7 @@
     <color name="colorPrimaryDark">#E21616</color>
     <color name="colorAccent">#C83F3F</color>
     <color name="primary_text_color">#7A8089</color>
+    <color name="list_text_color">#676C73</color>
     <color name="secondary_text_color">#147A7A</color>
 
     <color name="snackbar_error_color">#C83F3F</color>

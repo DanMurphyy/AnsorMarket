@@ -52,6 +52,7 @@
     <string name="image_not_selected">Rasm tanlang!</string>
     <string name="board_created">Mahsulot qo\'shildi</string>
     <string name="board_creating_error">Mahsulot kiritishda hatolik</string>
+    <string name="add_cart">Savatga</string>
     <string-array name="item_type">
         <item>Ichimliklar</item>
         <item>Qandolat mahsulotlari</item>

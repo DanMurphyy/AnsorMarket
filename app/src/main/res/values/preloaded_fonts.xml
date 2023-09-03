@@ -3,6 +3,8 @@
     <array name="preloaded_fonts" translatable="false">
         <item>@font/almarai_light</item>
         <item>@font/carter_one</item>
+        <item>@font/chelsea_market</item>
+        <item>@font/chilanka</item>
         <item>@font/francois_one</item>
         <item>@font/yeseva_one</item>
     </array>
