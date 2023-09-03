@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.logInScreens.IntroFragment
+import com.hfad.ansormarket.models.Item
 import com.hfad.ansormarket.models.User
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,8 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val signInResult: MutableLiveData<Boolean> = MutableLiveData()
     val userLiveData: MutableLiveData<User> = MutableLiveData()
     val imageUploadResult: MutableLiveData<String?> = MutableLiveData()
+    val createItemLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val itemList: MutableLiveData<List<Item>> = MutableLiveData()
 
 
     init {
@@ -54,6 +57,21 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                     hideProgress()    // Handle exceptions here
                     registrationResult.value = false
                 }
+                hideProgress()
+            }
+            hideProgress()
+        }
+    }
+
+    fun createItem(view: View, item: Item) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                repository.createItem(item)
+                createItemLiveData.postValue(true) // Set the value to true when item is created successfully
+                hideProgress()
+            } catch (e: Exception) {
+                createItemLiveData.postValue(false) // Set the value to false when item creation fails
                 hideProgress()
             }
             hideProgress()
@@ -126,7 +144,29 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 val extension = getFileExtension(uri)
                 if (extension != null) {
                     val filename = "USER_IMAGE_${System.currentTimeMillis()}.$extension"
-                    val imageUrl = repository.uploadImage(uri, filename)
+                    val imageUrl = repository.uploadUserImage(uri, filename)
+                    imageUploadResult.postValue(imageUrl)
+                } else {
+                    hideProgress()
+                    imageUploadResult.postValue(null) // Indicate failure
+                }
+            } catch (e: Exception) {
+                hideProgress()
+                imageUploadResult.postValue(null) // Indicate failure
+            } finally {
+                hideProgress()
+            }
+        }
+    }
+
+    fun uploadItemImage(context: Context, uri: Uri) {
+        showProgress(context)
+        viewModelScope.launch {
+            try {
+                val extension = getFileExtension(uri)
+                if (extension != null) {
+                    val filename = "USER_IMAGE_${System.currentTimeMillis()}.$extension"
+                    val imageUrl = repository.uploadItemImage(uri, filename)
                     imageUploadResult.postValue(imageUrl)
                 } else {
                     hideProgress()

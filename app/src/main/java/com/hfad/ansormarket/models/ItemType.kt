@@ -9,6 +9,8 @@ enum class ItemType {
     SNACK,
     FRUIT,
     BABYFOOD,
+    FLOUR,
+    SAUCE,
     MEAT,
     HYGIENE,
     KITCHEN,

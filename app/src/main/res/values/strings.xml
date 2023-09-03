@@ -43,5 +43,30 @@
     <string name="denied_permissions">Ilovaga kerakli ruxsatlar berilmagan, Iltimos, sozlamalarga kirib ruxsat bering.</string>
     <string name="go_to_settings">Sozlamalarga o\'tish</string>
     <string name="close_dialog_perm">Bekor qilish</string>
+    <string name="add">Qoshish</string>
+    <string name="item_name">Nomi</string>
+    <string name="create">Qo\'shish</string>
+    <string name="item_weight">Vazni</string>
+    <string name="item_price">Narxi</string>
+    <string name="invalid_item_type">Iltimos, barcha joylarni to\'ldiring</string>
+    <string name="image_not_selected">Rasm tanlang!</string>
+    <string name="board_created">Mahsulot qo\'shildi</string>
+    <string name="board_creating_error">Mahsulot kiritishda hatolik</string>
+    <string-array name="item_type">
+        <item>Ichimliklar</item>
+        <item>Qandolat mahsulotlari</item>
+        <item>Sut Mahsulotlari</item>
+        <item>Tortlar va Pishiriqlar</item>
+        <item>Konservalar</item>
+        <item>Snaklar</item>
+        <item>Mevalar</item>
+        <item>Bolalar Ovqatlari</item>
+        <item>Un Mahsulotlari</item>
+        <item>Souslar</item>
+        <item>Go\'sht</item>
+        <item>Gigiena vositalari</item>
+        <item>Oshxona</item>
+        <item>Yog\'lar</item>
+    </string-array>
 
 </resources>

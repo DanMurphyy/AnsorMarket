@@ -1,15 +1,15 @@
-package com.hfad.ansormarket.models
+import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.PropertyName
+import com.hfad.ansormarket.models.ItemType
 
-import androidx.room.TypeConverter
+class FirestoreItemTypeConverter {
 
-class Converter {
-
-    @TypeConverter
+    @PropertyName("category")
     fun fromItemType(itemType: ItemType): String {
         return itemType.name
     }
 
-    @TypeConverter
+    @Exclude
     fun toItemType(itemType: String): ItemType {
         return ItemType.valueOf(itemType)
     }

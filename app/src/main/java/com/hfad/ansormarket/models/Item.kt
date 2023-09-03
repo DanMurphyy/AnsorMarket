@@ -2,17 +2,23 @@ package com.hfad.ansormarket.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.PropertyName
 
 data class Item(
-    val name: String = "",
-    val image: String = "",
+    val imageItem: String = "",
+    val nameItem: String = "",
+    val weight: String = "",
     val price: Int = 0,
-    val category: ItemType,
+    @get:PropertyName("category")
+    @set:PropertyName("category")
+    var category: ItemType,
     val createdBy: String = "",
     val assignedTo: ArrayList<String> = ArrayList(),
     var documentId: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readInt(),
@@ -23,8 +29,9 @@ data class Item(
     )
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(name)
-        writeString(image)
+        writeString(imageItem)
+        writeString(nameItem)
+        writeString(weight)
         writeInt(price)
         writeString(category.name)
         writeString(createdBy)
@@ -42,5 +49,14 @@ data class Item(
         override fun newArray(size: Int): Array<Item?> {
             return arrayOfNulls(size)
         }
+    }
+    @Exclude
+    fun getCategoryName(): String {
+        return category.name
+    }
+
+    @Exclude
+    fun setCategoryName(categoryName: String) {
+        category = ItemType.valueOf(categoryName)
     }
 }

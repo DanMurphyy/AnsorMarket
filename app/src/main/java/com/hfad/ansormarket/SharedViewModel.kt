@@ -15,6 +15,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.models.Constants
+import com.hfad.ansormarket.models.ItemType
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
     var doubleBackToExitPressedOnce = false
@@ -71,4 +72,33 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         return MimeTypeMap.getSingleton()
             .getExtensionFromMimeType(context.contentResolver?.getType(uri!!))
     }
+
+    fun parseItemType(itemType: String): ItemType? {
+        return when (itemType) {
+            "Ichimliklar" -> ItemType.DRINK
+            "Qandolat mahsulotlari" -> ItemType.CANDY
+            "Sut Mahsulotlari" -> ItemType.DAIRY
+            "Tortlar va Pishiriqlar" -> ItemType.CAKE
+            "Konservalar" -> ItemType.CANNED
+            "Snaklar" -> ItemType.SNACK
+            "Mevalar" -> ItemType.FRUIT
+            "Bolalar Ovqatlari" -> ItemType.BABYFOOD
+            "Un Mahsulotlari" -> ItemType.FLOUR
+            "Souslar" -> ItemType.SAUCE
+            "Go\'sht" -> ItemType.MEAT
+            "Gigiena vositalari" -> ItemType.HYGIENE
+            "Oshxona" -> ItemType.KITCHEN
+            "Yog\'lar" -> ItemType.OIL
+            else -> ItemType.DRINK
+        }
+    }
+
+
+//    fun parsePriorityToInt(priority: Priority): Int {
+//        return when (priority) {
+//            Priority.HIGH -> 0
+//            Priority.MEDIUM -> 1
+//            Priority.LOW -> 2
+//        }
+//    }
 }

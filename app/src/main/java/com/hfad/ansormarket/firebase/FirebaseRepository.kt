@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.hfad.ansormarket.models.Constants
+import com.hfad.ansormarket.models.Item
 import com.hfad.ansormarket.models.User
 import kotlinx.coroutines.tasks.await
 
@@ -33,6 +34,19 @@ class FirebaseRepository {
         } catch (e: Exception) {
             Log.e("SignUpUser", "Error registering user", e)
             return false
+        }
+    }
+
+    suspend fun createItem(item: Item): Boolean {
+        return try {
+            mfireStore.collection(Constants.ITEMS)
+                .document()
+                .set(item, SetOptions.merge())
+                .await()
+            true
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error while creating a board.", e)
+            false
         }
     }
 
@@ -66,16 +80,30 @@ class FirebaseRepository {
         }
     }
 
-    suspend fun uploadImage(uri: Uri, fileName: String): String {
+    suspend fun uploadUserImage(uri: Uri, fileName: String): String {
         return try {
             val storageRef = FirebaseStorage.getInstance().reference
-            val imageRef = storageRef.child("images/$fileName")
+            val imageRef = storageRef.child("profileImages/$fileName")
             val uploadTask = imageRef.putFile(uri).await()
 
             val imageUrlTask = imageRef.downloadUrl.await()
             imageUrlTask.toString()
         } catch (e: Exception) {
-            Log.e("FirebaseRepository", "Error uploading image", e)
+            Log.e("FirebaseRepository", "Error uploading profileImages", e)
+            throw e
+        }
+    }
+
+    suspend fun uploadItemImage(uri: Uri, fileName: String): String {
+        return try {
+            val storageRef = FirebaseStorage.getInstance().reference
+            val imageRef = storageRef.child("itemImages/$fileName")
+            val uploadTask = imageRef.putFile(uri).await()
+
+            val imageUrlTask = imageRef.downloadUrl.await()
+            imageUrlTask.toString()
+        } catch (e: Exception) {
+            Log.e("FirebaseRepository", "Error uploading itemImages", e)
             throw e
         }
     }
