@@ -60,6 +60,14 @@
     <string name="sample_minus">-</string>
     <string name="sample_quantity">22</string>
     <string name="sample_add">+</string>
+    <string name="payment_method">To\'lov turi:</string>
+    <string name="cash_method">NAQD pul</string>
+    <string name="payment_amount">Buyurtma Summasi:</string>
+    <string name="delivery_fee">Bepul yetkazib berish uchun eng kam Buyurtma summasi 100 000 so\'m</string>
+    <string name="deliver_charge">Yetkazib berish xizmati</string>
+    <string name="deliver_charge_amount">10000</string>
+    <string name="fee_grand_info">Umumiy hisob \=\ </string>
+    <string name="make_order">Buyurtma berish</string>
     <string-array name="item_type">
         <item>Ichimliklar</item>
         <item>Qandolat mahsulotlari</item>

@@ -4,6 +4,7 @@ object Constants {
 
     const val USERS: String = "users"
     const val ITEMS: String = "items"
+    const val MY_CART: String = "mycart"
     const val IMAGE: String = "image"
     const val NAME: String = "name"
     const val MOBILE: String = "mobile"

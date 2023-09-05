@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.logInScreens.IntroFragment
 import com.hfad.ansormarket.models.Item
+import com.hfad.ansormarket.models.MyCart
 import com.hfad.ansormarket.models.User
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val userLiveData: MutableLiveData<User> = MutableLiveData()
     val imageUploadResult: MutableLiveData<String?> = MutableLiveData()
     val createItemLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val toCartLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val itemList: MutableLiveData<List<Item>> = MutableLiveData()
 
 
@@ -75,6 +77,23 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 hideProgress()
             } catch (e: Exception) {
                 createItemLiveData.postValue(false) // Set the value to false when item creation fails
+                hideProgress()
+            }
+            hideProgress()
+        }
+    }
+
+    fun toCart(view: View, myCart: MyCart) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                repository.toCart(myCart)
+//                val items = repository.getAllItems()
+//                itemList.postValue(items)
+                toCartLiveData.postValue(true) // Set the value to true when item is created successfully
+                hideProgress()
+            } catch (e: Exception) {
+                toCartLiveData.postValue(false) // Set the value to false when item creation fails
                 hideProgress()
             }
             hideProgress()

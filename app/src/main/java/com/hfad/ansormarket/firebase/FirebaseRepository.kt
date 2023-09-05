@@ -8,6 +8,7 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.hfad.ansormarket.models.Constants
 import com.hfad.ansormarket.models.Item
+import com.hfad.ansormarket.models.MyCart
 import com.hfad.ansormarket.models.User
 import kotlinx.coroutines.tasks.await
 
@@ -42,6 +43,19 @@ class FirebaseRepository {
             mFireStore.collection(Constants.ITEMS)
                 .document()
                 .set(item, SetOptions.merge())
+                .await()
+            true
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error while creating a board.", e)
+            false
+        }
+    }
+
+    suspend fun toCart(myCart: MyCart): Boolean {
+        return try {
+            mFireStore.collection(Constants.MY_CART)
+                .document()
+                .set(myCart, SetOptions.merge())
                 .await()
             true
         } catch (e: Exception) {

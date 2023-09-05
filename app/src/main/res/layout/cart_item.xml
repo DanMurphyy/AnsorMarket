@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:padding="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/creamy_border_shape_button_rounded"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/info_list_image"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/background_intro"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/roundedImageView" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/info_list_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="@string/sample_item_name"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/info_list_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="1dp"
+                    android:fontFamily="@font/amita"
+                    android:text="@string/sample_price"
+                    android:textColor="#FF4B4B"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/info_currency_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="1dp"
+                    android:fontFamily="@font/chelsea_market"
+                    android:text="@string/sample_currency"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/info_list_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:fontFamily="@font/yeseva_one"
+                android:text="@string/sample_weight"
+                android:textAlignment="center"
+                android:textColor="@color/list_text_color"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/quantity_minus"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/white_border_shape_button_rounded"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/custom_ripple"
+                android:src="@drawable/ic_remove"
+                app:tint="@color/black" />
+
+
+            <TextView
+                android:id="@+id/quantity_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/almarai_light"
+                android:text="@string/sample_quantity"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+
+            <ImageView
+                android:id="@+id/quantity_plus"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/white_border_shape_button_rounded"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/custom_ripple"
+                android:src="@drawable/ic_add"
+                app:tint="@color/black" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
