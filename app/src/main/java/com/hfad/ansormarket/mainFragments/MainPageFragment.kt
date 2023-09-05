@@ -1,17 +1,17 @@
 package com.hfad.ansormarket.mainFragments
 
 import android.Manifest
+import android.app.ActionBar
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
-import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +26,7 @@ import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.adapters.ItemListAdapter
 import com.hfad.ansormarket.databinding.FragmentItemCreateBinding
 import com.hfad.ansormarket.databinding.FragmentMainPageBinding
+import com.hfad.ansormarket.databinding.ItemInfoLayoutBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
 import com.hfad.ansormarket.models.Constants
 import com.hfad.ansormarket.models.Item
@@ -40,8 +41,11 @@ class MainPageFragment : Fragment() {
     private val mSharedViewModel: SharedViewModel by viewModels()
     private var mSelectedImageFileUri: Uri? = null
     private var itemCreateBinding: FragmentItemCreateBinding? = null
+    private var itemInfoBinding: ItemInfoLayoutBinding? = null
     private var bottomSheetDialog: BottomSheetDialog? = null
+    private var mDialog: Dialog? = null
     private val adapter: ItemListAdapter by lazy { ItemListAdapter() }
+    var quantity: Int = 1
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -61,10 +65,6 @@ class MainPageFragment : Fragment() {
         showRecyclerView()
         mFirebaseViewModel.itemList.observe(viewLifecycleOwner) { itemList ->
             adapter.setItems(itemList)
-            Log.d(
-                "MainPageFragment",
-                "onCreateView: Item list updated with ${itemList.size} items."
-            )
         }
 
         mFirebaseViewModel.fetchAllItems()
@@ -81,6 +81,60 @@ class MainPageFragment : Fragment() {
         recyclerView.itemAnimator = LandingAnimator().apply {
             addDuration = 200
         }
+
+
+        adapter.setOnClickListener(object : ItemListAdapter.OnClickListener {
+            override fun onClick(position: Int, currentItem: Item) {
+                showInfoDialog(currentItem)
+            }
+
+        })
+
+
+    }
+
+    private fun showInfoDialog(currentItem: Item) {
+        quantity = 1
+        mDialog = Dialog(requireContext(), R.style.Bottom_Sheet_Style)
+        itemInfoBinding = ItemInfoLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        val window: Window = mDialog!!.window!!
+        window.setBackgroundDrawableResource(android.R.color.transparent)
+        window.attributes.windowAnimations = R.style.DialogAnimation
+//        itemInfoBinding!!.closeItem.setOnClickListener {
+//            hideInfoDialog()
+//        }
+        Glide
+            .with(requireContext())
+            .load(currentItem.imageItem)
+            .fitCenter()
+            .placeholder(R.drawable.ic_images)
+            .into(itemInfoBinding!!.infoListImage)
+        itemInfoBinding!!.infoListPrice.text = currentItem.price.toString()
+        itemInfoBinding!!.infoListName.text = currentItem.nameItem
+        itemInfoBinding!!.infoListWeight.text = currentItem.weight
+        itemInfoBinding!!.quantityInfo.text = quantity.toString()
+        itemInfoBinding!!.quantityPlus.setOnClickListener {
+            quantity++
+            itemInfoBinding!!.quantityInfo.text = quantity.toString()
+        }
+
+        itemInfoBinding!!.quantityMinus.setOnClickListener {
+            if (quantity > 1) {
+                quantity--
+                itemInfoBinding!!.quantityInfo.text = quantity.toString()
+            }
+        }
+
+        mDialog!!.setContentView(itemInfoBinding!!.root)
+        mDialog!!.setCancelable(true)
+        mDialog!!.setCanceledOnTouchOutside(true)
+        mDialog!!.show()
+        window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
+
+    }
+
+    private fun hideInfoDialog() {
+        mDialog!!.dismiss()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -257,11 +311,9 @@ class MainPageFragment : Fragment() {
     }
 
     private fun showImageChooserPermissionDeniedDialog() {
-        Log.d(ContentValues.TAG, "showImageChooserPermissionDeniedDialog called")
         val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage("Ilovaga kerakli ruxsatlar berilmagan, Iltimos, sozlamalarga kirib ruxsat bering.")
-        builder.setPositiveButton("Sozlamalarga o'tish") { _, _ ->
-            Log.d(ContentValues.TAG, "Positive button clicked")
+        builder.setMessage(getString(R.string.denied_permissions))
+        builder.setPositiveButton(getString(R.string.go_to_settings)) { _, _ ->
             try {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri = Uri.fromParts("package", requireContext().packageName, null)
@@ -271,8 +323,7 @@ class MainPageFragment : Fragment() {
                 e.printStackTrace()
             }
         }
-        builder.setNegativeButton("Bekor qilish") { dialog, _ ->
-            Log.d(ContentValues.TAG, "Negative button clicked")
+        builder.setNegativeButton(getString(R.string.close_dialog_perm)) { dialog, _ ->
             dialog.dismiss()
         }
         builder.show()

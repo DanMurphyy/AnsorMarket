@@ -15,7 +15,6 @@ import androidx.lifecycle.AndroidViewModel
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.models.Constants
-import com.hfad.ansormarket.models.ItemType
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
     var doubleBackToExitPressedOnce = false

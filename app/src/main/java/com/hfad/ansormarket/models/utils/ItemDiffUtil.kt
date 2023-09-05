@@ -1,6 +1,7 @@
-package com.hfad.ansormarket.models
+package com.hfad.ansormarket.models.utils
 
 import androidx.recyclerview.widget.DiffUtil
+import com.hfad.ansormarket.models.Item
 
 class ItemDiffUtil(private val oldList: List<Item>, private val newList: List<Item>) :
     DiffUtil.Callback() {

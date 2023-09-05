@@ -1,6 +1,6 @@
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.PropertyName
-import com.hfad.ansormarket.models.ItemType
+import com.hfad.ansormarket.models.utils.ItemType
 
 class FirestoreItemTypeConverter {
 

@@ -8,10 +8,13 @@ import com.bumptech.glide.Glide
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.databinding.ListItemLayoutBinding
 import com.hfad.ansormarket.models.Item
-import com.hfad.ansormarket.models.ItemDiffUtil
+import com.hfad.ansormarket.models.utils.ItemDiffUtil
 
 class ItemListAdapter : RecyclerView.Adapter<ItemListAdapter.MyViewHolder>() {
-    private var itemList: List<Item> = emptyList() // Initialize itemList with an empty list
+
+    private var onClickListener: OnClickListener? = null
+
+    private var itemList: List<Item> = emptyList()
 
     class MyViewHolder(internal val binding: ListItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -34,6 +37,12 @@ class ItemListAdapter : RecyclerView.Adapter<ItemListAdapter.MyViewHolder>() {
         binding.itemListPrice.text = currentItem.price.toString()
         binding.itemListName.text = currentItem.nameItem
         binding.itemListWeight.text = currentItem.weight
+
+        holder.itemView.setOnClickListener {
+            if (onClickListener != null) {
+                onClickListener!!.onClick(position, currentItem)
+            }
+        }
     }
 
     fun setItems(items: List<Item>) {
@@ -45,6 +54,14 @@ class ItemListAdapter : RecyclerView.Adapter<ItemListAdapter.MyViewHolder>() {
 
     override fun getItemCount(): Int {
         return itemList.size
+    }
+
+    interface OnClickListener {
+        fun onClick(position: Int, currentItem: Item)
+    }
+
+    fun setOnClickListener(onClickListener: OnClickListener) {
+        this.onClickListener = onClickListener
     }
 
 }

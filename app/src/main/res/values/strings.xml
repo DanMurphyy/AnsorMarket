@@ -53,6 +53,13 @@
     <string name="board_created">Mahsulot qo\'shildi</string>
     <string name="board_creating_error">Mahsulot kiritishda hatolik</string>
     <string name="add_cart">Savatga</string>
+    <string name="sample_price">12000</string>
+    <string name="sample_currency">So\'m</string>
+    <string name="sample_item_name">Coca-Cola</string>
+    <string name="sample_weight">1.5 l</string>
+    <string name="sample_minus">-</string>
+    <string name="sample_quantity">22</string>
+    <string name="sample_add">+</string>
     <string-array name="item_type">
         <item>Ichimliklar</item>
         <item>Qandolat mahsulotlari</item>

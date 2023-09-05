@@ -53,7 +53,7 @@
                         android:backgroundTint="@android:color/transparent"
                         android:fontFamily="@font/francois_one"
                         android:hint="@string/item_name"
-                        android:inputType="text"
+                        android:inputType="textPersonName"
                         android:textSize="@dimen/progress_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
 

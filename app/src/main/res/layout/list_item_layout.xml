@@ -6,17 +6,18 @@
     android:layout_margin="5dp"
     android:elevation="10dp"
     android:padding="5dp"
+    android:foreground="@drawable/custom_ripple"
     app:cardCornerRadius="15dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F4F4F4"
+        android:background="#FBFBFB"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="5dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/item_list_image"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -27,7 +28,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/roundedImageView" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -55,8 +57,9 @@
                     android:layout_gravity="bottom"
                     android:layout_margin="1dp"
                     android:text="12 000"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="15sp" />
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/item_currency_price"
@@ -66,7 +69,7 @@
                     android:layout_margin="1dp"
                     android:fontFamily="@font/chelsea_market"
                     android:text="So\'m"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="10sp" />
             </LinearLayout>
 
@@ -76,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:ellipsize="end"
-                android:fontFamily="@font/chelsea_market"
+
                 android:maxLines="3"
                 android:text="Coca-Cola"
                 android:textColor="@color/black"

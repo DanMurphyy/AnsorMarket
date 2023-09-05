@@ -1,4 +1,4 @@
-package com.hfad.ansormarket.models
+package com.hfad.ansormarket.models.utils
 
 enum class ItemType {
     DRINK,

@@ -11,9 +11,10 @@ data class Item(
     var category: String,
     val createdBy: String = "",
     val assignedTo: ArrayList<String> = ArrayList(),
-    var documentId: String = ""
+    var documentId: String = "",
+    var quantity: Int = 1
 ) : Parcelable {
-    constructor() : this("", "", "", 0, "", "", ArrayList(), "")
+    constructor() : this("", "", "", 0, "", "", ArrayList(), "", 1)
 
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -23,7 +24,8 @@ data class Item(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.createStringArrayList()!!,
-        parcel.readString()!!
+        parcel.readString()!!,
+        parcel.readInt(),
     )
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
@@ -35,6 +37,7 @@ data class Item(
         writeString(createdBy)
         writeStringList(assignedTo)
         writeString(documentId)
+        writeInt(quantity)
     }
 
     override fun describeContents() = 0
