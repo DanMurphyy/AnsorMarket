@@ -17,7 +17,6 @@ class FirebaseRepository {
     private val mFireStore = FirebaseFirestore.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-
     suspend fun registerUser(name: String, login: String, password: String): Boolean {
         try {
             // Firebase Authentication
@@ -31,6 +30,10 @@ class FirebaseRepository {
                 .document(userId)
                 .set(user, SetOptions.merge())
                 .await()
+
+            mFireStore.collection(Constants.USERS).document(userId)
+                .collection(Constants.MY_CART)
+
             return true
         } catch (e: Exception) {
             Log.e("SignUpUser", "Error registering user", e)
@@ -40,23 +43,10 @@ class FirebaseRepository {
 
     suspend fun createItem(item: Item): Boolean {
         return try {
-            mFireStore.collection(Constants.ITEMS)
-                .document()
-                .set(item, SetOptions.merge())
-                .await()
-            true
-        } catch (e: Exception) {
-            Log.e("FirestoreRepository", "Error while creating a board.", e)
-            false
-        }
-    }
-
-    suspend fun toCart(myCart: MyCart): Boolean {
-        return try {
-            mFireStore.collection(Constants.MY_CART)
-                .document()
-                .set(myCart, SetOptions.merge())
-                .await()
+            val itemDocumentRef = mFireStore.collection(Constants.ITEMS).document()
+            val itemId = itemDocumentRef.id // Get the generated document ID
+            item.documentId = itemId // Assign the generated document ID to the item
+            itemDocumentRef.set(item, SetOptions.merge()).await()
             true
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error while creating a board.", e)
@@ -101,6 +91,85 @@ class FirebaseRepository {
         }
     }
 
+    suspend fun toCart(userId: String, myCart: MyCart): Boolean {
+        return try {
+            val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
+            val myCartCollectionRef = userDocumentRef.collection(Constants.MY_CART)
+            val myCartId =
+                myCartCollectionRef.add(myCart).await().id // Get the generated document ID
+            myCart.documentId = myCartId // Assign the generated document ID to the item
+
+            // Update the document in the collection with the same ID
+            val myCartDocRef = myCartCollectionRef.document(myCartId)
+            myCartDocRef.set(myCart, SetOptions.merge()).await()
+
+            true
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error while adding to cart.", e)
+            false
+        }
+    }
+
+    suspend fun getUserCart(userId: String): List<MyCart> {
+        try {
+            val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
+                .collection(Constants.MY_CART)
+            val querySnapshot = userDocumentRef.get().await()
+            val myCartList = mutableListOf<MyCart>()
+
+            for (document in querySnapshot.documents) {
+                val myCart = document.toObject(MyCart::class.java)
+                myCart?.documentId = document.id
+                myCart?.let { myCartList.add(it) }
+            }
+            Log.d(
+                "FirebaseRepository",
+                "getAllItems: Successful. ${myCartList.size} items fetched."
+            )
+
+            return myCartList
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error retrieving user cart: ${e.message}", e)
+            throw e
+        }
+    }
+
+    suspend fun deleteFromCart(userId: String, documentId: String): Boolean {
+        return try {
+            val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
+            val myCartCollectionRef = userDocumentRef.collection(Constants.MY_CART)
+
+            // Delete the item document from the user's cart collection
+            myCartCollectionRef.document(documentId).delete().await()
+
+            true
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error while deleting item from cart.", e)
+            false
+        }
+    }
+
+    suspend fun updateCartItemQuantity(
+        userId: String,
+        documentId: String,
+        newQuantity: Int,
+        newAmount: Int
+    ): Boolean {
+        return try {
+            val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
+            val myCartCollectionRef = userDocumentRef.collection(Constants.MY_CART)
+
+            myCartCollectionRef.document(documentId)
+                .update(mapOf("quantity" to newQuantity, "amount" to newAmount))
+                .await()
+
+            true
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error while deleting item from cart.", e)
+            false
+        }
+    }
+
     suspend fun updateUserData(userId: String, user: User) {
         try {
             mFireStore.collection(Constants.USERS)
@@ -140,7 +209,6 @@ class FirebaseRepository {
             throw e
         }
     }
-
 
     fun getCurrentUserId(): String {
         val currentUser = FirebaseAuth.getInstance().currentUser

@@ -20,7 +20,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.hfad.ansormarket.MainActivity
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.adapters.ItemListAdapter
@@ -30,6 +32,7 @@ import com.hfad.ansormarket.databinding.ItemInfoLayoutBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
 import com.hfad.ansormarket.models.Constants
 import com.hfad.ansormarket.models.Item
+import com.hfad.ansormarket.models.MyCart
 import jp.wasabeef.recyclerview.animators.LandingAnimator
 import java.io.IOException
 
@@ -45,8 +48,6 @@ class MainPageFragment : Fragment() {
     private var bottomSheetDialog: BottomSheetDialog? = null
     private var mDialog: Dialog? = null
     private val adapter: ItemListAdapter by lazy { ItemListAdapter() }
-    var quantity: Int = 1
-
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (!isGranted)
@@ -62,15 +63,25 @@ class MainPageFragment : Fragment() {
         mFirebaseViewModel.showProgress(requireContext())
         mFirebaseViewModel.loadUserData()
 
+        return (binding.root)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        liveUpdates()
+    }
+
+    private fun liveUpdates() {
         showRecyclerView()
         mFirebaseViewModel.itemList.observe(viewLifecycleOwner) { itemList ->
             adapter.setItems(itemList)
         }
-
         mFirebaseViewModel.fetchAllItems()
-
-
-        return (binding.root)
+        mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
+            adapter.setMyCartData(myCartList)
+            mSharedViewModel.cartItemCount(requireView(),myCartList)
+        }
+        mFirebaseViewModel.fetchMyCart()
     }
 
     private fun showRecyclerView() {
@@ -82,27 +93,39 @@ class MainPageFragment : Fragment() {
             addDuration = 200
         }
 
-
         adapter.setOnClickListener(object : ItemListAdapter.OnClickListener {
-            override fun onClick(position: Int, currentItem: Item) {
-                showInfoDialog(currentItem)
+            override fun onClick(position: Int, currentItem: Item, quantity: Int) {
+                showInfoDialog(currentItem, quantity)
             }
 
+            override fun onAddToCartClick(currentItem: Item, quantity: Int) {
+                toCart(currentItem, quantity)
+                liveUpdates()
+            }
         })
 
 
     }
 
-    private fun showInfoDialog(currentItem: Item) {
-        quantity = 1
+    private fun showInfoDialog(currentItem: Item, quantity: Int) {
+        var newQuantity = quantity
+        val myCartList = mFirebaseViewModel.myCartsLiveData.value!!
+        var isItemInCart = false
+        var myCartCurrentItem = ""
+
+        for (i in myCartList) {
+            if (currentItem.documentId == i.itemProd.documentId) {
+                isItemInCart = true
+                myCartCurrentItem = i.documentId
+                break
+            }
+        }
+
         mDialog = Dialog(requireContext(), R.style.Bottom_Sheet_Style)
         itemInfoBinding = ItemInfoLayoutBinding.inflate(LayoutInflater.from(requireContext()))
         val window: Window = mDialog!!.window!!
         window.setBackgroundDrawableResource(android.R.color.transparent)
         window.attributes.windowAnimations = R.style.DialogAnimation
-//        itemInfoBinding!!.closeItem.setOnClickListener {
-//            hideInfoDialog()
-//        }
         Glide
             .with(requireContext())
             .load(currentItem.imageItem)
@@ -112,17 +135,53 @@ class MainPageFragment : Fragment() {
         itemInfoBinding!!.infoListPrice.text = currentItem.price.toString()
         itemInfoBinding!!.infoListName.text = currentItem.nameItem
         itemInfoBinding!!.infoListWeight.text = currentItem.weight
-        itemInfoBinding!!.quantityInfo.text = quantity.toString()
+        itemInfoBinding!!.quantityInfo.text = newQuantity.toString()
+
         itemInfoBinding!!.quantityPlus.setOnClickListener {
-            quantity++
-            itemInfoBinding!!.quantityInfo.text = quantity.toString()
+            newQuantity++
+            val newAmount = currentItem.price * newQuantity // Recalculate newAmount
+            itemInfoBinding!!.quantityInfo.text = newQuantity.toString()
+            mFirebaseViewModel.updateCartItemQuantity(myCartCurrentItem, newQuantity, newAmount)
         }
 
         itemInfoBinding!!.quantityMinus.setOnClickListener {
-            if (quantity > 1) {
-                quantity--
-                itemInfoBinding!!.quantityInfo.text = quantity.toString()
+            if (newQuantity > 1) {
+                newQuantity--
+                itemInfoBinding!!.quantityInfo.text = newQuantity.toString()
+                val newAmount = currentItem.price * newQuantity // Recalculate newAmount
+                mFirebaseViewModel.updateCartItemQuantity(myCartCurrentItem, newQuantity, newAmount)
+            } else if (newQuantity == 1) {
+                mFirebaseViewModel.deleteMyCart(myCartCurrentItem)
+                Toast.makeText(
+                    requireContext(), getString(R.string.cart_removed), Toast.LENGTH_SHORT
+                ).show()
+                liveUpdates()
+                hideInfoDialog()
             }
+
+        }
+
+        itemInfoBinding!!.iconDelete.setOnClickListener {
+            mFirebaseViewModel.deleteMyCart(myCartCurrentItem)
+            Toast.makeText(
+                requireContext(), getString(R.string.cart_removed), Toast.LENGTH_SHORT
+            ).show()
+            liveUpdates()
+            hideInfoDialog()
+        }
+        if (isItemInCart) {
+            itemInfoBinding!!.btnToCart.visibility = View.GONE
+            itemInfoBinding!!.iconDelete.visibility = View.VISIBLE
+
+        } else {
+            itemInfoBinding!!.btnToCart.visibility = View.VISIBLE
+            itemInfoBinding!!.iconDelete.visibility = View.GONE
+        }
+
+        itemInfoBinding!!.btnToCart.setOnClickListener {
+            toCart(currentItem, newQuantity)
+            liveUpdates()
+            hideInfoDialog()
         }
 
         mDialog!!.setContentView(itemInfoBinding!!.root)
@@ -135,6 +194,34 @@ class MainPageFragment : Fragment() {
 
     private fun hideInfoDialog() {
         mDialog!!.dismiss()
+    }
+
+    private fun toCart(currentItem: Item, quantity: Int) {
+        val mQuantity = quantity
+        val newAmount = currentItem.price * mQuantity
+
+        val userId = mFirebaseViewModel.getCurrentUserId() // Assuming userId is not empty here
+
+        val myCart = MyCart(
+            currentItem,
+            mQuantity,
+            userId,
+            amount = newAmount
+        )
+
+        mFirebaseViewModel.toCart(requireView(), myCart)
+
+        mFirebaseViewModel.toCartLiveData.observe(viewLifecycleOwner) { isSuccess ->
+            if (isSuccess) {
+//                Toast.makeText(
+//                    requireContext(), getString(R.string.board_created), Toast.LENGTH_SHORT
+//                ).show()
+            } else {
+                Toast.makeText(
+                    requireContext(), getString(R.string.board_creating_error), Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -246,7 +333,7 @@ class MainPageFragment : Fragment() {
         }
 
         val mItemImageUrl = mFirebaseViewModel.imageUploadResult.value.toString()
-        val userLogin = mFirebaseViewModel.userLiveData.value!!.login.toString()
+        val userLogin = mFirebaseViewModel.userLiveData.value!!.login
 
         if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || TextUtils.isEmpty(
                 mItemType
@@ -256,8 +343,11 @@ class MainPageFragment : Fragment() {
         ) {
             // Show a toast indicating that some fields are empty
             Toast.makeText(
-                requireContext(), getString(R.string.invalid_item_type), Toast.LENGTH_SHORT
+                requireContext(), " Ashnaqa", Toast.LENGTH_SHORT
             ).show()
+//            Toast.makeText(
+//                requireContext(), getString(R.string.invalid_item_type), Toast.LENGTH_SHORT
+//            ).show()
         } else if (TextUtils.isEmpty(mItemImageUrl)) {
             // Show a toast indicating that the image is not selected
             Toast.makeText(

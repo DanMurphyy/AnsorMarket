@@ -1,17 +1,18 @@
 package com.hfad.ansormarket
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hfad.ansormarket.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private val mSharedViewModel: SharedViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
+    private lateinit var bottomNavigationView: BottomNavigationView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,5 +28,11 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = builder.build()
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         binding.bottomNav.setupWithNavController(navController)
+        bottomNavigationView = findViewById(R.id.bottom_nav)
+
+    }
+
+    fun getBottomNavigationView(): BottomNavigationView {
+        return bottomNavigationView
     }
 }

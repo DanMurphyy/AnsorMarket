@@ -9,18 +9,28 @@ import android.provider.MediaStore
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.models.Constants
+import com.hfad.ansormarket.models.MyCart
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
     var doubleBackToExitPressedOnce = false
     private val context = getApplication<Application>()
     private var mProgressDialog: Dialog? = null
 
+    fun cartItemCount(view: View,myCart: List<MyCart>) {
+        val count = myCart.size
+        val bottomNavigationView = (view.context as MainActivity).getBottomNavigationView()
+        val badge = bottomNavigationView.getOrCreateBadge(R.id.cartFragment)
+        badge.number = count
+        badge.backgroundColor = view.resources.getColor(R.color.colorPrimary)
+    }
 
     fun showProgress(context: Context) {
         mProgressDialog = Dialog(context)

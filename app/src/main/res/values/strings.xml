@@ -51,23 +51,27 @@
     <string name="invalid_item_type">Iltimos, barcha joylarni to\'ldiring</string>
     <string name="image_not_selected">Rasm tanlang!</string>
     <string name="board_created">Mahsulot qo\'shildi</string>
+    <string name="cart_removed">Mahsulot savatdan olib tashlandi</string>
+    <string name="item_already_created">Mahsulot allaqachon qo\'shilgan</string>
     <string name="board_creating_error">Mahsulot kiritishda hatolik</string>
     <string name="add_cart">Savatga</string>
-    <string name="sample_price">12000</string>
+    <string name="sample_price">0</string>
     <string name="sample_currency">So\'m</string>
     <string name="sample_item_name">Coca-Cola</string>
     <string name="sample_weight">1.5 l</string>
     <string name="sample_minus">-</string>
     <string name="sample_quantity">22</string>
     <string name="sample_add">+</string>
-    <string name="payment_method">To\'lov turi:</string>
+    <string name="payment_method">Yetkazib berilganda NAQD pulda to\'lanadi</string>
     <string name="cash_method">NAQD pul</string>
     <string name="payment_amount">Buyurtma Summasi:</string>
     <string name="delivery_fee">Bepul yetkazib berish uchun eng kam Buyurtma summasi 100 000 so\'m</string>
-    <string name="deliver_charge">Yetkazib berish xizmati</string>
+    <string name="deliver_charge">Yetkazib berish \:\ </string>
     <string name="deliver_charge_amount">10000</string>
-    <string name="fee_grand_info">Umumiy hisob \=\ </string>
+    <string name="fee_grand_info">To\'lanadigon summa \:\ </string>
     <string name="make_order">Buyurtma berish</string>
+    <string name="subtotal">Buyurtma summasi \:\ </string>
+    <string name="subtotal_amount">0</string>
     <string-array name="item_type">
         <item>Ichimliklar</item>
         <item>Qandolat mahsulotlari</item>

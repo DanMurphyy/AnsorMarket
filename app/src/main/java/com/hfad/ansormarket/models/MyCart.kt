@@ -4,29 +4,27 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class MyCart(
-    val itemList: ArrayList<Item> = ArrayList(),
-    val totalAmount: Int = 0,
-    val createdBy: String = "",
-    val assignedTo: ArrayList<String> = ArrayList(),
+    var itemProd: Item,
+    var quantity: Int = 1,
+    var createdBy: String = "",
     var documentId: String = "",
+    var amount: Int = 0,
 ) : Parcelable {
-    constructor() : this(ArrayList(), 0, "", ArrayList(), "")
-
-
+    constructor() : this(Item(), 1, "","",1)
     constructor(parcel: Parcel) : this(
-        parcel.createTypedArrayList(Item.CREATOR)!!,
+        parcel.readParcelable(Item::class.java.classLoader) ?: Item(),
         parcel.readInt(),
         parcel.readString()!!,
-        parcel.createStringArrayList()!!,
         parcel.readString()!!,
+        parcel.readInt(),
     )
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeTypedList(itemList)
-        writeInt(totalAmount)
+        writeParcelable(itemProd, flags)
+        writeInt(quantity)
         writeString(createdBy)
-        writeStringList(assignedTo)
         writeString(documentId)
+        writeInt(amount)
     }
 
     override fun describeContents() = 0

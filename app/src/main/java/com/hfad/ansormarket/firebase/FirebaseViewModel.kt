@@ -30,9 +30,9 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val userLiveData: MutableLiveData<User> = MutableLiveData()
     val imageUploadResult: MutableLiveData<String?> = MutableLiveData()
     val createItemLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val toCartLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val itemList: MutableLiveData<List<Item>> = MutableLiveData()
-
+    val toCartLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val myCartsLiveData: MutableLiveData<List<MyCart>> = MutableLiveData()
 
     init {
         repository = FirebaseRepository()
@@ -87,30 +87,71 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         showProgress(view.context)
         viewModelScope.launch {
             try {
-                repository.toCart(myCart)
-//                val items = repository.getAllItems()
-//                itemList.postValue(items)
-                toCartLiveData.postValue(true) // Set the value to true when item is created successfully
+                val userId = getCurrentUserId()
+                // Update the user's cart in Firestore
+                repository.toCart(userId, myCart)
+                toCartLiveData.postValue(true) // Set the value to true when item is added to the cart successfully
                 hideProgress()
             } catch (e: Exception) {
-                toCartLiveData.postValue(false) // Set the value to false when item creation fails
+                // Handle the error
+                toCartLiveData.postValue(false) // Set the value to false when item addition to the cart fails
                 hideProgress()
             }
-            hideProgress()
         }
     }
+
+    fun fetchMyCart() {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                Log.d("FirebaseViewModel", "fetchMyCart: Fetching cart for user ID: $userId")
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
+                Log.d("FirebaseViewModel", "fetchMyCart: ${userCart.size} items fetched.")
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching cart: ${e.message}", e)
+            }
+        }
+    }
+
+    fun deleteMyCart(documentId: String) {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                repository.deleteFromCart(userId, documentId)
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
+                Log.d("FirebaseViewModel", "fetchMyCart: ${userCart.size} items fetched.")
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching cart: ${e.message}", e)
+            }
+        }
+    }
+
+    fun updateCartItemQuantity(documentId: String, newQuantity: Int, newAmount: Int) {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                repository.updateCartItemQuantity(userId, documentId, newQuantity, newAmount)
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
+            } catch (e: Exception) {
+                // Handle the error
+            }
+        }
+    }
+
 
     fun fetchAllItems() {
         viewModelScope.launch {
             try {
                 val items = repository.getAllItems()
                 itemList.postValue(items)
-                Log.d("FirebaseViewModel", "fetchAllItems: Items fetched successfully.")
-
             } catch (e: Exception) {
                 // Handle the error
                 Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
-
             }
         }
     }
@@ -272,7 +313,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         mProgressDialog?.show()
     }
 
-    private fun hideProgress() {
+    fun hideProgress() {
         mProgressDialog!!.dismiss()
     }
 
