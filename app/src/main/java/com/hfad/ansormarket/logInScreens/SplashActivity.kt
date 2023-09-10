@@ -9,11 +9,9 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.hfad.ansormarket.MainActivity
 import com.hfad.ansormarket.R
-import com.hfad.ansormarket.firebase.FirebaseRepository
 import com.hfad.ansormarket.firebase.FirebaseViewModel
 
 class SplashActivity : AppCompatActivity() {
@@ -56,7 +54,7 @@ class SplashActivity : AppCompatActivity() {
         val gifImageView: ImageView = findViewById(R.id.delivering_iv2)
         Glide.with(this)
             .asGif()
-            .load(R.drawable.deliverying) // Assuming "fire.gif" is the name of your animated GIF file
+            .load(R.drawable.delivering) // Assuming "fire.gif" is the name of your animated GIF file
             .into(gifImageView)
     }
 

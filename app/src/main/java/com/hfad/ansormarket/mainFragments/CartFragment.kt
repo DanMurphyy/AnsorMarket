@@ -4,17 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.adapters.MyCartListAdapter
 import com.hfad.ansormarket.databinding.FragmentCartBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
-import com.hfad.ansormarket.models.utils.SwipeToDelete
+import com.hfad.ansormarket.models.Order
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
 class CartFragment : Fragment() {
@@ -31,6 +33,11 @@ class CartFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCartBinding.inflate(inflater, container, false)
+        showRecyclerView()
+
+        binding.btnMakeOrder.setOnClickListener {
+            orderNow()
+        }
 
 
         return binding.root
@@ -38,16 +45,14 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showRecyclerView()
         mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
             adapter.setMyCartData(myCartList)
             updateCartVisibility(myCartList.isEmpty())
             updateAmount()
             mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
-        showRecyclerView()
-        updateAmount()
         mFirebaseViewModel.fetchMyCart()
+        mFirebaseViewModel.loadUserDataForOrder()
     }
 
     private fun showRecyclerView() {
@@ -70,12 +75,12 @@ class CartFragment : Fragment() {
                 mFirebaseViewModel.updateCartItemQuantity(currentItem, newQuantity, newAmount)
             }
         })
-
     }
 
     private fun updateAmount() {
         val totalAmount = adapter.calculateTotalAmount()
         binding.subtotalPrice.text = totalAmount.toString()
+
 
         if (totalAmount <= 99999) {
             val withDelivery = totalAmount + 10000
@@ -103,11 +108,67 @@ class CartFragment : Fragment() {
             recyclerView.visibility = View.VISIBLE
             rateMethodAndBtn.visibility = View.VISIBLE
             emptyCartView.visibility = View.GONE
+            val totalAmount = adapter.calculateTotalAmount()
+                if (totalAmount.toString().isNotEmpty() && totalAmount <= 99999) {
+                    binding.feeInfo.visibility = View.VISIBLE
+                } else {
+                    binding.feeInfo.visibility = View.GONE
+                }
+
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+
+    private fun orderNow() {
+        // Ensure that userLiveData and myCartsLiveData are not null
+        val user = mFirebaseViewModel.userLiveData.value
+        val myCartList = mFirebaseViewModel.myCartsLiveData.value
+
+        if (user != null && myCartList != null) {
+            // Create an Order object with valid user and cart data
+            val order = Order(
+                orderStatus = 0,
+                orderUser = user,
+                orderProducts = myCartList,
+                totalAmount = grandTotal
+            )
+            // Call the orderNow function in FirebaseViewModel
+            mFirebaseViewModel.orderNow(requireView(), order)
+
+            mFirebaseViewModel.orderNowResult.observe(viewLifecycleOwner) { isSuccess ->
+                if (isSuccess != null) { // Check for null before showing the Toast
+                    if (isSuccess) {
+                        updateAfterDelete()
+                        Toast.makeText(
+                            requireContext(), getString(R.string.ordered_placed), Toast.LENGTH_SHORT
+                        ).show()
+
+                        // Reset orderNowResult to its neutral state
+                        mFirebaseViewModel.resetOrderNowResult()
+                    } else {
+                        Toast.makeText(
+                            requireContext(), getString(R.string.ordering_error), Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+
+        } else {
+            // If user or myCartList is null, display a message
+            Toast.makeText(
+                requireContext(), "User or Cart data is null", Toast.LENGTH_SHORT
+            ).show()
+        }
     }
+
+    private fun updateAfterDelete() {
+        mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
+            adapter.setMyCartData(myCartList)
+            updateCartVisibility(myCartList.isEmpty())
+            mSharedViewModel.cartItemCount(requireView(), myCartList)
+        }
+        updateAmount()
+        mFirebaseViewModel.fetchMyCart()
+    }
+
 }

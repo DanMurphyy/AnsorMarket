@@ -20,9 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.hfad.ansormarket.MainActivity
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.adapters.ItemListAdapter
@@ -62,7 +60,7 @@ class MainPageFragment : Fragment() {
         setHasOptionsMenu(true)
         mFirebaseViewModel.showProgress(requireContext())
         mFirebaseViewModel.loadUserData()
-
+        showRecyclerView()
         return (binding.root)
     }
 
@@ -72,14 +70,13 @@ class MainPageFragment : Fragment() {
     }
 
     private fun liveUpdates() {
-        showRecyclerView()
         mFirebaseViewModel.itemList.observe(viewLifecycleOwner) { itemList ->
             adapter.setItems(itemList)
         }
         mFirebaseViewModel.fetchAllItems()
         mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
             adapter.setMyCartData(myCartList)
-            mSharedViewModel.cartItemCount(requireView(),myCartList)
+            mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
         mFirebaseViewModel.fetchMyCart()
     }
@@ -211,7 +208,7 @@ class MainPageFragment : Fragment() {
 
         mFirebaseViewModel.toCart(requireView(), myCart)
 
-        mFirebaseViewModel.toCartLiveData.observe(viewLifecycleOwner) { isSuccess ->
+        mFirebaseViewModel.toCartResult.observe(viewLifecycleOwner) { isSuccess ->
             if (isSuccess) {
 //                Toast.makeText(
 //                    requireContext(), getString(R.string.board_created), Toast.LENGTH_SHORT
@@ -366,7 +363,7 @@ class MainPageFragment : Fragment() {
             // Call the ViewModel function to create the item
             mFirebaseViewModel.createItem(requireView(), item)
         }
-        mFirebaseViewModel.createItemLiveData.observe(viewLifecycleOwner) { isSuccess ->
+        mFirebaseViewModel.createItemResult.observe(viewLifecycleOwner) { isSuccess ->
             if (isSuccess) {
                 // Show a toast indicating that the board is created
                 Toast.makeText(
@@ -419,8 +416,4 @@ class MainPageFragment : Fragment() {
         builder.show()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
 }

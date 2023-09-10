@@ -15,9 +15,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.logInScreens.IntroFragment
-import com.hfad.ansormarket.models.Item
-import com.hfad.ansormarket.models.MyCart
-import com.hfad.ansormarket.models.User
+import com.hfad.ansormarket.models.*
 import kotlinx.coroutines.launch
 
 class FirebaseViewModel(application: Application) : AndroidViewModel(application) {
@@ -28,14 +26,22 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val registrationResult: MutableLiveData<Boolean> = MutableLiveData()
     val signInResult: MutableLiveData<Boolean> = MutableLiveData()
     val userLiveData: MutableLiveData<User> = MutableLiveData()
+    val contactUsLiveData: MutableLiveData<ContactUs> = MutableLiveData()
     val imageUploadResult: MutableLiveData<String?> = MutableLiveData()
-    val createItemLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val createItemResult: MutableLiveData<Boolean> = MutableLiveData()
     val itemList: MutableLiveData<List<Item>> = MutableLiveData()
-    val toCartLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val toCartResult: MutableLiveData<Boolean> = MutableLiveData()
     val myCartsLiveData: MutableLiveData<List<MyCart>> = MutableLiveData()
+    val orderNowResult: MutableLiveData<Boolean?> = MutableLiveData()
+    val orderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
+    val activeOrderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
 
     init {
         repository = FirebaseRepository()
+    }
+
+    fun resetOrderNowResult() {
+        orderNowResult.value = null
     }
 
     fun registerUser(view: View, name: String, login: String, password: String) {
@@ -66,96 +72,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun createItem(view: View, item: Item) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                repository.createItem(item)
-                val items = repository.getAllItems()
-                itemList.postValue(items)
-                createItemLiveData.postValue(true) // Set the value to true when item is created successfully
-                hideProgress()
-            } catch (e: Exception) {
-                createItemLiveData.postValue(false) // Set the value to false when item creation fails
-                hideProgress()
-            }
-            hideProgress()
-        }
-    }
-
-    fun toCart(view: View, myCart: MyCart) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                // Update the user's cart in Firestore
-                repository.toCart(userId, myCart)
-                toCartLiveData.postValue(true) // Set the value to true when item is added to the cart successfully
-                hideProgress()
-            } catch (e: Exception) {
-                // Handle the error
-                toCartLiveData.postValue(false) // Set the value to false when item addition to the cart fails
-                hideProgress()
-            }
-        }
-    }
-
-    fun fetchMyCart() {
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                Log.d("FirebaseViewModel", "fetchMyCart: Fetching cart for user ID: $userId")
-                val userCart = repository.getUserCart(userId)
-                myCartsLiveData.postValue(userCart)
-                Log.d("FirebaseViewModel", "fetchMyCart: ${userCart.size} items fetched.")
-            } catch (e: Exception) {
-                // Handle the error
-                Log.e("FirebaseViewModel", "Error fetching cart: ${e.message}", e)
-            }
-        }
-    }
-
-    fun deleteMyCart(documentId: String) {
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                repository.deleteFromCart(userId, documentId)
-                val userCart = repository.getUserCart(userId)
-                myCartsLiveData.postValue(userCart)
-                Log.d("FirebaseViewModel", "fetchMyCart: ${userCart.size} items fetched.")
-            } catch (e: Exception) {
-                // Handle the error
-                Log.e("FirebaseViewModel", "Error fetching cart: ${e.message}", e)
-            }
-        }
-    }
-
-    fun updateCartItemQuantity(documentId: String, newQuantity: Int, newAmount: Int) {
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                repository.updateCartItemQuantity(userId, documentId, newQuantity, newAmount)
-                val userCart = repository.getUserCart(userId)
-                myCartsLiveData.postValue(userCart)
-            } catch (e: Exception) {
-                // Handle the error
-            }
-        }
-    }
-
-
-    fun fetchAllItems() {
-        viewModelScope.launch {
-            try {
-                val items = repository.getAllItems()
-                itemList.postValue(items)
-            } catch (e: Exception) {
-                // Handle the error
-                Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
-            }
-        }
-    }
-
     fun loadUserData() {
         viewModelScope.launch {
             try {
@@ -165,6 +81,28 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             } catch (e: Exception) {
             }
             hideProgress()
+        }
+    }
+
+    fun getContactUs() {
+        viewModelScope.launch {
+            try {
+                val contact = repository.getContactUs()
+                contactUsLiveData.postValue(contact)
+            } catch (e: Exception) {
+            }
+            hideProgress()
+        }
+    }
+
+    fun loadUserDataForOrder() {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                val user = repository.getUserData(userId)
+                userLiveData.postValue(user)
+            } catch (e: Exception) {
+            }
         }
     }
 
@@ -215,6 +153,152 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun createItem(view: View, item: Item) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                repository.createItem(item)
+                val items = repository.getAllItems()
+                itemList.postValue(items)
+                createItemResult.postValue(true) // Set the value to true when item is created successfully
+                hideProgress()
+            } catch (e: Exception) {
+                createItemResult.postValue(false) // Set the value to false when item creation fails
+                hideProgress()
+            }
+            hideProgress()
+        }
+    }
+
+    fun fetchAllItems() {
+        viewModelScope.launch {
+            try {
+                val items = repository.getAllItems()
+                itemList.postValue(items)
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
+            }
+        }
+    }
+
+    fun getActiveOrders(view: View) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val orders = repository.getActiveOrders()
+                activeOrderNowLiveData.postValue(orders)
+                Log.d("FirebaseViewModel", "getActiveOrders: ${orders}")
+
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching orders: ${e.message}", e)
+                hideProgress()
+            }
+        }
+    }
+
+    fun toCart(view: View, myCart: MyCart) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                // Update the user's cart in Firestore
+                repository.toCart(userId, myCart)
+                toCartResult.postValue(true) // Set the value to true when item is added to the cart successfully
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
+                toCartResult.postValue(false) // Set the value to false when item addition to the cart fails
+                hideProgress()
+            }
+        }
+    }
+
+    fun fetchMyCart() {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                Log.d("FirebaseViewModel", "fetchMyCart: Fetching cart for user ID: $userId")
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
+                Log.d("FirebaseViewModel", "fetchMyCart: ${userCart.size} items fetched.")
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching cart: ${e.message}", e)
+            }
+        }
+    }
+
+    fun deleteMyCart(documentId: String) {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                repository.deleteFromCart(userId, documentId)
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
+                Log.d("FirebaseViewModel", "fetchMyCart: ${userCart.size} items fetched.")
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching cart: ${e.message}", e)
+            }
+        }
+    }
+
+    fun updateCartItemQuantity(documentId: String, newQuantity: Int, newAmount: Int) {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                repository.updateCartItemQuantity(userId, documentId, newQuantity, newAmount)
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
+            } catch (e: Exception) {
+                // Handle the error
+            }
+        }
+    }
+
+    fun orderNow(view: View, order: Order) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                repository.orderNow(userId, order)
+                orderNowResult.postValue(true) // Set the value to true when item is created successfully
+                repository.deleteCart(userId)
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
+                hideProgress()
+            } catch (e: Exception) {
+                orderNowResult.postValue(false) // Set the value to false when item creation fails
+                hideProgress()
+            }
+
+        }
+    }
+
+    fun getMyOrders(view: View) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                getCurrentUserId()
+                val userId = getCurrentUserId()
+                val myOrders = repository.getMyOrders(userId)
+
+                Log.d("FirebaseViewModel", "getMyOrders: ${myOrders.size} items fetched.")
+                orderNowLiveData.postValue(myOrders)
+                hideProgress()
+
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching myOrder: ${e.message}", e)
+                hideProgress()
+
+            }
+        }
+    }
+
     fun uploadImage(context: Context, uri: Uri) {
         showProgress(context)
         viewModelScope.launch {
@@ -259,16 +343,14 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun getFileExtension(uri: Uri?): String? {
-        return MimeTypeMap.getSingleton()
-            .getExtensionFromMimeType(context.contentResolver?.getType(uri!!))
-    }
-
-
     fun getCurrentUserId(): String {
         return repository.getCurrentUserId()
     }
 
+    fun getFileExtension(uri: Uri?): String? {
+        return MimeTypeMap.getSingleton()
+            .getExtensionFromMimeType(context.contentResolver?.getType(uri!!))
+    }
 
     private fun validateForm(view: View, name: String, login: String, password: String): Boolean {
         return when {

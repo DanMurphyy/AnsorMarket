@@ -24,5 +24,19 @@
         android:id="@+id/ordersFragment"
         android:name="com.hfad.ansormarket.mainFragments.OrdersFragment"
         android:label="@string/myOrders"
-        tools:layout="@layout/fragment_orders" />
+        tools:layout="@layout/fragment_orders">
+        <action
+            android:id="@+id/action_ordersFragment_to_activeOrdersFragment"
+            app:destination="@id/activeOrdersFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/ordersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/activeOrdersFragment"
+        android:name="com.hfad.ansormarket.mainFragments.ActiveOrdersFragment"
+        android:label="@string/active_orders"
+        tools:layout="@layout/fragment_active_orders" />
 </navigation>

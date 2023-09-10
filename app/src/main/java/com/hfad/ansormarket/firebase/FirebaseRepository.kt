@@ -6,10 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
-import com.hfad.ansormarket.models.Constants
-import com.hfad.ansormarket.models.Item
-import com.hfad.ansormarket.models.MyCart
-import com.hfad.ansormarket.models.User
+import com.hfad.ansormarket.models.*
 import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository {
@@ -36,8 +33,35 @@ class FirebaseRepository {
 
             return true
         } catch (e: Exception) {
-            Log.e("SignUpUser", "Error registering user", e)
             return false
+        }
+    }
+
+    suspend fun signInUser(login: String, password: String): Boolean {
+        return try {
+            auth.signInWithEmailAndPassword(login, password).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun getUserData(userId: String): User {
+        val userDocument = mFireStore.collection(Constants.USERS)
+            .document(userId)
+            .get()
+            .await()
+        return userDocument.toObject(User::class.java) ?: User()
+    }
+
+    suspend fun updateUserData(userId: String, user: User) {
+        try {
+            mFireStore.collection(Constants.USERS)
+                .document(userId)
+                .set(user, SetOptions.merge())
+                .await()
+        } catch (e: Exception) {
+            throw e  // Rethrow the exception to handle it in the calling code
         }
     }
 
@@ -49,27 +73,8 @@ class FirebaseRepository {
             itemDocumentRef.set(item, SetOptions.merge()).await()
             true
         } catch (e: Exception) {
-            Log.e("FirestoreRepository", "Error while creating a board.", e)
             false
         }
-    }
-
-    suspend fun signInUser(login: String, password: String): Boolean {
-        return try {
-            auth.signInWithEmailAndPassword(login, password).await()
-            true
-        } catch (e: Exception) {
-            Log.e("SignInUser", "Error signing in user", e)
-            false
-        }
-    }
-
-    suspend fun getUserData(userId: String): User {
-        val userDocument = mFireStore.collection(Constants.USERS)
-            .document(userId)
-            .get()
-            .await()
-        return userDocument.toObject(User::class.java) ?: User()
     }
 
     suspend fun getAllItems(): List<Item> {
@@ -83,11 +88,41 @@ class FirebaseRepository {
                 item?.documentId = document.id
                 item?.let { itemList.add(it) }
             }
-            Log.d("FirebaseRepository", "getAllItems: Successful. ${itemList.size} items fetched.")
             return itemList
         } catch (e: Exception) {
-            Log.e("FirebaseRepository", "Error retrieving items: ${e.message}", e)
             throw e
+        }
+    }
+
+    suspend fun getActiveOrders(): List<Order> {
+        try {
+            val ordersCollection = mFireStore.collection(Constants.ORDERS)
+            val querySnapshot = ordersCollection.get().await()
+            val ordersList = mutableListOf<Order>()
+
+            for (document in querySnapshot.documents) {
+                val orders = document.toObject(Order::class.java)
+                orders?.orderedId = document.id
+                orders?.let { ordersList.add(it) }
+            }
+            return ordersList
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun getContactUs(): ContactUs {
+        try {
+            val contactUsDocument = mFireStore.collection(Constants.CONTACT_US)
+                .document("dJomedlYJ1O6FjouqUNP") // Replace with the actual document ID
+                .get()
+                .await()
+
+            return contactUsDocument.toObject(ContactUs::class.java) ?: ContactUs()
+        } catch (e: Exception) {
+            // Handle the error
+            Log.e("FirebaseRepository", "Error fetching contact us info: ${e.message}", e)
+            throw e // Rethrow the exception to handle it in the calling code
         }
     }
 
@@ -105,7 +140,6 @@ class FirebaseRepository {
 
             true
         } catch (e: Exception) {
-            Log.e("FirestoreRepository", "Error while adding to cart.", e)
             false
         }
     }
@@ -122,14 +156,8 @@ class FirebaseRepository {
                 myCart?.documentId = document.id
                 myCart?.let { myCartList.add(it) }
             }
-            Log.d(
-                "FirebaseRepository",
-                "getAllItems: Successful. ${myCartList.size} items fetched."
-            )
-
             return myCartList
         } catch (e: Exception) {
-            Log.e("FirestoreRepository", "Error retrieving user cart: ${e.message}", e)
             throw e
         }
     }
@@ -144,16 +172,26 @@ class FirebaseRepository {
 
             true
         } catch (e: Exception) {
-            Log.e("FirestoreRepository", "Error while deleting item from cart.", e)
+            false
+        }
+    }
+
+    suspend fun deleteCart(userId: String): Boolean {
+        return try {
+            val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
+            val myCartCollectionRef = userDocumentRef.collection(Constants.MY_CART).get().await()
+            for (document in myCartCollectionRef.documents) {
+                document.reference.delete().await()
+            }
+
+            true
+        } catch (e: Exception) {
             false
         }
     }
 
     suspend fun updateCartItemQuantity(
-        userId: String,
-        documentId: String,
-        newQuantity: Int,
-        newAmount: Int
+        userId: String, documentId: String, newQuantity: Int, newAmount: Int
     ): Boolean {
         return try {
             val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
@@ -165,20 +203,50 @@ class FirebaseRepository {
 
             true
         } catch (e: Exception) {
-            Log.e("FirestoreRepository", "Error while deleting item from cart.", e)
             false
         }
     }
 
-    suspend fun updateUserData(userId: String, user: User) {
-        try {
-            mFireStore.collection(Constants.USERS)
-                .document(userId)
-                .set(user, SetOptions.merge())
-                .await()
+    suspend fun orderNow(userId: String, order: Order): Boolean {
+        return try {
+
+            val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
+            val myOrderCollectionRef = userDocumentRef.collection(Constants.MY_ORDERS)
+            val myOrderId =
+                myOrderCollectionRef.add(order).await().id // Get the generated document ID
+            order.orderedId = myOrderId // Assign the generated document ID to the item
+
+            // Update the document in the collection with the same ID
+            val myOrderDocRef = myOrderCollectionRef.document(myOrderId)
+            myOrderDocRef.set(order, SetOptions.merge()).await()
+
+            val orderDocumentRef = mFireStore.collection(Constants.ORDERS).document()
+            val orderId = orderDocumentRef.id
+            order.orderedId = orderId
+            orderDocumentRef.set(order, SetOptions.merge()).await()
+
+            true
         } catch (e: Exception) {
-            Log.e("FirebaseRepository", "Error updating user profile data", e)
-            throw e  // Rethrow the exception to handle it in the calling code
+            Log.e("FirestoreRepository", "Error while creating a board.", e)
+            false
+        }
+    }
+
+    suspend fun getMyOrders(userId: String): List<Order> {
+        try {
+            val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
+                .collection(Constants.MY_ORDERS)
+            val querySnapshot = userDocumentRef.get().await()
+            val myOrderList = mutableListOf<Order>()
+
+            for (document in querySnapshot.documents) {
+                val order = document.toObject(Order::class.java)
+                order?.orderedId = document.id
+                order?.let { myOrderList.add(it) }
+            }
+            return myOrderList
+        } catch (e: Exception) {
+            throw e
         }
     }
 

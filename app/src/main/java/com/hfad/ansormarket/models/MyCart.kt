@@ -10,7 +10,7 @@ data class MyCart(
     var documentId: String = "",
     var amount: Int = 0,
 ) : Parcelable {
-    constructor() : this(Item(), 1, "","",1)
+    constructor() : this(Item(), 1, "", "", 1)
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(Item::class.java.classLoader) ?: Item(),
         parcel.readInt(),

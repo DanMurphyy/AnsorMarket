@@ -47,4 +47,11 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10dp</item> <!-- Adjust the corner radius as needed -->
     </style>
+    <style name="roundImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">90dp</item>
+        <item name="cornerSizeTopRight">3dp</item>
+        <item name="cornerSizeBottomLeft">3dp</item>
+        <item name="cornerSizeBottomRight">90dp</item>
+    </style>
 </resources>

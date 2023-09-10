@@ -2,6 +2,7 @@ package com.hfad.ansormarket.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -18,10 +19,6 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
 
     class MyViewHolder(internal val binding: CartItemBinding) :
         RecyclerView.ViewHolder(binding.root)
-
-    fun getDocumentId(position: Int): String {
-        return myCartList[position].documentId // Replace 'documentId' with your actual field name.
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = CartItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -48,18 +45,31 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         binding.quantityPlus.setOnClickListener {
             if (onClickListener != null) {
                 val newQuantity = currentItem.quantity + 1
-                val newAmount =  currentItem.itemProd.price * newQuantity
-                onClickListener!!.onUpdateCartQuantityClick(currentItem.documentId, newQuantity, newAmount)
+                val newAmount = currentItem.itemProd.price * newQuantity
+                onClickListener!!.onUpdateCartQuantityClick(
+                    currentItem.documentId,
+                    newQuantity,
+                    newAmount
+                )
             }
         }
 
         binding.quantityMinus.setOnClickListener {
             if (onClickListener != null && currentItem.quantity > 1) {
                 val newQuantity = currentItem.quantity - 1
-                val newAmount =  currentItem.itemProd.price * newQuantity
-                onClickListener!!.onUpdateCartQuantityClick(currentItem.documentId, newQuantity, newAmount)
+                val newAmount = currentItem.itemProd.price * newQuantity
+                onClickListener!!.onUpdateCartQuantityClick(
+                    currentItem.documentId,
+                    newQuantity,
+                    newAmount
+                )
             } else {
                 onClickListener!!.onDeleteCartClick(currentItem.documentId)
+                Toast.makeText(
+                    holder.itemView.context,
+                    holder.itemView.context.getString(R.string.cart_removed),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -77,6 +87,7 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         val myCartDiffResult = DiffUtil.calculateDiff(myCartDiffUtil)
         this.myCartList = myCart
         myCartDiffResult.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {

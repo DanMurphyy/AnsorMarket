@@ -12,6 +12,7 @@
         android:id="@+id/recycler_View_cart_items"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@id/rate_and_method"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -19,16 +20,33 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteY="2dp" />
 
-    <TextView
+    <LinearLayout
         android:id="@+id/emptyCartView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your cart is empty."
+        android:gravity="center"
+        android:orientation="vertical"
         android:textColor="@color/black"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.35000002">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/empty_cart" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/chelsea_market"
+            android:text="@string/empty_cart_text"
+            android:textColor="@color/purple_700" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/rate_and_method"
@@ -40,12 +58,22 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="5dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recycler_View_cart_items"
         tools:layout_editor_absoluteY="2dp">
+
+        <TextView
+            android:id="@+id/fee_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/delivery_fee"
+            android:textColor="@color/colorAccent"
+            android:textSize="11sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
