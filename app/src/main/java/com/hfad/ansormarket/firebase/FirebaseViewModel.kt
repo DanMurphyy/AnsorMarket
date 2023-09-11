@@ -10,7 +10,6 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
@@ -37,6 +36,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val orderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
     val activeOrderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
     val updateActiveOrderResult: MutableLiveData<Boolean?> = MutableLiveData()
+    val moveNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
 
     init {
         repository = FirebaseRepository()
@@ -157,11 +157,13 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun updateActiveOrders(view: View, orderId: String, newOrderStatus: Int) {
+    fun updateActiveOrders(view: View, updatedOrder: Order) {
         showProgress(view.context)
         viewModelScope.launch {
             try {
-                repository.updateActiveOrders(orderId, newOrderStatus)
+                repository.updateActiveOrders(updatedOrder)
+                Log.d("YourTag", "ViewModel Order Document ID: ${updatedOrder.orderedId}")
+
                 val orders = repository.getActiveOrders()
                 activeOrderNowLiveData.postValue(orders)
                 updateActiveOrderResult.postValue(true)
@@ -222,6 +224,23 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+
+    fun getCompletedOrders(view: View) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val orders = repository.getCompletedOrders()
+                moveNowLiveData.postValue(orders)
+                Log.d("FirebaseViewModel", "getActiveOrders: ${orders}")
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching orders: ${e.message}", e)
+                hideProgress()
+            }
+        }
+    }
+
     fun toCart(view: View, myCart: MyCart) {
         showProgress(view.context)
         viewModelScope.launch {
@@ -261,10 +280,23 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 repository.deleteFromCart(userId, documentId)
                 val userCart = repository.getUserCart(userId)
                 myCartsLiveData.postValue(userCart)
-                Log.d("FirebaseViewModel", "fetchMyCart: ${userCart.size} items fetched.")
             } catch (e: Exception) {
                 // Handle the error
-                Log.e("FirebaseViewModel", "Error fetching cart: ${e.message}", e)
+            }
+        }
+    }
+
+    fun deleteMyOrder(view: View, documentId: String) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                repository.deleteMyOrder(userId, documentId)
+                val myOrders = repository.getMyOrders(userId)
+                orderNowLiveData.postValue(myOrders)
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
             }
         }
     }
@@ -300,6 +332,22 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
 
         }
     }
+
+    fun moveOrder(view: View, order: Order) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                repository.moveNow(order)
+                repository.deleteAfterMove(order.orderedId)
+                val orders = repository.getActiveOrders()
+                activeOrderNowLiveData.postValue(orders)
+                hideProgress()
+            } catch (e: Exception) {
+                hideProgress()
+            }
+        }
+    }
+
 
     fun getMyOrders(view: View) {
         showProgress(view.context)

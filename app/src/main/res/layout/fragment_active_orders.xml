@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="mFirebaseViewModel"
             type="com.hfad.ansormarket.firebase.FirebaseViewModel" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,15 +32,15 @@
             android:id="@+id/emptyActiveOrderView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:emptyActiveOrder="@{mFirebaseViewModel.activeOrderNowLiveData}"
             android:gravity="center"
             android:orientation="vertical"
             android:textColor="@color/black"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:emptyActiveOrder="@{mFirebaseViewModel.activeOrderNowLiveData}"
-            android:visibility="invisible"
             app:layout_constraintVertical_bias="0.35000002">
 
 

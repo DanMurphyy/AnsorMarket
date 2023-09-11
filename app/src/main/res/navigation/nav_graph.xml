@@ -38,5 +38,14 @@
         android:id="@+id/activeOrdersFragment"
         android:name="com.hfad.ansormarket.mainFragments.ActiveOrdersFragment"
         android:label="@string/active_orders"
-        tools:layout="@layout/fragment_active_orders" />
+        tools:layout="@layout/fragment_active_orders" >
+        <action
+            android:id="@+id/action_activeOrdersFragment_to_completedOrdersFragment"
+            app:destination="@id/completedOrdersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/completedOrdersFragment"
+        android:name="com.hfad.ansormarket.mainFragments.CompletedOrdersFragment"
+        android:label="@string/completed_orders"
+        tools:layout="@layout/fragment_completed_orders" />
 </navigation>

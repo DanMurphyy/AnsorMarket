@@ -63,6 +63,14 @@ class OrdersFragment : Fragment() {
         recyclerView.itemAnimator = ScaleInAnimator().apply {
             addDuration = 200
         }
+
+        adapter.setDeleteMyOrderClickListener(object :
+            OrderListAdapter.OnDeleteMyOrderClickListener {
+            override fun onDeleteMyOrderClick(currentItem: String) {
+                mFirebaseViewModel.deleteMyOrder(requireView(), currentItem)
+            }
+
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -2,12 +2,11 @@ package com.hfad.ansormarket.mainFragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.hfad.ansormarket.R
@@ -24,12 +23,12 @@ class ActiveOrdersFragment : Fragment() {
     private val mFirebaseViewModel: FirebaseViewModel by viewModels()
     private val adapter: ActiveOrderListAdapter by lazy { ActiveOrderListAdapter() }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentActiveOrdersBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
         showRecyclerView()
 
         return binding.root
@@ -43,6 +42,7 @@ class ActiveOrdersFragment : Fragment() {
         }
         binding.lifecycleOwner = this
         binding.mFirebaseViewModel = mFirebaseViewModel
+
         mFirebaseViewModel.getActiveOrders(requireView())
     }
 
@@ -59,18 +59,25 @@ class ActiveOrdersFragment : Fragment() {
                 updateStatus(order, selectedPosition)
             }
 
+            override fun onDeleteMyOrderClick(currentItem: Order) {
+                mFirebaseViewModel.moveOrder(recyclerView, currentItem)
+
+            }
+
         })
 
     }
 
     private fun updateStatus(order: Order, selectedPosition: Int) {
-        mFirebaseViewModel.updateActiveOrders(
-            binding.root.rootView,
-            order.orderedId,
-            selectedPosition
+        val updatedOrder = Order(
+            orderStatus = selectedPosition,
+            orderProducts = order.orderProducts,
+            orderUser = order.orderUser,
+            orderedId = order.orderedId
         )
+        Log.d("YourTag", "Order Document ID: ${updatedOrder.orderedId}")
 
-
+        mFirebaseViewModel.updateActiveOrders(requireView(), updatedOrder)
     }
 
     companion object {
@@ -82,6 +89,19 @@ class ActiveOrdersFragment : Fragment() {
                 .load(R.drawable.no_order)
                 .into(gifImageView)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.active_order_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.completed_orders_menuO -> {
+                findNavController().navigate(R.id.action_activeOrdersFragment_to_completedOrdersFragment)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {

@@ -96,6 +96,7 @@
     <string name="empty_order_text">Buyurtmalar mavjud emas</string>
     <string name="active_orders">Faol Buyurtmalar</string>
     <string name="active_phone">Telefon raqami</string>
+    <string name="completed_orders">Tugallangan buyurtmalar</string>
     <string-array name="item_type">
         <item>Ichimliklar</item>
         <item>Qandolat mahsulotlari</item>

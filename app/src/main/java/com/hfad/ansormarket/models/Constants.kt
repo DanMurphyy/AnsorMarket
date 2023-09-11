@@ -8,7 +8,7 @@ object Constants {
     const val ORDERS: String = "orders"
     const val MY_ORDERS: String = "myorders"
     const val CONTACT_US: String = "contactus"
-    const val NAME: String = "name"
+    const val COMPLETED_ORDERS: String = "completedorderes"
     const val MOBILE: String = "mobile"
     const val ASSIGNED_TO: String = "assignedTo"
     const val LOGIN: String = "login"

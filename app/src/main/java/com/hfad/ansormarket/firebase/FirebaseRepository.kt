@@ -94,32 +94,6 @@ class FirebaseRepository {
         }
     }
 
-    suspend fun getActiveOrders(): List<Order> {
-        try {
-            val ordersCollection = mFireStore.collection(Constants.ORDERS)
-            val querySnapshot = ordersCollection.get().await()
-            val ordersList = mutableListOf<Order>()
-
-            for (document in querySnapshot.documents) {
-                val orders = document.toObject(Order::class.java)
-                orders?.orderedId = document.id
-                orders?.let { ordersList.add(it) }
-            }
-            return ordersList
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    suspend fun updateActiveOrders(orderId: String, newOrderStatus: Int) {
-        try {
-            val orderRef = mFireStore.collection(Constants.ORDERS).document(orderId)
-            orderRef.update("orderStatus", newOrderStatus).await()
-        } catch (e: Exception) {
-            throw e  // Rethrow the exception to handle it in the calling code
-        }
-    }
-
     suspend fun getContactUs(): ContactUs {
         try {
             val contactUsDocument = mFireStore.collection(Constants.CONTACT_US)
@@ -199,6 +173,18 @@ class FirebaseRepository {
         }
     }
 
+    suspend fun deleteMyOrder(userId: String, documentId: String): Boolean {
+        return try {
+            val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
+            val myOrderCollection = userDocumentRef.collection(Constants.MY_ORDERS)
+            myOrderCollection.document(documentId).delete().await()
+            true
+
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun updateCartItemQuantity(
         userId: String, documentId: String, newQuantity: Int, newAmount: Int
     ): Boolean {
@@ -219,19 +205,15 @@ class FirebaseRepository {
     suspend fun orderNow(userId: String, order: Order): Boolean {
         return try {
 
+            val orderId = mFireStore.collection(Constants.ORDERS).document().id
+            order.orderedId = orderId
+            Log.d("YourTag", "Before creating orderDocumentRef: ${orderId}")
+
             val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
             val myOrderCollectionRef = userDocumentRef.collection(Constants.MY_ORDERS)
-            val myOrderId =
-                myOrderCollectionRef.add(order).await().id // Get the generated document ID
-            order.orderedId = myOrderId // Assign the generated document ID to the item
+            myOrderCollectionRef.document(orderId).set(order, SetOptions.merge()).await()
 
-            // Update the document in the collection with the same ID
-            val myOrderDocRef = myOrderCollectionRef.document(myOrderId)
-            myOrderDocRef.set(order, SetOptions.merge()).await()
-
-            val orderDocumentRef = mFireStore.collection(Constants.ORDERS).document()
-            val orderId = orderDocumentRef.id
-            order.orderedId = orderId
+            val orderDocumentRef = mFireStore.collection(Constants.ORDERS).document(orderId)
             orderDocumentRef.set(order, SetOptions.merge()).await()
 
             true
@@ -240,6 +222,29 @@ class FirebaseRepository {
             false
         }
     }
+
+    suspend fun moveNow(order: Order): Boolean {
+        return try {
+            val orderDocumentRef =
+                mFireStore.collection(Constants.COMPLETED_ORDERS).document(order.orderedId)
+            orderDocumentRef.set(order, SetOptions.merge()).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun deleteAfterMove(documentId: String): Boolean {
+        return try {
+            val moveOrderDocumentRef = mFireStore.collection(Constants.ORDERS).document(documentId)
+            moveOrderDocumentRef.delete().await()
+            true
+
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 
     suspend fun getMyOrders(userId: String): List<Order> {
         try {
@@ -258,6 +263,58 @@ class FirebaseRepository {
             throw e
         }
     }
+
+    suspend fun getActiveOrders(): List<Order> {
+        try {
+            val ordersCollection = mFireStore.collection(Constants.ORDERS)
+            val querySnapshot = ordersCollection.get().await()
+            val ordersList = mutableListOf<Order>()
+
+            for (document in querySnapshot.documents) {
+                val orders = document.toObject(Order::class.java)
+                orders?.orderedId = document.id
+                orders?.let { ordersList.add(it) }
+            }
+            return ordersList
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun getCompletedOrders(): List<Order> {
+        try {
+            val ordersCollection = mFireStore.collection(Constants.COMPLETED_ORDERS)
+            val querySnapshot = ordersCollection.get().await()
+            val ordersList = mutableListOf<Order>()
+
+            for (document in querySnapshot.documents) {
+                val orders = document.toObject(Order::class.java)
+                orders?.orderedId = document.id
+                orders?.let { ordersList.add(it) }
+            }
+            return ordersList
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun updateActiveOrders(order: Order) {
+        try {
+            val ordersCollection = mFireStore.collection(Constants.ORDERS)
+            val orderDocumentRef = ordersCollection.document(order.orderedId)
+            orderDocumentRef.update(mapOf("orderStatus" to order.orderStatus)).await()
+
+            val userDocumentRef =
+                mFireStore.collection(Constants.USERS).document(order.orderUser.id)
+
+            val myOrderCollectionRef = userDocumentRef.collection(Constants.MY_ORDERS)
+            val myOrderDocRef = myOrderCollectionRef.document(order.orderedId)
+            myOrderDocRef.update(mapOf("orderStatus" to order.orderStatus)).await()
+        } catch (e: Exception) {
+            throw e  // Rethrow the exception to handle it in the calling code
+        }
+    }
+
 
     suspend fun uploadUserImage(uri: Uri, fileName: String): String {
         return try {

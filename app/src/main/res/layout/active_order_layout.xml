@@ -282,6 +282,13 @@
 
                     </LinearLayout>
 
+                    <ImageView
+                        android:id="@+id/completed_delete_my_order"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:src="@drawable/ic_completed"/>
+
                     <LinearLayout
 
                         android:layout_width="0dp"

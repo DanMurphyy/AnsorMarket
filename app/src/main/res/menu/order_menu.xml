@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/active_orders_menuO"
-        android:icon="@drawable/delivering"
+        android:icon="@drawable/ic_active_cart"
         android:iconTint="@color/white"
         android:title="@string/add"
         app:showAsAction="always" />

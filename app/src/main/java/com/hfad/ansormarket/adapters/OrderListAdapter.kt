@@ -15,6 +15,8 @@ import com.hfad.ansormarket.models.utils.MyOrderDiffUtil
 class OrderListAdapter : RecyclerView.Adapter<OrderListAdapter.MyViewHolder>() {
 
     private var myOrderList: List<Order> = emptyList()
+    private var onDeleteMyOrderClickListener: OnDeleteMyOrderClickListener? = null
+
 
     class MyViewHolder(internal val binding: MyOrderLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -57,12 +59,18 @@ class OrderListAdapter : RecyclerView.Adapter<OrderListAdapter.MyViewHolder>() {
             layoutManager = LinearLayoutManager(context)
             adapter = innerAdapter
         }
+
+        binding.deleteMyOrder.setOnClickListener {
+            onDeleteMyOrderClickListener?.onDeleteMyOrderClick(currentItem.orderedId)
+        }
     }
 
     private fun statusPending(binding: MyOrderLayoutBinding) {
         binding.progressBar.visibility = View.VISIBLE
         binding.orderStatusImage.visibility = View.GONE
         binding.orderStatusText.text = binding.root.context.getString(R.string.order_in_process)
+        binding.deleteMyOrder.visibility = View.GONE
+
 
     }
 
@@ -70,12 +78,12 @@ class OrderListAdapter : RecyclerView.Adapter<OrderListAdapter.MyViewHolder>() {
         binding.progressBar.visibility = View.GONE
         binding.orderStatusImage.visibility = View.VISIBLE
         binding.orderStatusText.text = binding.root.context.getString(R.string.order_getting_ready)
-
         val gifImageView = binding.orderStatusImage
         Glide.with(binding.root.context)
             .asGif()
             .load(R.drawable.grocery) // Assuming "fire.gif" is the name of your animated GIF file
             .into(gifImageView)
+        binding.deleteMyOrder.visibility = View.GONE
 
     }
 
@@ -83,13 +91,12 @@ class OrderListAdapter : RecyclerView.Adapter<OrderListAdapter.MyViewHolder>() {
         binding.progressBar.visibility = View.GONE
         binding.orderStatusImage.visibility = View.VISIBLE
         binding.orderStatusText.text = binding.root.context.getString(R.string.order_delivering)
-
-
         val gifImageView = binding.orderStatusImage
         Glide.with(binding.root.context)
             .asGif()
             .load(R.drawable.delivering) // Assuming "fire.gif" is the name of your animated GIF file
             .into(gifImageView)
+        binding.deleteMyOrder.visibility = View.GONE
 
     }
 
@@ -98,7 +105,7 @@ class OrderListAdapter : RecyclerView.Adapter<OrderListAdapter.MyViewHolder>() {
         binding.orderStatusImage.visibility = View.VISIBLE
         binding.orderStatusImage.setImageResource(R.drawable.ic_delivered)
         binding.orderStatusText.text = binding.root.context.getString(R.string.order_delivered)
-
+        binding.deleteMyOrder.visibility = View.VISIBLE
 
     }
 
@@ -107,7 +114,7 @@ class OrderListAdapter : RecyclerView.Adapter<OrderListAdapter.MyViewHolder>() {
         binding.orderStatusImage.visibility = View.VISIBLE
         binding.orderStatusImage.setImageResource(R.drawable.ic_cancelled)
         binding.orderStatusText.text = binding.root.context.getString(R.string.order_cancelled)
-
+        binding.deleteMyOrder.visibility = View.VISIBLE
 
     }
 
@@ -134,6 +141,14 @@ class OrderListAdapter : RecyclerView.Adapter<OrderListAdapter.MyViewHolder>() {
 
     override fun getItemCount(): Int {
         return myOrderList.size
+    }
+
+    interface OnDeleteMyOrderClickListener {
+        fun onDeleteMyOrderClick(currentItem: String)
+    }
+
+    fun setDeleteMyOrderClickListener(listener: OnDeleteMyOrderClickListener) {
+        this.onDeleteMyOrderClickListener = listener
     }
 }
 

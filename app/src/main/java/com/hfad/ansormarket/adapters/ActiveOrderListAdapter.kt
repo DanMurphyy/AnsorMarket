@@ -33,7 +33,6 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
             }
         }
 
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -62,15 +61,11 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
             makeGoneRecyclerView(binding)
         }
 
-//        binding.saveChange.setOnClickListener {
-//            updateStatus(currentItem, binding)
-//        }
-
         binding.saveChange.setOnClickListener {
             onSaveChangeClickListener?.onSaveChangeClick(
                 currentItem,
                 binding.activeOrderStatusText.selectedItemPosition
-            ) // Call the listener
+            )
         }
 
         val innerAdapter: ActiveOrderMyCartListAdapter by lazy { ActiveOrderMyCartListAdapter() }
@@ -81,6 +76,10 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
             adapter = innerAdapter
         }
 
+        binding.completedDeleteMyOrder.setOnClickListener {
+            onSaveChangeClickListener?.onDeleteMyOrderClick(currentItem)
+        }
+
     }
 
     private fun statusPending(binding: ActiveOrderLayoutBinding) {
@@ -88,6 +87,8 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
         binding.activeOrderStatusImage.visibility = View.GONE
         binding.activeOrderStatusText.setSelection(0)
         binding.root.context.getString(R.string.order_in_process)
+        binding.completedDeleteMyOrder.visibility = View.GONE
+
 
     }
 
@@ -96,12 +97,13 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
         binding.activeOrderStatusImage.visibility = View.VISIBLE
         binding.activeOrderStatusText.setSelection(1)
         binding.root.context.getString(R.string.order_getting_ready)
-
         val gifImageView = binding.activeOrderStatusImage
         Glide.with(binding.root.context)
             .asGif()
             .load(R.drawable.grocery) // Assuming "fire.gif" is the name of your animated GIF file
             .into(gifImageView)
+        binding.completedDeleteMyOrder.visibility = View.GONE
+
 
     }
 
@@ -110,13 +112,13 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
         binding.activeOrderStatusImage.visibility = View.VISIBLE
         binding.activeOrderStatusText.setSelection(2)
         binding.root.context.getString(R.string.order_delivering)
-
-
         val gifImageView = binding.activeOrderStatusImage
         Glide.with(binding.root.context)
             .asGif()
             .load(R.drawable.delivering) // Assuming "fire.gif" is the name of your animated GIF file
             .into(gifImageView)
+        binding.completedDeleteMyOrder.visibility = View.GONE
+
 
     }
 
@@ -125,7 +127,7 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
         binding.activeOrderStatusImage.visibility = View.VISIBLE
         binding.activeOrderStatusImage.setImageResource(R.drawable.ic_delivered)
         binding.activeOrderStatusText.setSelection(3)
-//            binding.root.context.getString(R.string.order_delivered)
+        binding.completedDeleteMyOrder.visibility = View.VISIBLE
 
 
     }
@@ -135,7 +137,7 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
         binding.activeOrderStatusImage.visibility = View.VISIBLE
         binding.activeOrderStatusImage.setImageResource(R.drawable.ic_cancelled)
         binding.activeOrderStatusText.setSelection(4)
-//            binding.root.context.getString(R.string.order_cancelled)
+        binding.completedDeleteMyOrder.visibility = View.VISIBLE
 
 
     }
@@ -166,6 +168,8 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
 
     interface OnSaveChangeClickListener {
         fun onSaveChangeClick(order: Order, selectedPosition: Int)
+        fun onDeleteMyOrderClick(currentItem: Order)
+
     }
 
     fun setOnSaveChangeClickListener(listener: OnSaveChangeClickListener) {

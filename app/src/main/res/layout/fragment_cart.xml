@@ -181,9 +181,8 @@
 
                 <TextView
                     android:id="@+id/grand_info"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:paddingEnd="2dp"
                     android:text="@string/fee_grand_info"
                     android:textColor="@color/secondary_text_color"
@@ -191,11 +190,12 @@
 
                 <TextView
                     android:id="@+id/price_totalGrand"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_margin="1dp"
-                    android:paddingEnd="10dp"
+                    android:layout_weight="1"
+                    android:padding="1dp"
+                    android:textAlignment="center"
+                    android:layout_marginEnd="5dp"
                     android:text="@string/sample_price"
                     android:textColor="#FF4B4B"
                     android:textSize="20sp"
