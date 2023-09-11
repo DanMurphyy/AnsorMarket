@@ -1,6 +1,5 @@
 package com.hfad.ansormarket.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,24 +15,35 @@ import com.hfad.ansormarket.models.utils.MyOrderDiffUtil
 class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyViewHolder>() {
 
     private var activeOrderList: List<Order> = emptyList()
+    private var onSaveChangeClickListener: OnSaveChangeClickListener? = null
+
 
     class MyViewHolder(internal val binding: ActiveOrderLayoutBinding) :
-        RecyclerView.ViewHolder(binding.root)
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(order: Order) {
+            binding.mOrder = order
+            binding.executePendingBindings()
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): MyViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ActiveOrderLayoutBinding.inflate(layoutInflater, parent, false)
+                return MyViewHolder(binding)
+            }
+        }
+
+
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val binding =
-            ActiveOrderLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MyViewHolder(binding)
+        return MyViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = activeOrderList[position] // Access items directly from itemList
+        holder.bind(currentItem)
         val binding = holder.binding
-        binding.activeOrderNumber.text = currentItem.orderNumber
-        binding.activeOrderAmount.text = currentItem.totalAmount.toString()
-        binding.activeOrderDate.text = currentItem.date
-        binding.activeOrderAddress.text = currentItem.orderUser.address
-        binding.activeOrderPhone.text = currentItem.orderUser.mobile.toString()
 
         when (currentItem.orderStatus) {
             0 -> statusPending(binding)
@@ -43,12 +53,24 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
             4 -> statusCancelled(binding)
         }
 
+
         binding.activeInfoArrowDown.setOnClickListener {
             makeVisRecyclerView(binding)
         }
 
         binding.activeInfoArrowUp.setOnClickListener {
             makeGoneRecyclerView(binding)
+        }
+
+//        binding.saveChange.setOnClickListener {
+//            updateStatus(currentItem, binding)
+//        }
+
+        binding.saveChange.setOnClickListener {
+            onSaveChangeClickListener?.onSaveChangeClick(
+                currentItem,
+                binding.activeOrderStatusText.selectedItemPosition
+            ) // Call the listener
         }
 
         val innerAdapter: ActiveOrderMyCartListAdapter by lazy { ActiveOrderMyCartListAdapter() }
@@ -58,21 +80,22 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
             layoutManager = LinearLayoutManager(context)
             adapter = innerAdapter
         }
+
     }
 
     private fun statusPending(binding: ActiveOrderLayoutBinding) {
         binding.activeProgressBar.visibility = View.VISIBLE
         binding.activeOrderStatusImage.visibility = View.GONE
-        binding.activeOrderStatusText.text =
-            binding.root.context.getString(R.string.order_in_process)
+        binding.activeOrderStatusText.setSelection(0)
+        binding.root.context.getString(R.string.order_in_process)
 
     }
 
     private fun statusAccepted(binding: ActiveOrderLayoutBinding) {
         binding.activeProgressBar.visibility = View.GONE
         binding.activeOrderStatusImage.visibility = View.VISIBLE
-        binding.activeOrderStatusText.text =
-            binding.root.context.getString(R.string.order_getting_ready)
+        binding.activeOrderStatusText.setSelection(1)
+        binding.root.context.getString(R.string.order_getting_ready)
 
         val gifImageView = binding.activeOrderStatusImage
         Glide.with(binding.root.context)
@@ -85,8 +108,8 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
     private fun statusSend(binding: ActiveOrderLayoutBinding) {
         binding.activeProgressBar.visibility = View.GONE
         binding.activeOrderStatusImage.visibility = View.VISIBLE
-        binding.activeOrderStatusText.text =
-            binding.root.context.getString(R.string.order_delivering)
+        binding.activeOrderStatusText.setSelection(2)
+        binding.root.context.getString(R.string.order_delivering)
 
 
         val gifImageView = binding.activeOrderStatusImage
@@ -101,8 +124,8 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
         binding.activeProgressBar.visibility = View.GONE
         binding.activeOrderStatusImage.visibility = View.VISIBLE
         binding.activeOrderStatusImage.setImageResource(R.drawable.ic_delivered)
-        binding.activeOrderStatusText.text =
-            binding.root.context.getString(R.string.order_delivered)
+        binding.activeOrderStatusText.setSelection(3)
+//            binding.root.context.getString(R.string.order_delivered)
 
 
     }
@@ -111,12 +134,11 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
         binding.activeProgressBar.visibility = View.GONE
         binding.activeOrderStatusImage.visibility = View.VISIBLE
         binding.activeOrderStatusImage.setImageResource(R.drawable.ic_cancelled)
-        binding.activeOrderStatusText.text =
-            binding.root.context.getString(R.string.order_cancelled)
+        binding.activeOrderStatusText.setSelection(4)
+//            binding.root.context.getString(R.string.order_cancelled)
 
 
     }
-
 
     private fun makeGoneRecyclerView(binding: ActiveOrderLayoutBinding) {
         binding.activeOrderDetails.visibility = View.GONE
@@ -130,7 +152,6 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
         binding.activeInfoArrowDown.visibility = View.GONE
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun setActiveMyCartData(activeOrder: List<Order>) {
         val myOrderDiffUtil = MyOrderDiffUtil(activeOrder, activeOrder)
         val myOrderDiffResult = DiffUtil.calculateDiff(myOrderDiffUtil)
@@ -141,6 +162,14 @@ class ActiveOrderListAdapter : RecyclerView.Adapter<ActiveOrderListAdapter.MyVie
 
     override fun getItemCount(): Int {
         return activeOrderList.size
+    }
+
+    interface OnSaveChangeClickListener {
+        fun onSaveChangeClick(order: Order, selectedPosition: Int)
+    }
+
+    fun setOnSaveChangeClickListener(listener: OnSaveChangeClickListener) {
+        this.onSaveChangeClickListener = listener
     }
 }
 

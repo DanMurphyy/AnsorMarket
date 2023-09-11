@@ -51,7 +51,7 @@
                         android:src="@drawable/ic_user_place_holder"
                         app:civ_border_color="@color/background_white"
                         app:civ_border_width="2dp"
-                        app:imageUrl="@{viewModel.userLiveData.image}" />
+                        android:imageUrl="@{viewModel.userLiveData.image}" />
 
 
                     <com.google.android.material.textfield.TextInputLayout

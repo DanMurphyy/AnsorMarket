@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -46,11 +47,12 @@ class OrdersFragment : Fragment() {
         mFirebaseViewModel.orderNowLiveData.observe(viewLifecycleOwner) { myOrderList ->
             Log.d("OrdersFragment", "Received ${myOrderList.size} orders")
             adapter.setMyCartData(myOrderList)
-            updateOrderVisibility(myOrderList.isEmpty())
         }
-
         mFirebaseViewModel.getMyOrders(requireView())
         mFirebaseViewModel.getContactUs()
+
+        binding.lifecycleOwner = this
+        binding.mFirebaseViewModel = mFirebaseViewModel
 
     }
 
@@ -101,7 +103,6 @@ class OrdersFragment : Fragment() {
         contactUsInfoBinding!!.appContact.text = contactUs.AppMobile
         contactUsInfoBinding!!.workingHours.text = contactUs.WorkingHours
 
-
         contactUsInfoBinding!!.btnBack.setOnClickListener {
             hideInfoDialog()
         }
@@ -118,29 +119,24 @@ class OrdersFragment : Fragment() {
         mDialog!!.dismiss()
     }
 
-    private fun updateOrderVisibility(isEmpty: Boolean) {
-        val recyclerView = binding.recyclerViewOrderList
-        val emptyOrderView = binding.emptyOrderView
-        if (isEmpty) {
-            recyclerView.visibility = View.GONE
-            emptyOrderView.visibility = View.VISIBLE
-            gif()
-        } else {
-            recyclerView.visibility = View.VISIBLE
-            emptyOrderView.visibility = View.GONE
+    companion object {
+        @JvmStatic
+        fun gif1(view: View) {
+            val gifImageView = view.findViewById<ImageView>(R.id.no_order_image)
+            Glide.with(view)
+                .asGif()
+                .load(R.drawable.no_my_order)
+                .into(gifImageView)
         }
-    }
-
-    private fun gif() {
-        val gifImageView = binding.noOrderImage
-        Glide.with(requireContext())
-            .asGif()
-            .load(R.drawable.no_my_order) // Assuming "fire.gif" is the name of your animated GIF file
-            .into(gifImageView)
     }
 
     private fun navigate() {
         findNavController().navigate(R.id.action_ordersFragment_to_activeOrdersFragment)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

@@ -5,12 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.adapters.MyCartListAdapter
@@ -39,7 +36,6 @@ class CartFragment : Fragment() {
             orderNow()
         }
 
-
         return binding.root
     }
 
@@ -47,12 +43,13 @@ class CartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
             adapter.setMyCartData(myCartList)
-            updateCartVisibility(myCartList.isEmpty())
             updateAmount()
             mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
         mFirebaseViewModel.fetchMyCart()
         mFirebaseViewModel.loadUserDataForOrder()
+        binding.lifecycleOwner = this
+        binding.mFirebaseViewModel = mFirebaseViewModel
     }
 
     private fun showRecyclerView() {
@@ -81,7 +78,6 @@ class CartFragment : Fragment() {
         val totalAmount = adapter.calculateTotalAmount()
         binding.subtotalPrice.text = totalAmount.toString()
 
-
         if (totalAmount <= 99999) {
             val withDelivery = totalAmount + 10000
             binding.deliveryFeePrice.text = getString(R.string.deliver_charge_amount)
@@ -93,31 +89,12 @@ class CartFragment : Fragment() {
             grandTotal = totalAmount
             binding.priceTotalGrand.text = grandTotal.toString()
         }
-
-    }
-
-    private fun updateCartVisibility(isEmpty: Boolean) {
-        val recyclerView = binding.recyclerViewCartItems
-        val emptyCartView = binding.emptyCartView
-        val rateMethodAndBtn = binding.rateAndMethod
-        if (isEmpty) {
-            recyclerView.visibility = View.GONE
-            rateMethodAndBtn.visibility = View.GONE
-            emptyCartView.visibility = View.VISIBLE
+        if (totalAmount.toString().isNotEmpty() && totalAmount <= 99999) {
+            binding.feeInfo.visibility = View.VISIBLE
         } else {
-            recyclerView.visibility = View.VISIBLE
-            rateMethodAndBtn.visibility = View.VISIBLE
-            emptyCartView.visibility = View.GONE
-            val totalAmount = adapter.calculateTotalAmount()
-                if (totalAmount.toString().isNotEmpty() && totalAmount <= 99999) {
-                    binding.feeInfo.visibility = View.VISIBLE
-                } else {
-                    binding.feeInfo.visibility = View.GONE
-                }
-
+            binding.feeInfo.visibility = View.GONE
         }
     }
-
 
     private fun orderNow() {
         // Ensure that userLiveData and myCartsLiveData are not null
@@ -164,11 +141,15 @@ class CartFragment : Fragment() {
     private fun updateAfterDelete() {
         mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
             adapter.setMyCartData(myCartList)
-            updateCartVisibility(myCartList.isEmpty())
             mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
         updateAmount()
         mFirebaseViewModel.fetchMyCart()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

@@ -169,19 +169,6 @@ class MyProfileFragment : Fragment() {
         activity?.finish()
     }
 
-    companion object {
-        @JvmStatic
-        @BindingAdapter("imageUrl")
-        fun loadImage(view: ImageView, imageUrl: String?) {
-            if (!imageUrl.isNullOrEmpty()) {
-                Glide.with(view.context)
-                    .load(imageUrl)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_user_place_holder)
-                    .into(view)
-            }
-        }
-    }
 
     override fun onDestroy() {
         super.onDestroy()

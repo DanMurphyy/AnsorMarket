@@ -1,226 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="2dp"
-    tools:context=".mainFragments.CartFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_View_cart_items"
+    <data>
+
+        <variable
+            name="mFirebaseViewModel"
+            type="com.hfad.ansormarket.firebase.FirebaseViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@id/rate_and_method"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteY="2dp" />
-
-    <LinearLayout
-        android:id="@+id/emptyCartView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:textColor="@color/black"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.35000002">
+        android:padding="2dp"
+        tools:context=".mainFragments.CartFragment">
 
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@drawable/empty_cart" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_View_cart_items"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/rate_and_method"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteY="2dp" />
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/emptyCartView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/chelsea_market"
-            android:text="@string/empty_cart_text"
-            android:textColor="@color/purple_700" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/rate_and_method"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/green_border_shape_button_rounded"
-        android:baselineAligned="false"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recycler_View_cart_items"
-        tools:layout_editor_absoluteY="2dp">
-
-        <TextView
-            android:id="@+id/fee_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:emptyMyCart="@{mFirebaseViewModel.myCartsLiveData}"
             android:gravity="center"
-            android:text="@string/delivery_fee"
-            android:textColor="@color/colorAccent"
-            android:textSize="11sp" />
+            android:orientation="vertical"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.35000002">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp">
-
-            <TextView
-                android:id="@+id/items_amount"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingEnd="2dp"
-                android:text="@string/subtotal"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/subtotal_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="1dp"
-                android:paddingEnd="10dp"
-                android:text="@string/subtotal_amount"
-                android:textColor="#FF4B4B"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/empty_cart" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="1dp"
                 android:fontFamily="@font/chelsea_market"
-                android:text="@string/sample_currency"
-                android:textColor="@color/colorPrimary"
-                android:textSize="13sp" />
-        </LinearLayout>
+                android:text="@string/empty_cart_text"
+                android:textColor="#5D6177" />
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp">
-
-            <TextView
-                android:id="@+id/delivery_fee_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingEnd="2dp"
-                android:text="@string/deliver_charge"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/delivery_fee_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="1dp"
-                android:paddingEnd="10dp"
-                android:text="@string/deliver_charge_amount"
-                android:textColor="#FF4B4B"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/currency_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="1dp"
-                android:fontFamily="@font/chelsea_market"
-                android:text="@string/sample_currency"
-                android:textColor="@color/colorPrimary"
-                android:textSize="13sp" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/rate_and_method"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp">
-
-            <TextView
-                android:id="@+id/grand_info"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingEnd="2dp"
-                android:text="@string/fee_grand_info"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/price_totalGrand"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="1dp"
-                android:paddingEnd="10dp"
-                android:text="@string/sample_price"
-                android:textColor="#FF4B4B"
-                android:textSize="20sp"
-                android:textStyle="bold|italic" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="1dp"
-                android:fontFamily="@font/chelsea_market"
-                android:text="@string/sample_currency"
-                android:textColor="@color/colorPrimary"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-
-        <Button
-            android:id="@+id/btn_make_order"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/green_border_shape_button_rounded"
-            android:foreground="@drawable/custom_ripple"
+            android:baselineAligned="false"
             android:gravity="center"
-            android:text="@string/make_order"
-            android:textColor="@color/secondary_text_color"
-            android:textSize="@dimen/progress_text_size"
-            android:textStyle="bold"
-            app:backgroundTint="@null" />
+            android:oppositeEmptyMyCart="@{mFirebaseViewModel.myCartsLiveData}"
+            android:orientation="vertical"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recycler_View_cart_items"
+            tools:layout_editor_absoluteY="2dp">
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/fee_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/delivery_fee"
+                android:textColor="@color/colorAccent"
+                android:textSize="11sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp">
+
+                <TextView
+                    android:id="@+id/items_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingEnd="2dp"
+                    android:text="@string/subtotal"
+                    android:textColor="@color/secondary_text_color"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/subtotal_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="1dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/subtotal_amount"
+                    android:textColor="#FF4B4B"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="1dp"
+                    android:fontFamily="@font/chelsea_market"
+                    android:text="@string/sample_currency"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="13sp" />
+            </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp">
+
+                <TextView
+                    android:id="@+id/delivery_fee_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingEnd="2dp"
+                    android:text="@string/deliver_charge"
+                    android:textColor="@color/secondary_text_color"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/delivery_fee_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="1dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/deliver_charge_amount"
+                    android:textColor="#FF4B4B"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/currency_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="1dp"
+                    android:fontFamily="@font/chelsea_market"
+                    android:text="@string/sample_currency"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp">
+
+                <TextView
+                    android:id="@+id/grand_info"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingEnd="2dp"
+                    android:text="@string/fee_grand_info"
+                    android:textColor="@color/secondary_text_color"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/price_totalGrand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="1dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/sample_price"
+                    android:textColor="#FF4B4B"
+                    android:textSize="20sp"
+                    android:textStyle="bold|italic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="1dp"
+                    android:fontFamily="@font/chelsea_market"
+                    android:text="@string/sample_currency"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+
+            <Button
+                android:id="@+id/btn_make_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/green_border_shape_button_rounded"
+                android:foreground="@drawable/custom_ripple"
+                android:gravity="center"
+                android:text="@string/make_order"
+                android:textColor="@color/secondary_text_color"
+                android:textSize="@dimen/progress_text_size"
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -111,6 +111,15 @@ class FirebaseRepository {
         }
     }
 
+    suspend fun updateActiveOrders(orderId: String, newOrderStatus: Int) {
+        try {
+            val orderRef = mFireStore.collection(Constants.ORDERS).document(orderId)
+            orderRef.update("orderStatus", newOrderStatus).await()
+        } catch (e: Exception) {
+            throw e  // Rethrow the exception to handle it in the calling code
+        }
+    }
+
     suspend fun getContactUs(): ContactUs {
         try {
             val contactUsDocument = mFireStore.collection(Constants.CONTACT_US)

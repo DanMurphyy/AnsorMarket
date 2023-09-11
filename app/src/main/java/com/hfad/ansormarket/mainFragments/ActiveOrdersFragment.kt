@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.hfad.ansormarket.R
 import com.hfad.ansormarket.adapters.ActiveOrderListAdapter
 import com.hfad.ansormarket.databinding.FragmentActiveOrdersBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
+import com.hfad.ansormarket.models.Order
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
 class ActiveOrdersFragment : Fragment() {
@@ -38,9 +40,9 @@ class ActiveOrdersFragment : Fragment() {
         mFirebaseViewModel.activeOrderNowLiveData.observe(viewLifecycleOwner) { activeOrderList ->
             Log.d("OrdersFragment", "Received ${activeOrderList.size} orders")
             adapter.setActiveMyCartData(activeOrderList)
-            updateOrderVisibility(activeOrderList.isEmpty())
         }
-
+        binding.lifecycleOwner = this
+        binding.mFirebaseViewModel = mFirebaseViewModel
         mFirebaseViewModel.getActiveOrders(requireView())
     }
 
@@ -51,27 +53,40 @@ class ActiveOrdersFragment : Fragment() {
         recyclerView.itemAnimator = ScaleInAnimator().apply {
             addDuration = 200
         }
+        adapter.setOnSaveChangeClickListener(object :
+            ActiveOrderListAdapter.OnSaveChangeClickListener {
+            override fun onSaveChangeClick(order: Order, selectedPosition: Int) {
+                updateStatus(order, selectedPosition)
+            }
+
+        })
+
     }
 
-    private fun updateOrderVisibility(isEmpty: Boolean) {
-        val recyclerView = binding.recyclerViewActiveOrderList
-        val emptyOrderView = binding.emptyActiveOrderView
-        if (isEmpty) {
-            recyclerView.visibility = View.GONE
-            emptyOrderView.visibility = View.VISIBLE
-            gif()
-        } else {
-            recyclerView.visibility = View.VISIBLE
-            emptyOrderView.visibility = View.GONE
+    private fun updateStatus(order: Order, selectedPosition: Int) {
+        mFirebaseViewModel.updateActiveOrders(
+            binding.root.rootView,
+            order.orderedId,
+            selectedPosition
+        )
+
+
+    }
+
+    companion object {
+        @JvmStatic
+        fun gif(view: View) {
+            val gifImageView = view.findViewById<ImageView>(R.id.no_active_order_image)
+            Glide.with(view)
+                .asGif()
+                .load(R.drawable.no_order)
+                .into(gifImageView)
         }
     }
 
-    private fun gif() {
-        val gifImageView = binding.noActiveOrderImage
-        Glide.with(requireContext())
-            .asGif()
-            .load(R.drawable.no_order) // Assuming "fire.gif" is the name of your animated GIF file
-            .into(gifImageView)
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

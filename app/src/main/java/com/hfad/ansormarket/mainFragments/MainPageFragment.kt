@@ -416,4 +416,9 @@ class MainPageFragment : Fragment() {
         builder.show()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 }

@@ -78,6 +78,7 @@
     <string name="ordered_date">Vaqti \:</string>
     <string name="sample_quantity_dona">dona</string>
     <string name="order_status">Buyurtma holati :</string>
+    <string name="active_order_status">Holati :</string>
     <string name="order_user">Ismi :</string>
     <string name="order_address">Yetkaziladigon manzil \:</string>
     <string name="empty_cart_text">Savatingiz Bo\'sh !!</string>
@@ -110,6 +111,14 @@
         <item>Gigiena vositalari</item>
         <item>Oshxona</item>
         <item>Yog\'lar</item>
+    </string-array>
+
+    <string-array name="update_order_status">
+        <item>Jarayonda\.\.\.</item>
+        <item>Terilmoqda</item>
+        <item>Yo\'lda</item>
+        <item>Yetkazib berilgan!</item>
+        <item>Bekor qilingan</item>
     </string-array>
 
 </resources>

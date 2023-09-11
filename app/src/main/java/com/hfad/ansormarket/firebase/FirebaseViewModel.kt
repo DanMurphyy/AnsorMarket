@@ -10,6 +10,7 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
@@ -35,6 +36,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val orderNowResult: MutableLiveData<Boolean?> = MutableLiveData()
     val orderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
     val activeOrderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
+    val updateActiveOrderResult: MutableLiveData<Boolean?> = MutableLiveData()
 
     init {
         repository = FirebaseRepository()
@@ -42,6 +44,10 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
 
     fun resetOrderNowResult() {
         orderNowResult.value = null
+    }
+
+    fun resetUpdateActiveOrderResult() {
+        updateActiveOrderResult.value = null
     }
 
     fun registerUser(view: View, name: String, login: String, password: String) {
@@ -131,7 +137,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             try {
                 val userId = getCurrentUserId()
                 val user = userLiveData.value
-
                 // Check if the user object is not null
                 if (user != null) {
                     // Update the user object fields based on the updatedUser object
@@ -141,7 +146,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                     if (updatedUser.image.isNotEmpty() && updatedUser.image != user.image) {
                         user.image = updatedUser.image
                     }
-
                     repository.updateUserData(userId, user)
                     userLiveData.postValue(user!!)
                 }
@@ -150,6 +154,25 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 hideProgress()
             }
             hideProgress()
+        }
+    }
+
+    fun updateActiveOrders(view: View, orderId: String, newOrderStatus: Int) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                repository.updateActiveOrders(orderId, newOrderStatus)
+                val orders = repository.getActiveOrders()
+                activeOrderNowLiveData.postValue(orders)
+                updateActiveOrderResult.postValue(true)
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
+                updateActiveOrderResult.postValue(false)
+                Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
+                hideProgress()
+
+            }
         }
     }
 
