@@ -72,24 +72,14 @@ class MainPageFragment : Fragment() {
 
     private fun liveUpdates() {
         mFirebaseViewModel.itemList.observe(viewLifecycleOwner) { itemList ->
-            // Update the adapter only if it's not null
             adapter.setItems(itemList)
         }
-
+        mFirebaseViewModel.fetchAllItems()
         mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
-            // Update the adapter with cart data
             adapter.setMyCartData(myCartList)
             mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
-
-        // Fetch data only if it's not already fetched
-        if (mFirebaseViewModel.itemList.value == null) {
-            mFirebaseViewModel.fetchAllItems()
-        }
-
-        if (mFirebaseViewModel.myCartsLiveData.value == null) {
-            mFirebaseViewModel.fetchMyCart()
-        }
+        mFirebaseViewModel.fetchMyCart()
     }
 
     private fun showRecyclerView() {
@@ -305,14 +295,8 @@ class MainPageFragment : Fragment() {
                                 ).show()
                                 createItemData(itemCreateBinding!!) // Pass the binding here
                             } else {
-                                Log.d("MyApp", "Image upload error")
-
-                                Toast.makeText(
-                                    requireContext(),
-                                    getString(R.string.image_error),
-                                    Toast.LENGTH_SHORT
-                                ).show()
                             }
+                            mFirebaseViewModel.resetImageUploadResult()
                         }
                     }
 
@@ -403,7 +387,7 @@ class MainPageFragment : Fragment() {
                     // Hide the bottom dialog
                     hideBottomDialog()
                     mSelectedImageFileUri = null
-//                    mFirebaseViewModel.resetItemResult()
+                    mFirebaseViewModel.resetItemResult()
                 } else {
                     Toast.makeText(
                         requireContext(),
