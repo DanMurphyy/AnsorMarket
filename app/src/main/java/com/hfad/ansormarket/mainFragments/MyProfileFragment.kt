@@ -11,11 +11,9 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
@@ -55,8 +53,7 @@ class MyProfileFragment : Fragment() {
             setUserDataInUI(user)
         }
 
-        mFirebaseViewModel.showProgress(requireContext())
-        mFirebaseViewModel.loadUserData()
+        mFirebaseViewModel.loadUserData(requireContext())
 
         binding.imageUser.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
@@ -71,17 +68,26 @@ class MyProfileFragment : Fragment() {
 
         binding.btnUpdateProfile.setOnClickListener {
             if (mSelectedImageFileUri != null) {
-                mFirebaseViewModel.uploadImage(requireContext(), mSelectedImageFileUri!!)
+                if (mSelectedImageFileUri.toString().isNotEmpty()) {
+                    mFirebaseViewModel.uploadImage(requireContext(), mSelectedImageFileUri!!)
+                }
                 mFirebaseViewModel.imageUploadResult.observe(viewLifecycleOwner) { imageUrl ->
                     if (imageUrl != null) {
-                        Toast.makeText(
-                            requireContext(), getString(R.string.image_uploaded), Toast.LENGTH_SHORT
-                        ).show()
-                        updateUserProfileData()
-                    } else {
-                        Toast.makeText(
-                            requireContext(), getString(R.string.image_error), Toast.LENGTH_SHORT
-                        ).show()
+                        if (imageUrl) {
+                            Toast.makeText(
+                                requireContext(),
+                                getString(R.string.image_uploaded),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            updateUserProfileData()
+                            mFirebaseViewModel.resetImageUploadResult()
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                getString(R.string.image_error),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             } else {
@@ -118,18 +124,31 @@ class MyProfileFragment : Fragment() {
     }
 
     private fun updateUserProfileData() {
-        val mProfileImageUrl = mFirebaseViewModel.imageUploadResult
-        val updatedUser = User(
-            name = binding.etUserName.text.toString(),
-            address = binding.etAddressName.text.toString(),
-            mobile = binding.etMobileNumber.text.toString().toLong(),
-            image = mProfileImageUrl.value.toString()
-        )
+        val mProfileImageUrl = mFirebaseViewModel.imageUploadLive.value
+
+        // Check if an image was uploaded successfully
+        val updatedUser = if (!mProfileImageUrl.isNullOrEmpty()) {
+            User(
+                name = binding.etUserName.text.toString(),
+                address = binding.etAddressName.text.toString(),
+                mobile = binding.etMobileNumber.text.toString().toLong(),
+                image = mProfileImageUrl
+            )
+        } else {
+            // If no image was uploaded, keep the existing image URL
+            User(
+                name = binding.etUserName.text.toString(),
+                address = binding.etAddressName.text.toString(),
+                mobile = binding.etMobileNumber.text.toString().toLong(),
+                image = mFirebaseViewModel.userLiveData.value?.image ?: ""
+            )
+        }
 
         // Call the ViewModel function to update the user profile data
         mFirebaseViewModel.updateUserProfileData(requireView(), updatedUser)
         Log.d(TAG, "User data updated")
     }
+
 
     private fun showImageChooserPermissionDeniedDialog() {
         val builder = AlertDialog.Builder(requireContext())

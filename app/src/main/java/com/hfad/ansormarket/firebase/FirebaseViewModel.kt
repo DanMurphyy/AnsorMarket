@@ -27,8 +27,9 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val signInResult: MutableLiveData<Boolean> = MutableLiveData()
     val userLiveData: MutableLiveData<User> = MutableLiveData()
     val contactUsLiveData: MutableLiveData<ContactUs> = MutableLiveData()
-    val imageUploadResult: MutableLiveData<String?> = MutableLiveData()
-    val createItemResult: MutableLiveData<Boolean> = MutableLiveData()
+    val imageUploadLive: MutableLiveData<String?> = MutableLiveData()
+    val imageUploadResult: MutableLiveData<Boolean?> = MutableLiveData()
+    val createItemResult: MutableLiveData<Boolean?> = MutableLiveData()
     val itemList: MutableLiveData<List<Item>> = MutableLiveData()
     val toCartResult: MutableLiveData<Boolean> = MutableLiveData()
     val myCartsLiveData: MutableLiveData<List<MyCart>> = MutableLiveData()
@@ -42,12 +43,17 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         repository = FirebaseRepository()
     }
 
+    fun resetImageUploadResult() {
+        imageUploadResult.value = null
+    }
+
     fun resetOrderNowResult() {
         orderNowResult.value = null
     }
 
-    fun resetUpdateActiveOrderResult() {
-        updateActiveOrderResult.value = null
+    fun resetItemResult() {
+        createItemResult.value = null
+        hideProgress()
     }
 
     fun registerUser(view: View, name: String, login: String, password: String) {
@@ -78,13 +84,16 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun loadUserData() {
+    fun loadUserData(context: Context) {
+        showProgress(context)
         viewModelScope.launch {
             try {
                 val userId = getCurrentUserId()
                 val user = repository.getUserData(userId)
                 userLiveData.postValue(user)
+                hideProgress()
             } catch (e: Exception) {
+                hideProgress()
             }
             hideProgress()
         }
@@ -119,7 +128,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             if (validation) {
                 try {
                     val isSuccess = repository.signInUser(login, password)
-                    loadUserData()
+                    loadUserData(view.context)
                     hideProgress()
                     signInResult.value = isSuccess
                 } catch (e: Exception) {
@@ -137,7 +146,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             try {
                 val userId = getCurrentUserId()
                 val user = userLiveData.value
-                // Check if the user object is not null
                 if (user != null) {
                     // Update the user object fields based on the updatedUser object
                     user.name = updatedUser.name
@@ -179,20 +187,21 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun createItem(view: View, item: Item) {
+        Log.d("MainPage", "show3:")
         showProgress(view.context)
         viewModelScope.launch {
             try {
                 repository.createItem(item)
-                val items = repository.getAllItems()
-                itemList.postValue(items)
                 createItemResult.postValue(true) // Set the value to true when item is created successfully
                 hideProgress()
+                imageUploadLive.postValue(null)
+                imageUploadResult.postValue(false)
             } catch (e: Exception) {
                 createItemResult.postValue(false) // Set the value to false when item creation fails
                 hideProgress()
             }
-            hideProgress()
         }
+        Log.d("MainPage", "hide3:")
     }
 
     fun fetchAllItems() {
@@ -223,7 +232,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
-
 
     fun getCompletedOrders(view: View) {
         showProgress(view.context)
@@ -375,24 +383,24 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             try {
                 val extension = getFileExtension(uri)
-                if (extension != null) {
+                if (extension != null && extension.isNotEmpty()) {
                     val filename = "USER_IMAGE_${System.currentTimeMillis()}.$extension"
                     val imageUrl = repository.uploadUserImage(uri, filename)
-                    imageUploadResult.postValue(imageUrl)
-                } else {
+                    imageUploadLive.postValue(imageUrl)
+                    imageUploadResult.postValue(true)
                     hideProgress()
-                    imageUploadResult.postValue(null) // Indicate failure
                 }
             } catch (e: Exception) {
                 hideProgress()
-                imageUploadResult.postValue(null) // Indicate failure
-            } finally {
-                hideProgress()
+                imageUploadLive.postValue(null) // Indicate failure
+                imageUploadResult.postValue(false)
+
             }
         }
     }
 
     fun uploadItemImage(context: Context, uri: Uri) {
+        Log.d("MainPage", "show2:")
         showProgress(context)
         viewModelScope.launch {
             try {
@@ -400,17 +408,25 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 if (extension != null) {
                     val filename = "USER_IMAGE_${System.currentTimeMillis()}.$extension"
                     val imageUrl = repository.uploadItemImage(uri, filename)
-                    imageUploadResult.postValue(imageUrl)
+                    imageUploadLive.postValue(imageUrl)
+                    imageUploadResult.postValue(true)
+
                 } else {
                     hideProgress()
-                    imageUploadResult.postValue(null) // Indicate failure
+                    imageUploadLive.postValue(null) // Indicate failure
+                    imageUploadResult.postValue(false)
+
                 }
             } catch (e: Exception) {
                 hideProgress()
-                imageUploadResult.postValue(null) // Indicate failure
+                imageUploadLive.postValue(null) // Indicate failure
+                imageUploadResult.postValue(false)
+
             } finally {
                 hideProgress()
             }
+            hideProgress()
+            Log.d("MainPage", "hide2:")
         }
     }
 
@@ -418,7 +434,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         return repository.getCurrentUserId()
     }
 
-    fun getFileExtension(uri: Uri?): String? {
+    private fun getFileExtension(uri: Uri?): String? {
         return MimeTypeMap.getSingleton()
             .getExtensionFromMimeType(context.contentResolver?.getType(uri!!))
     }

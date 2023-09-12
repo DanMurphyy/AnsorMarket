@@ -245,7 +245,6 @@ class FirebaseRepository {
         }
     }
 
-
     suspend fun getMyOrders(userId: String): List<Order> {
         try {
             val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)

@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -58,9 +59,9 @@ class MainPageFragment : Fragment() {
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-        mFirebaseViewModel.showProgress(requireContext())
-        mFirebaseViewModel.loadUserData()
+        mFirebaseViewModel.loadUserData(requireContext())
         showRecyclerView()
+
         return (binding.root)
     }
 
@@ -71,14 +72,24 @@ class MainPageFragment : Fragment() {
 
     private fun liveUpdates() {
         mFirebaseViewModel.itemList.observe(viewLifecycleOwner) { itemList ->
+            // Update the adapter only if it's not null
             adapter.setItems(itemList)
         }
-        mFirebaseViewModel.fetchAllItems()
+
         mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
+            // Update the adapter with cart data
             adapter.setMyCartData(myCartList)
             mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
-        mFirebaseViewModel.fetchMyCart()
+
+        // Fetch data only if it's not already fetched
+        if (mFirebaseViewModel.itemList.value == null) {
+            mFirebaseViewModel.fetchAllItems()
+        }
+
+        if (mFirebaseViewModel.myCartsLiveData.value == null) {
+            mFirebaseViewModel.fetchMyCart()
+        }
     }
 
     private fun showRecyclerView() {
@@ -253,7 +264,7 @@ class MainPageFragment : Fragment() {
         }
 
         itemCreateBinding!!.btnCreate.setOnClickListener {
-            val mItemType = itemCreateBinding!!.etItemType.selectedItem.toString()
+            Log.d("MyApp", "Create button clicked") // Log the button click
             val nameItem = itemCreateBinding!!.etItemName.text.toString()
             val weight = itemCreateBinding!!.etItemWeight.text.toString()
             val priceText = itemCreateBinding!!.etItemPrice.text.toString()
@@ -266,7 +277,7 @@ class MainPageFragment : Fragment() {
 
             val userLogin = mFirebaseViewModel.userLiveData.value!!.login.toString()
 
-            if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || mItemType == null || TextUtils.isEmpty(
+            if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || TextUtils.isEmpty(
                     userLogin
                 )
             ) {
@@ -274,32 +285,45 @@ class MainPageFragment : Fragment() {
                 Toast.makeText(
                     requireContext(), getString(R.string.invalid_item_type), Toast.LENGTH_SHORT
                 ).show()
+                Log.d("MyApp", "Some fields are empty")
+
             } else {
                 if (mSelectedImageFileUri != null) {
+                    Log.d("MyApp", "getActiveOrders: $mSelectedImageFileUri")
+
                     // Fields are not empty, start uploading the image to Firestore storage
                     mFirebaseViewModel.uploadItemImage(requireContext(), mSelectedImageFileUri!!)
-                    mFirebaseViewModel.imageUploadResult.observe(viewLifecycleOwner) { imageUrl ->
-                        if (imageUrl != null) {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.image_uploaded),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            createItemData(itemCreateBinding!!) // Pass the binding here
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.image_error),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                    mFirebaseViewModel.imageUploadResult.observe(viewLifecycleOwner) { isSuccess ->
+                        if (isSuccess != null) {
+                            Log.d("MyApp", "Image selected: $mSelectedImageFileUri")
+                            if (isSuccess) {
+                                Log.d("MyApp", "Image uploaded successfully: $isSuccess")
+                                Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.image_uploaded),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                createItemData(itemCreateBinding!!) // Pass the binding here
+                            } else {
+                                Log.d("MyApp", "Image upload error")
+
+                                Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.image_error),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
+
                 } else {
                     // No image selected, show a toast indicating that an image is required
                     Toast.makeText(
                         requireContext(), getString(R.string.image_not_selected), Toast.LENGTH_SHORT
                     ).show()
+                    Log.d("MyApp", "No image selected")
                 }
+                mSelectedImageFileUri = null
             }
         }
 
@@ -314,10 +338,12 @@ class MainPageFragment : Fragment() {
     }
 
     private fun hideBottomDialog() {
+        liveUpdates()
         bottomSheetDialog!!.dismiss()
     }
 
     private fun createItemData(binding: FragmentItemCreateBinding) {
+        Log.d("MyApp", "Creating item data")
         val mItemType = binding.etItemType.selectedItem.toString()
         val nameItem = binding.etItemName.text.toString()
         val weight = binding.etItemWeight.text.toString()
@@ -329,7 +355,7 @@ class MainPageFragment : Fragment() {
             0 // You can change this default value to another suitable value or handle it as needed
         }
 
-        val mItemImageUrl = mFirebaseViewModel.imageUploadResult.value.toString()
+        val mItemImageUrl = mFirebaseViewModel.imageUploadLive.value.toString()
         val userLogin = mFirebaseViewModel.userLiveData.value!!.login
 
         if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || TextUtils.isEmpty(
@@ -340,16 +366,17 @@ class MainPageFragment : Fragment() {
         ) {
             // Show a toast indicating that some fields are empty
             Toast.makeText(
-                requireContext(), " Ashnaqa", Toast.LENGTH_SHORT
+                requireContext(), getString(R.string.invalid_item_type), Toast.LENGTH_SHORT
             ).show()
-//            Toast.makeText(
-//                requireContext(), getString(R.string.invalid_item_type), Toast.LENGTH_SHORT
-//            ).show()
+            Log.d("MyApp", "Some fields are empty during item data creation")
+
         } else if (TextUtils.isEmpty(mItemImageUrl)) {
             // Show a toast indicating that the image is not selected
             Toast.makeText(
                 requireContext(), getString(R.string.image_not_selected), Toast.LENGTH_SHORT
             ).show()
+            Log.d("MyApp", "Image is not selected during item data creation")
+
         } else {
             val item = Item(
                 imageItem = mItemImageUrl.toString(),
@@ -362,20 +389,29 @@ class MainPageFragment : Fragment() {
 
             // Call the ViewModel function to create the item
             mFirebaseViewModel.createItem(requireView(), item)
+            mSelectedImageFileUri = null
+            mFirebaseViewModel.resetItemResult()
         }
         mFirebaseViewModel.createItemResult.observe(viewLifecycleOwner) { isSuccess ->
-            if (isSuccess) {
-                // Show a toast indicating that the board is created
-                Toast.makeText(
-                    requireContext(), getString(R.string.board_created), Toast.LENGTH_SHORT
-                ).show()
+            if (isSuccess != null) {
+                if (isSuccess) {
+                    // Show a toast indicating that the board is created
+                    Toast.makeText(
+                        requireContext(), getString(R.string.board_created), Toast.LENGTH_SHORT
+                    ).show()
 
-                // Hide the bottom dialog
-                hideBottomDialog()
-            } else {
-                Toast.makeText(
-                    requireContext(), getString(R.string.board_creating_error), Toast.LENGTH_SHORT
-                ).show()
+                    // Hide the bottom dialog
+                    hideBottomDialog()
+                    mSelectedImageFileUri = null
+//                    mFirebaseViewModel.resetItemResult()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.board_creating_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Log.d("MyApp", "Error during item creation")
+                }
             }
         }
     }
