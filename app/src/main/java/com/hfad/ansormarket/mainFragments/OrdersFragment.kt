@@ -38,6 +38,10 @@ class OrdersFragment : Fragment() {
         setHasOptionsMenu(true)
         showRecyclerView()
 
+        binding.refreshOrder.setOnClickListener {
+            mFirebaseViewModel.getMyOrders(requireView())
+        }
+
         return (binding.root)
     }
 
@@ -109,7 +113,8 @@ class OrdersFragment : Fragment() {
         contactUsInfoBinding!!.marketNumber.text = contactUs.MarketMobile
         contactUsInfoBinding!!.deliveryNumber.text = contactUs.DeliveryMobile
         contactUsInfoBinding!!.appContact.text = contactUs.AppMobile
-        contactUsInfoBinding!!.workingHours.text = contactUs.WorkingHours
+        contactUsInfoBinding!!.workingHoursFrom.text = contactUs.WorkingHoursFrom.toString()
+        contactUsInfoBinding!!.workingHoursTill.text = contactUs.WorkingHoursTill.toString()
 
         contactUsInfoBinding!!.btnBack.setOnClickListener {
             hideInfoDialog()

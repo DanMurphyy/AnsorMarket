@@ -1,6 +1,7 @@
 package com.hfad.ansormarket.adapters
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -108,6 +109,12 @@ class ItemListAdapter : RecyclerView.Adapter<ItemListAdapter.MyViewHolder>() {
 
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
+    }
+
+    fun shuffleItems() {
+        itemList = itemList.shuffled()
+        Log.d("Shuffle", "Shuffled item count: ${itemList.size}")
+        notifyDataSetChanged()
     }
 
 }

@@ -97,6 +97,8 @@
     <string name="active_orders">Faol Buyurtmalar</string>
     <string name="active_phone">Telefon raqami</string>
     <string name="completed_orders">Tugallangan buyurtmalar</string>
+    <string name="work_from">dan</string>
+    <string name="work_till">gacha</string>
     <string-array name="item_type">
         <item>Ichimliklar</item>
         <item>Qandolat mahsulotlari</item>

@@ -7,14 +7,16 @@ data class ContactUs(
     val AppMobile: String = "",
     var MarketMobile: String = "",
     var DeliveryMobile: String = "",
-    var WorkingHours: String = ""
+    var WorkingHoursFrom: Int = 0,
+    var WorkingHoursTill: Int = 0
 
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readString()!!,
+        parcel.readInt(),
+        parcel.readInt(),
     ) {
     }
 
@@ -22,7 +24,8 @@ data class ContactUs(
         writeString(AppMobile)
         writeString(MarketMobile)
         writeString(DeliveryMobile)
-        writeString(WorkingHours)
+        writeInt(WorkingHoursFrom)
+        writeInt(WorkingHoursTill)
     }
 
     override fun describeContents() = 0

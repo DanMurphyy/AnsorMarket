@@ -31,6 +31,10 @@ class ActiveOrdersFragment : Fragment() {
         setHasOptionsMenu(true)
         showRecyclerView()
 
+        binding.refreshActiveOrder.setOnClickListener {
+            mFirebaseViewModel.getActiveOrders(requireView())
+        }
+
         return binding.root
     }
 

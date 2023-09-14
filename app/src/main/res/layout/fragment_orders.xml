@@ -34,11 +34,11 @@
             android:id="@+id/emptyOrderView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:emptyMyOrder="@{mFirebaseViewModel.orderNowLiveData}"
             android:gravity="center"
             android:orientation="vertical"
             android:textColor="@color/black"
             android:visibility="invisible"
-            android:emptyMyOrder="@{mFirebaseViewModel.orderNowLiveData}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,6 +70,20 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/refresh_order"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:clickable="true"
+            android:layout_marginBottom="5dp"
+            android:focusable="true"
+            android:background="@drawable/ic_refresh"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:tint="@color/pink" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -56,6 +56,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         hideProgress()
     }
 
+
     fun registerUser(view: View, name: String, login: String, password: String) {
         showProgress(view.context)
         viewModelScope.launch {
@@ -84,43 +85,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun loadUserData(context: Context) {
-        showProgress(context)
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                val user = repository.getUserData(userId)
-                userLiveData.postValue(user)
-                hideProgress()
-            } catch (e: Exception) {
-                hideProgress()
-            }
-            hideProgress()
-        }
-    }
-
-    fun getContactUs() {
-        viewModelScope.launch {
-            try {
-                val contact = repository.getContactUs()
-                contactUsLiveData.postValue(contact)
-            } catch (e: Exception) {
-            }
-            hideProgress()
-        }
-    }
-
-    fun loadUserDataForOrder() {
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                val user = repository.getUserData(userId)
-                userLiveData.postValue(user)
-            } catch (e: Exception) {
-            }
-        }
-    }
-
     fun signInUser(view: View, login: String, password: String) {
         showProgress(view.context)
         viewModelScope.launch {
@@ -135,6 +99,21 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                     hideProgress()
                     signInResult.value = false
                 }
+            }
+            hideProgress()
+        }
+    }
+
+    fun loadUserData(context: Context) {
+        showProgress(context)
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                val user = repository.getUserData(userId)
+                userLiveData.postValue(user)
+                hideProgress()
+            } catch (e: Exception) {
+                hideProgress()
             }
             hideProgress()
         }
@@ -165,24 +144,25 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun updateActiveOrders(view: View, updatedOrder: Order) {
-        showProgress(view.context)
+    fun loadUserDataForOrder() {
         viewModelScope.launch {
             try {
-                repository.updateActiveOrders(updatedOrder)
-                Log.d("YourTag", "ViewModel Order Document ID: ${updatedOrder.orderedId}")
-
-                val orders = repository.getActiveOrders()
-                activeOrderNowLiveData.postValue(orders)
-                updateActiveOrderResult.postValue(true)
-                hideProgress()
+                val userId = getCurrentUserId()
+                val user = repository.getUserData(userId)
+                userLiveData.postValue(user)
             } catch (e: Exception) {
-                // Handle the error
-                updateActiveOrderResult.postValue(false)
-                Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
-                hideProgress()
-
             }
+        }
+    }
+
+    fun getContactUs() {
+        viewModelScope.launch {
+            try {
+                val contact = repository.getContactUs()
+                contactUsLiveData.postValue(contact)
+            } catch (e: Exception) {
+            }
+            hideProgress()
         }
     }
 
@@ -212,39 +192,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             } catch (e: Exception) {
                 // Handle the error
                 Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
-            }
-        }
-    }
-
-    fun getActiveOrders(view: View) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                val orders = repository.getActiveOrders()
-                activeOrderNowLiveData.postValue(orders)
-                Log.d("FirebaseViewModel", "getActiveOrders: ${orders}")
-
-                hideProgress()
-            } catch (e: Exception) {
-                // Handle the error
-                Log.e("FirebaseViewModel", "Error fetching orders: ${e.message}", e)
-                hideProgress()
-            }
-        }
-    }
-
-    fun getCompletedOrders(view: View) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                val orders = repository.getCompletedOrders()
-                moveNowLiveData.postValue(orders)
-                Log.d("FirebaseViewModel", "getActiveOrders: ${orders}")
-                hideProgress()
-            } catch (e: Exception) {
-                // Handle the error
-                Log.e("FirebaseViewModel", "Error fetching orders: ${e.message}", e)
-                hideProgress()
             }
         }
     }
@@ -294,21 +241,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun deleteMyOrder(view: View, documentId: String) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                repository.deleteMyOrder(userId, documentId)
-                val myOrders = repository.getMyOrders(userId)
-                orderNowLiveData.postValue(myOrders)
-                hideProgress()
-            } catch (e: Exception) {
-                // Handle the error
-            }
-        }
-    }
-
     fun updateCartItemQuantity(documentId: String, newQuantity: Int, newAmount: Int) {
         viewModelScope.launch {
             try {
@@ -341,22 +273,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun moveOrder(view: View, order: Order) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                repository.moveNow(order)
-                repository.deleteAfterMove(order.orderedId)
-                val orders = repository.getActiveOrders()
-                activeOrderNowLiveData.postValue(orders)
-                hideProgress()
-            } catch (e: Exception) {
-                hideProgress()
-            }
-        }
-    }
-
-
     fun getMyOrders(view: View) {
         showProgress(view.context)
         viewModelScope.launch {
@@ -374,6 +290,90 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 Log.e("FirebaseViewModel", "Error fetching myOrder: ${e.message}", e)
                 hideProgress()
 
+            }
+        }
+    }
+
+    fun deleteMyOrder(view: View, documentId: String) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                repository.deleteMyOrder(userId, documentId)
+                val myOrders = repository.getMyOrders(userId)
+                orderNowLiveData.postValue(myOrders)
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
+            }
+        }
+    }
+
+    fun getActiveOrders(view: View) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val orders = repository.getActiveOrders()
+                activeOrderNowLiveData.postValue(orders)
+                Log.d("FirebaseViewModel", "getActiveOrders: ${orders}")
+
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching orders: ${e.message}", e)
+                hideProgress()
+            }
+        }
+    }
+
+    fun updateActiveOrders(view: View, updatedOrder: Order) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                repository.updateActiveOrders(updatedOrder)
+                Log.d("YourTag", "ViewModel Order Document ID: ${updatedOrder.orderedId}")
+
+                val orders = repository.getActiveOrders()
+                activeOrderNowLiveData.postValue(orders)
+                updateActiveOrderResult.postValue(true)
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
+                updateActiveOrderResult.postValue(false)
+                Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
+                hideProgress()
+
+            }
+        }
+    }
+
+    fun moveOrder(view: View, order: Order) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                repository.moveNow(order)
+                repository.deleteAfterMove(order.orderedId)
+                val orders = repository.getActiveOrders()
+                activeOrderNowLiveData.postValue(orders)
+                hideProgress()
+            } catch (e: Exception) {
+                hideProgress()
+            }
+        }
+    }
+
+    fun getCompletedOrders(view: View) {
+        showProgress(view.context)
+        viewModelScope.launch {
+            try {
+                val orders = repository.getCompletedOrders()
+                moveNowLiveData.postValue(orders)
+                Log.d("FirebaseViewModel", "getActiveOrders: ${orders}")
+                hideProgress()
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching orders: ${e.message}", e)
+                hideProgress()
             }
         }
     }

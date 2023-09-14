@@ -36,7 +36,6 @@ import jp.wasabeef.recyclerview.animators.LandingAnimator
 import java.io.IOException
 
 class MainPageFragment : Fragment() {
-
     private var _binding: FragmentMainPageBinding? = null
     private val binding get() = _binding!!
     private val mFirebaseViewModel: FirebaseViewModel by viewModels()
@@ -101,7 +100,6 @@ class MainPageFragment : Fragment() {
                 liveUpdates()
             }
         })
-
 
     }
 
