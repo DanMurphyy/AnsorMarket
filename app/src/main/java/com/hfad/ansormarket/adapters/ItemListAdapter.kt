@@ -35,12 +35,14 @@ class ItemListAdapter : RecyclerView.Adapter<ItemListAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = itemList[position] // Access items directly from itemList
         val binding = holder.binding
+
         Glide
             .with(binding.root.context)
             .load(currentItem.imageItem)
             .centerCrop()
             .placeholder(R.drawable.ic_images)
             .into(binding.itemListImage)
+
         binding.itemListPrice.text = currentItem.price.toString()
         binding.itemListName.text = currentItem.nameItem
         binding.itemListWeight.text = currentItem.weight
@@ -109,12 +111,6 @@ class ItemListAdapter : RecyclerView.Adapter<ItemListAdapter.MyViewHolder>() {
 
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
-    }
-
-    fun shuffleItems() {
-        itemList = itemList.shuffled()
-        Log.d("Shuffle", "Shuffled item count: ${itemList.size}")
-        notifyDataSetChanged()
     }
 
 }

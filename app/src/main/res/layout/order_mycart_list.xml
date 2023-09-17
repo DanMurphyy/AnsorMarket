@@ -23,7 +23,7 @@
         android:layout_weight="1"
         android:contentDescription="@string/image_content"
         android:scaleType="fitCenter"
-        android:src="@drawable/background_intro" />
+        android:src="@drawable/ic_images" />
 
     <LinearLayout
         android:layout_width="0dp"

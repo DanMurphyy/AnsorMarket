@@ -24,28 +24,5 @@
         android:id="@+id/ordersFragment"
         android:name="com.hfad.ansormarket.mainFragments.OrdersFragment"
         android:label="@string/myOrders"
-        tools:layout="@layout/fragment_orders">
-        <action
-            android:id="@+id/action_ordersFragment_to_activeOrdersFragment"
-            app:destination="@id/activeOrdersFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out"
-            app:popEnterAnim="@android:anim/fade_in"
-            app:popExitAnim="@android:anim/fade_out"
-            app:popUpTo="@id/ordersFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/activeOrdersFragment"
-        android:name="com.hfad.ansormarket.mainFragments.ActiveOrdersFragment"
-        android:label="@string/active_orders"
-        tools:layout="@layout/fragment_active_orders" >
-        <action
-            android:id="@+id/action_activeOrdersFragment_to_completedOrdersFragment"
-            app:destination="@id/completedOrdersFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/completedOrdersFragment"
-        android:name="com.hfad.ansormarket.mainFragments.CompletedOrdersFragment"
-        android:label="@string/completed_orders"
-        tools:layout="@layout/fragment_completed_orders" />
+        tools:layout="@layout/fragment_orders" />
 </navigation>

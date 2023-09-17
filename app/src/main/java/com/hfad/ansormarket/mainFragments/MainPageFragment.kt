@@ -1,62 +1,42 @@
 package com.hfad.ansormarket.mainFragments
 
-import android.Manifest
 import android.app.ActionBar
-import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
-import android.text.TextUtils
-import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.adapters.ItemListAdapter
-import com.hfad.ansormarket.databinding.FragmentItemCreateBinding
 import com.hfad.ansormarket.databinding.FragmentMainPageBinding
 import com.hfad.ansormarket.databinding.ItemInfoLayoutBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
-import com.hfad.ansormarket.models.Constants
 import com.hfad.ansormarket.models.Item
 import com.hfad.ansormarket.models.MyCart
 import jp.wasabeef.recyclerview.animators.LandingAnimator
-import java.io.IOException
 
-class MainPageFragment : Fragment() {
+@Suppress("DEPRECATION")
+class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
     private var _binding: FragmentMainPageBinding? = null
     private val binding get() = _binding!!
     private val mFirebaseViewModel: FirebaseViewModel by viewModels()
     private val mSharedViewModel: SharedViewModel by viewModels()
-    private var mSelectedImageFileUri: Uri? = null
-    private var itemCreateBinding: FragmentItemCreateBinding? = null
     private var itemInfoBinding: ItemInfoLayoutBinding? = null
-    private var bottomSheetDialog: BottomSheetDialog? = null
     private var mDialog: Dialog? = null
     private val adapter: ItemListAdapter by lazy { ItemListAdapter() }
-    private val permissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (!isGranted)
-                showImageChooserPermissionDeniedDialog()
-        }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
+        @Suppress("DEPRECATION", "DEPRECATION", "DEPRECATION")
         setHasOptionsMenu(true)
         mFirebaseViewModel.loadUserData(requireContext())
         showRecyclerView()
@@ -193,14 +173,13 @@ class MainPageFragment : Fragment() {
     }
 
     private fun toCart(currentItem: Item, quantity: Int) {
-        val mQuantity = quantity
-        val newAmount = currentItem.price * mQuantity
+        val newAmount = currentItem.price * quantity
 
         val userId = mFirebaseViewModel.getCurrentUserId() // Assuming userId is not empty here
 
         val myCart = MyCart(
             currentItem,
-            mQuantity,
+            quantity,
             userId,
             amount = newAmount
         )
@@ -220,223 +199,64 @@ class MainPageFragment : Fragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_page_add, menu)
+        val search: MenuItem = menu.findItem(R.id.menu_search)
+        val searchView: SearchView? = search.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.main_add_item -> showBottomDialog()
+            R.id.main_add_item -> Toast.makeText(
+                requireContext(),
+                "nimadur boladi",
+                Toast.LENGTH_SHORT
+            ).show()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun showBottomDialog() {
-        bottomSheetDialog = BottomSheetDialog(
-            requireContext(),
-            R.style.Bottom_Sheet_Style
-        ) // Set your own dialog theme
-        itemCreateBinding = FragmentItemCreateBinding.inflate(LayoutInflater.from(requireContext()))
-
-        itemCreateBinding!!.ivItemImage.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                // Permission is already granted, show image chooser
-                mSharedViewModel.showImageChooser(this)
-            } else {
-                // Request permission using the Activity Result API
-                permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
-        }
-
-        itemCreateBinding!!.btnCreate.setOnClickListener {
-            Log.d("MyApp", "Create button clicked") // Log the button click
-            val nameItem = itemCreateBinding!!.etItemName.text.toString()
-            val weight = itemCreateBinding!!.etItemWeight.text.toString()
-            val priceText = itemCreateBinding!!.etItemPrice.text.toString()
-            val price = if (priceText.isNotEmpty()) {
-                priceText.toInt()
-            } else {
-                // Handle the case where the price is empty (e.g., show an error message)
-                0 // You can change this default value to another suitable value or handle it as needed
-            }
-
-            val userLogin = mFirebaseViewModel.userLiveData.value!!.login.toString()
-
-            if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || TextUtils.isEmpty(
-                    userLogin
-                )
-            ) {
-                // Show a toast indicating that some fields are empty
-                Toast.makeText(
-                    requireContext(), getString(R.string.invalid_item_type), Toast.LENGTH_SHORT
-                ).show()
-                Log.d("MyApp", "Some fields are empty")
-
-            } else {
-                if (mSelectedImageFileUri != null) {
-                    Log.d("MyApp", "getActiveOrders: $mSelectedImageFileUri")
-
-                    // Fields are not empty, start uploading the image to Firestore storage
-                    mFirebaseViewModel.uploadItemImage(requireContext(), mSelectedImageFileUri!!)
-                    mFirebaseViewModel.imageUploadResult.observe(viewLifecycleOwner) { isSuccess ->
-                        if (isSuccess != null) {
-                            Log.d("MyApp", "Image selected: $mSelectedImageFileUri")
-                            if (isSuccess) {
-                                Log.d("MyApp", "Image uploaded successfully: $isSuccess")
-                                Toast.makeText(
-                                    requireContext(),
-                                    getString(R.string.image_uploaded),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                createItemData(itemCreateBinding!!) // Pass the binding here
-                            } else {
-                            }
-                            mFirebaseViewModel.resetImageUploadResult()
-                        }
-                    }
-
-                } else {
-                    // No image selected, show a toast indicating that an image is required
-                    Toast.makeText(
-                        requireContext(), getString(R.string.image_not_selected), Toast.LENGTH_SHORT
-                    ).show()
-                    Log.d("MyApp", "No image selected")
-                }
-                mSelectedImageFileUri = null
-            }
-        }
-
-
-        // Set the content view of the dialog to the root view of the binding
-        bottomSheetDialog!!.setContentView(itemCreateBinding!!.root)
-
-        val window: Window = bottomSheetDialog!!.window!!
-        window.setBackgroundDrawableResource(android.R.color.transparent)
-        window.attributes.windowAnimations = R.style.DialogAnimation
-        bottomSheetDialog!!.show()
-    }
-
-    private fun hideBottomDialog() {
-        liveUpdates()
-        bottomSheetDialog!!.dismiss()
-    }
-
-    private fun createItemData(binding: FragmentItemCreateBinding) {
-        Log.d("MyApp", "Creating item data")
-        val mItemType = binding.etItemType.selectedItem.toString()
-        val nameItem = binding.etItemName.text.toString()
-        val weight = binding.etItemWeight.text.toString()
-        val priceText = binding.etItemPrice.text.toString()
-        val price = if (priceText.isNotEmpty()) {
-            priceText.toInt()
-        } else {
-            // Handle the case where the price is empty (e.g., show an error message)
-            0 // You can change this default value to another suitable value or handle it as needed
-        }
-
-        val mItemImageUrl = mFirebaseViewModel.imageUploadLive.value.toString()
-        val userLogin = mFirebaseViewModel.userLiveData.value!!.login
-
-        if (TextUtils.isEmpty(nameItem) || TextUtils.isEmpty(weight) || price == 0 || TextUtils.isEmpty(
-                mItemType
-            ) || TextUtils.isEmpty(
-                userLogin
-            )
-        ) {
-            // Show a toast indicating that some fields are empty
-            Toast.makeText(
-                requireContext(), getString(R.string.invalid_item_type), Toast.LENGTH_SHORT
-            ).show()
-            Log.d("MyApp", "Some fields are empty during item data creation")
-
-        } else if (TextUtils.isEmpty(mItemImageUrl)) {
-            // Show a toast indicating that the image is not selected
-            Toast.makeText(
-                requireContext(), getString(R.string.image_not_selected), Toast.LENGTH_SHORT
-            ).show()
-            Log.d("MyApp", "Image is not selected during item data creation")
-
-        } else {
-            val item = Item(
-                imageItem = mItemImageUrl.toString(),
-                nameItem = nameItem,
-                weight = weight,
-                price = price,
-                category = mItemType,
-                createdBy = userLogin,
-            )
-
-            // Call the ViewModel function to create the item
-            mFirebaseViewModel.createItem(requireView(), item)
-            mSelectedImageFileUri = null
-            mFirebaseViewModel.resetItemResult()
-        }
-        mFirebaseViewModel.createItemResult.observe(viewLifecycleOwner) { isSuccess ->
-            if (isSuccess != null) {
-                if (isSuccess) {
-                    // Show a toast indicating that the board is created
-                    Toast.makeText(
-                        requireContext(), getString(R.string.board_created), Toast.LENGTH_SHORT
-                    ).show()
-
-                    // Hide the bottom dialog
-                    hideBottomDialog()
-                    mSelectedImageFileUri = null
-                    mFirebaseViewModel.resetItemResult()
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.board_creating_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    Log.d("MyApp", "Error during item creation")
-                }
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == Constants.PICK_IMAGE_REQUEST_CODE && data!!.data != null) {
-            mSelectedImageFileUri = data.data
-            try {
-                Glide
-                    .with(requireContext())
-                    .load(mSelectedImageFileUri)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_baseline_image_24)
-                    .into(itemCreateBinding!!.ivItemImage) // Load the image into the ImageView
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun showImageChooserPermissionDeniedDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage(getString(R.string.denied_permissions))
-        builder.setPositiveButton(getString(R.string.go_to_settings)) { _, _ ->
-            try {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                val uri = Uri.fromParts("package", requireContext().packageName, null)
-                intent.data = uri
-                startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                e.printStackTrace()
-            }
-        }
-        builder.setNegativeButton(getString(R.string.close_dialog_perm)) { dialog, _ ->
-            dialog.dismiss()
-        }
-        builder.show()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if (query != null) {
+            searchThroughDatabase(query)
+        }
+
+        return true
+    }
+
+
+    override fun onQueryTextChange(query: String?): Boolean {
+        if (query != null) {
+            searchThroughDatabase(query)
+        }
+
+        return true
+    }
+
+    private fun searchThroughDatabase(query: String) {
+        val searchQuery =
+            query.trim() // Remove leading and trailing whitespace for a more precise search
+
+        val filteredItems = mFirebaseViewModel.itemList.value?.filter { item ->
+            // You can customize the condition for filtering here
+            item.nameItem.contains(
+                searchQuery,
+                ignoreCase = true
+            ) // Case-insensitive search by name
+        }
+
+        filteredItems?.let {
+            adapter.setItems(it)
+        }
     }
 
 }

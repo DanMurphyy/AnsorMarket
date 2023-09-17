@@ -1,6 +1,7 @@
 package com.hfad.ansormarket.mainFragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.adapters.MyCartListAdapter
 import com.hfad.ansormarket.databinding.FragmentCartBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
+import com.hfad.ansormarket.models.MyCart
 import com.hfad.ansormarket.models.Order
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
@@ -31,6 +33,9 @@ class CartFragment : Fragment() {
     ): View {
         _binding = FragmentCartBinding.inflate(inflater, container, false)
         showRecyclerView()
+        mFirebaseViewModel.fetchAllItems()
+        mFirebaseViewModel.fetchMyCart()
+        updateAmount()
 
         binding.btnMakeOrder.setOnClickListener {
             orderNow()
@@ -41,10 +46,12 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
             adapter.setMyCartData(myCartList)
             updateAmount()
             mSharedViewModel.cartItemCount(requireView(), myCartList)
+            updateItemPriceDifference(myCartList)
         }
         mFirebaseViewModel.fetchMyCart()
         mFirebaseViewModel.loadUserDataForOrder()
@@ -146,6 +153,25 @@ class CartFragment : Fragment() {
         updateAmount()
         mFirebaseViewModel.fetchMyCart()
     }
+
+    private fun updateItemPriceDifference(listOfCart: List<MyCart>) {
+
+        val items = mFirebaseViewModel.itemList.value
+
+        if (items != null) {
+            for (i in items) {
+                for (j in listOfCart)
+                    if (j.itemProd.documentId == i.documentId) {
+                        if (j.itemProd != i)
+                            Log.d("CartFragment", "cart: $j")
+                        Log.d("CartFragment", "cart: $i")
+                        mFirebaseViewModel.updateCartItemPrice(j.documentId, i)
+                        Log.d("CartFragment", "cart: $j.documentId and $i.price")
+                    }
+            }
+        }
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()

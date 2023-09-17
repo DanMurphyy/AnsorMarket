@@ -23,7 +23,7 @@
             android:layout_weight="1"
             android:contentDescription="@string/image_content"
             android:scaleType="fitCenter"
-            android:src="@drawable/background_intro"
+            android:src="@drawable/ic_images"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"

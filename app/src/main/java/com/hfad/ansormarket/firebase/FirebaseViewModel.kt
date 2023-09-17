@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.logInScreens.IntroFragment
 import com.hfad.ansormarket.models.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FirebaseViewModel(application: Application) : AndroidViewModel(application) {
@@ -29,15 +30,12 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val contactUsLiveData: MutableLiveData<ContactUs> = MutableLiveData()
     val imageUploadLive: MutableLiveData<String?> = MutableLiveData()
     val imageUploadResult: MutableLiveData<Boolean?> = MutableLiveData()
-    val createItemResult: MutableLiveData<Boolean?> = MutableLiveData()
     val itemList: MutableLiveData<List<Item>> = MutableLiveData()
     val toCartResult: MutableLiveData<Boolean> = MutableLiveData()
     val myCartsLiveData: MutableLiveData<List<MyCart>> = MutableLiveData()
     val orderNowResult: MutableLiveData<Boolean?> = MutableLiveData()
     val orderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
-    val activeOrderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
-    val updateActiveOrderResult: MutableLiveData<Boolean?> = MutableLiveData()
-    val moveNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
+
 
     init {
         repository = FirebaseRepository()
@@ -50,12 +48,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     fun resetOrderNowResult() {
         orderNowResult.value = null
     }
-
-    fun resetItemResult() {
-        createItemResult.value = null
-        hideProgress()
-    }
-
 
     fun registerUser(view: View, name: String, login: String, password: String) {
         showProgress(view.context)
@@ -166,26 +158,8 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun createItem(view: View, item: Item) {
-        Log.d("MainPage", "show3:")
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                repository.createItem(item)
-                createItemResult.postValue(true) // Set the value to true when item is created successfully
-                hideProgress()
-                imageUploadLive.postValue(null)
-                imageUploadResult.postValue(false)
-            } catch (e: Exception) {
-                createItemResult.postValue(false) // Set the value to false when item creation fails
-                hideProgress()
-            }
-        }
-        Log.d("MainPage", "hide3:")
-    }
-
     fun fetchAllItems() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val items = repository.getAllItems()
                 itemList.postValue(items)
@@ -214,7 +188,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun fetchMyCart() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val userId = getCurrentUserId()
                 Log.d("FirebaseViewModel", "fetchMyCart: Fetching cart for user ID: $userId")
@@ -254,9 +228,22 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun updateCartItemPrice(documentId: String, newItem: Item) {
+        viewModelScope.launch {
+            try {
+                val userId = getCurrentUserId()
+                repository.updateCartItemPrice(userId, documentId, newItem)
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
+            } catch (e: Exception) {
+                // Handle the error
+            }
+        }
+    }
+
     fun orderNow(view: View, order: Order) {
         showProgress(view.context)
-        viewModelScope.launch {
+        viewModelScope.launch() {
             try {
                 val userId = getCurrentUserId()
                 repository.orderNow(userId, order)
@@ -309,78 +296,9 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun getActiveOrders(view: View) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                val orders = repository.getActiveOrders()
-                activeOrderNowLiveData.postValue(orders)
-                Log.d("FirebaseViewModel", "getActiveOrders: ${orders}")
-
-                hideProgress()
-            } catch (e: Exception) {
-                // Handle the error
-                Log.e("FirebaseViewModel", "Error fetching orders: ${e.message}", e)
-                hideProgress()
-            }
-        }
-    }
-
-    fun updateActiveOrders(view: View, updatedOrder: Order) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                repository.updateActiveOrders(updatedOrder)
-                Log.d("YourTag", "ViewModel Order Document ID: ${updatedOrder.orderedId}")
-
-                val orders = repository.getActiveOrders()
-                activeOrderNowLiveData.postValue(orders)
-                updateActiveOrderResult.postValue(true)
-                hideProgress()
-            } catch (e: Exception) {
-                // Handle the error
-                updateActiveOrderResult.postValue(false)
-                Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
-                hideProgress()
-
-            }
-        }
-    }
-
-    fun moveOrder(view: View, order: Order) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                repository.moveNow(order)
-                repository.deleteAfterMove(order.orderedId)
-                val orders = repository.getActiveOrders()
-                activeOrderNowLiveData.postValue(orders)
-                hideProgress()
-            } catch (e: Exception) {
-                hideProgress()
-            }
-        }
-    }
-
-    fun getCompletedOrders(view: View) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            try {
-                val orders = repository.getCompletedOrders()
-                moveNowLiveData.postValue(orders)
-                Log.d("FirebaseViewModel", "getActiveOrders: ${orders}")
-                hideProgress()
-            } catch (e: Exception) {
-                // Handle the error
-                Log.e("FirebaseViewModel", "Error fetching orders: ${e.message}", e)
-                hideProgress()
-            }
-        }
-    }
-
     fun uploadImage(context: Context, uri: Uri) {
         showProgress(context)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val extension = getFileExtension(uri)
                 if (extension != null && extension.isNotEmpty()) {
@@ -396,37 +314,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 imageUploadResult.postValue(false)
 
             }
-        }
-    }
-
-    fun uploadItemImage(context: Context, uri: Uri) {
-        Log.d("MainPage", "show2:")
-        showProgress(context)
-        viewModelScope.launch {
-            try {
-                val extension = getFileExtension(uri)
-                if (extension != null) {
-                    val filename = "USER_IMAGE_${System.currentTimeMillis()}.$extension"
-                    val imageUrl = repository.uploadItemImage(uri, filename)
-                    imageUploadLive.postValue(imageUrl)
-                    imageUploadResult.postValue(true)
-
-                } else {
-                    hideProgress()
-                    imageUploadLive.postValue(null) // Indicate failure
-                    imageUploadResult.postValue(false)
-
-                }
-            } catch (e: Exception) {
-                hideProgress()
-                imageUploadLive.postValue(null) // Indicate failure
-                imageUploadResult.postValue(false)
-
-            } finally {
-                hideProgress()
-            }
-            hideProgress()
-            Log.d("MainPage", "hide2:")
         }
     }
 

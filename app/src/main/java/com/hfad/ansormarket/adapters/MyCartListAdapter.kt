@@ -1,5 +1,6 @@
 package com.hfad.ansormarket.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -14,7 +15,6 @@ import com.hfad.ansormarket.models.utils.MyCartDiffUtil
 class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>() {
 
     private var onClickListener: OnClickListenerCart? = null
-
     private var myCartList: List<MyCart> = emptyList()
 
     class MyViewHolder(internal val binding: CartItemBinding) :
@@ -40,7 +40,8 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         binding.infoListPrice.text = currentItem.itemProd.price.toString()
         binding.infoListWeight.text = currentItem.itemProd.weight
         binding.quantityInfo.text = currentItem.quantity.toString()
-
+        val updateQuantity = currentItem.quantity
+        val updateAmount = currentItem.itemProd.price * updateQuantity
 
         binding.quantityPlus.setOnClickListener {
             if (onClickListener != null) {
@@ -53,6 +54,11 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
                 )
             }
         }
+        onClickListener!!.onUpdateCartQuantityClick(
+            currentItem.documentId,
+            updateQuantity,
+            updateAmount
+        )
 
         binding.quantityMinus.setOnClickListener {
             if (onClickListener != null && currentItem.quantity > 1) {
@@ -82,6 +88,8 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         return totalAmount
     }
 
+
+    @SuppressLint("NotifyDataSetChanged")
     fun setMyCartData(myCart: List<MyCart>) {
         val myCartDiffUtil = MyCartDiffUtil(myCartList, myCart)
         val myCartDiffResult = DiffUtil.calculateDiff(myCartDiffUtil)

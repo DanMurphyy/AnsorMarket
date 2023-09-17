@@ -20,7 +20,11 @@
         <entry key="app/src/main/res/drawable/ic_baseline_vibration_24.xml" value="0.1975" />
         <entry key="app/src/main/res/drawable/ic_baseline_whatshot_24.xml" value="0.1975" />
         <entry key="app/src/main/res/drawable/ic_delivered.xml" value="0.1475" />
+        <entry key="app/src/main/res/drawable/ic_image.xml" value="0.15" />
+        <entry key="app/src/main/res/drawable/ic_images.xml" value="0.15" />
         <entry key="app/src/main/res/drawable/ic_log_out.xml" value="0.1475" />
+        <entry key="app/src/main/res/drawable/ic_refresh.xml" value="0.15" />
+        <entry key="app/src/main/res/drawable/ic_refreshwhite.xml" value="0.15" />
         <entry key="app/src/main/res/drawable/ic_remove.xml" value="0.169" />
         <entry key="app/src/main/res/drawable/ic_round_remove.xml" value="0.1975" />
         <entry key="app/src/main/res/drawable/shape_bottom_rounded.xml" value="0.1675" />
@@ -52,7 +56,7 @@
         <entry key="app/src/main/res/layout/fragment_orders.xml" value="0.2324074074074074" />
         <entry key="app/src/main/res/layout/fragment_sign_in.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/fragment_sign_up.xml" value="0.3098958333333333" />
-        <entry key="app/src/main/res/layout/item_info_layout.xml" value="0.30885416666666665" />
+        <entry key="app/src/main/res/layout/item_info_layout.xml" value="0.18425925925925926" />
         <entry key="app/src/main/res/layout/list_item_layout.xml" value="0.335" />
         <entry key="app/src/main/res/layout/my_order_layout.xml" value="0.24444444444444444" />
         <entry key="app/src/main/res/layout/order_mycart_list.xml" value="0.30885416666666665" />
