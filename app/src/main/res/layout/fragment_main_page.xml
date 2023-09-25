@@ -9,14 +9,223 @@
     android:orientation="vertical"
     tools:context=".mainFragments.MainPageFragment">
 
+    <HorizontalScrollView
+        android:id="@+id/scrollCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/creamy_border_shape_button_rounded"
+            android:elevation="10dp"
+            android:gravity="start"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/showAll"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="2dp"
+                    android:checked="true"
+                    android:padding="5dp"
+                    android:text="Barchasi"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Ichimliklar"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Ichimliklar"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/qandolat_mahsulotlari"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Qandolat mahsulotlari"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Sut_Mahsulotlari"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Sut Mahsulotlari"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Tortlar_va_Pishiriqlar"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Tortlar va Pishiriqlar"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Konservalar"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Konservalar"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Snaklar"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Snaklar"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Mevalar"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Mevalar"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Bolalar_Ovqatlari"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Bolalar Ovqatlari"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Un_Mahsulotlari"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Un Mahsulotlari"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Souslar"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Souslar"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Gosht"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Go\'sht"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Gigiena_vositalari"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Gigiena vositalari"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+
+                    android:id="@+id/Oshxona"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="5dp"
+                    android:text="Oshxona"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Yoglar"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="5dp"
+                    android:padding="5dp"
+                    android:text="Yog\'lar"
+                    android:textColor="@color/black"
+                    app:chipCornerRadius="10dp" />
+
+            </com.google.android.material.chip.ChipGroup>
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@id/scrollCategory" />
 </androidx.constraintlayout.widget.ConstraintLayout>
