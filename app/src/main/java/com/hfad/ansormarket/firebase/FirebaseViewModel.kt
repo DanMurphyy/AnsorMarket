@@ -157,6 +157,15 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             hideProgress()
         }
     }
+    fun getContactUsOrder() {
+        viewModelScope.launch {
+            try {
+                val contact = repository.getContactUs()
+                contactUsLiveData.postValue(contact)
+            } catch (e: Exception) {
+            }
+        }
+    }
 
     fun fetchAllItems() {
         viewModelScope.launch(Dispatchers.IO) {

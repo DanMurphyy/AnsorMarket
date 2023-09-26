@@ -1,5 +1,6 @@
 package com.hfad.ansormarket.mainFragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,6 +26,8 @@ import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CartFragment : Fragment() {
 
@@ -44,9 +47,10 @@ class CartFragment : Fragment() {
         mFirebaseViewModel.fetchAllItems()
         mFirebaseViewModel.fetchMyCart()
         updateAmount()
+        mFirebaseViewModel.getContactUsOrder()
 
         binding.btnMakeOrder.setOnClickListener {
-            orderNow()
+            checkTime()
         }
 
         return binding.root
@@ -111,6 +115,48 @@ class CartFragment : Fragment() {
         }
     }
 
+    private fun checkTime() {
+        val workingHoursFrom = mFirebaseViewModel.contactUsLiveData.value?.WorkingHoursFrom
+        val workingHoursTill = mFirebaseViewModel.contactUsLiveData.value?.WorkingHoursTill
+
+        if (workingHoursFrom != null && workingHoursTill != null) {
+            val currentTime: String = SimpleDateFormat("HH", Locale.ENGLISH).format(
+                Date()
+            )
+            if (currentTime.toInt() in (workingHoursFrom) until workingHoursTill) {
+                orderDialog()
+            } else {
+                offTimeDialog()
+            }
+        } else {
+            orderDialog()
+        }
+    }
+
+    private fun offTimeDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage(getString(R.string.off_work_time))
+        builder.setPositiveButton(getString(R.string.proceed_off_work_time)) { _, _ ->
+            orderDialog()
+        }
+        builder.setNegativeButton(getString(R.string.close_dialog_perm)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun orderDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage(getString(R.string.payment_method))
+        builder.setPositiveButton(getString(R.string.order_off_work_time)) { _, _ ->
+            orderNow()
+        }
+        builder.setNegativeButton(getString(R.string.close_dialog_perm)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
     private fun orderNow() {
         // Ensure that userLiveData and myCartsLiveData are not null
         val user = mFirebaseViewModel.userLiveData.value
@@ -134,7 +180,7 @@ class CartFragment : Fragment() {
                         Toast.makeText(
                             requireContext(), getString(R.string.ordered_placed), Toast.LENGTH_SHORT
                         ).show()
-                        sendPushNow(order.orderProducts.size.toString())
+                        sendPushNow(order.orderProducts.size.toString() + order.orderUser.address)
                         // Reset orderNowResult to its neutral state
                         mFirebaseViewModel.resetOrderNowResult()
                     } else {

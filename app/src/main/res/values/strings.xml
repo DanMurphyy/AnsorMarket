@@ -41,6 +41,9 @@
     <string name="image_uploaded">Rasm muvaffaqiyatli yuklandi</string>
     <string name="image_error">Rasmni yuklashda xatolik!</string>
     <string name="denied_permissions">Ilovaga kerakli ruxsatlar berilmagan, Iltimos, sozlamalarga kirib ruxsat bering.</string>
+    <string name="off_work_time">Hozirda ish vaqti tugagan, buyurtmangiz ertalab yetkazib beriladi</string>
+    <string name="order_off_work_time">Buyurtma berish</string>
+    <string name="proceed_off_work_time">Davom etish</string>
     <string name="go_to_settings">Sozlamalarga o\'tish</string>
     <string name="close_dialog_perm">Bekor qilish</string>
     <string name="add">Qoshish</string>
@@ -117,6 +120,7 @@
         <item>Oshxona</item>
         <item>Yog\'lar</item>
     </string-array>
+
 
     <string-array name="update_order_status">
         <item>Jarayonda\.\.\.</item>
