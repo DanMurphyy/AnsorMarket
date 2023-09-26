@@ -9,14 +9,22 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.adapters.MyCartListAdapter
 import com.hfad.ansormarket.databinding.FragmentCartBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
+import com.hfad.ansormarket.firebase.retrofit.NotificationData
+import com.hfad.ansormarket.firebase.retrofit.PushNotification
+import com.hfad.ansormarket.firebase.retrofit.RetrofitInstance
+import com.hfad.ansormarket.models.Constants.TOPIC
 import com.hfad.ansormarket.models.MyCart
 import com.hfad.ansormarket.models.Order
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CartFragment : Fragment() {
 
@@ -126,7 +134,7 @@ class CartFragment : Fragment() {
                         Toast.makeText(
                             requireContext(), getString(R.string.ordered_placed), Toast.LENGTH_SHORT
                         ).show()
-
+                        sendPushNow(order.orderProducts.size.toString())
                         // Reset orderNowResult to its neutral state
                         mFirebaseViewModel.resetOrderNowResult()
                     } else {
@@ -172,6 +180,39 @@ class CartFragment : Fragment() {
         }
     }
 
+    private fun sendPushNow(message: String) {
+        val mTitle = getString(R.string.new_Order)
+        if (mTitle.isNotEmpty() && message.isNotEmpty()) {
+            PushNotification(NotificationData(mTitle, message), TOPIC).also {
+                sendNotification(it)
+            }
+        } else {
+            Log.w(TAG, "onCreate: Title and/or message is empty")
+        }
+    }
+
+    private fun sendNotification(notification: PushNotification) =
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitInstance.api.postNotification(notification)
+                if (response.isSuccessful) {
+                    Log.d(
+                        TAG, "sendNotification: Notification sent successfully. Response: ${
+                            Gson().toJson(response)
+                        }"
+                    )
+                } else {
+                    Log.e(
+                        TAG, "sendNotification: Error sending notification. Response: ${
+                            response.errorBody().toString()
+                        }"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "sendNotification: Exception occurred: $e")
+
+            }
+        }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -179,3 +220,5 @@ class CartFragment : Fragment() {
     }
 
 }
+
+private val TAG = "SendNotification"
