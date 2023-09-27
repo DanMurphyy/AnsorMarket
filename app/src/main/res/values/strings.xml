@@ -66,6 +66,7 @@
     <string name="sample_quantity">22</string>
     <string name="sample_add">+</string>
     <string name="payment_method">Yetkazib berilganda NAQD pulda to\'lanadi</string>
+    <string name="log_out_dialog">Profilingizdan chiqmoqchimisiz?</string>
     <string name="cash_method">NAQD pul</string>
     <string name="payment_amount">Narxi \:</string>
     <string name="delivery_fee">Bepul yetkazib berish uchun eng kam Buyurtma narxi 100 000 so\'m</string>

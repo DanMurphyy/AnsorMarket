@@ -175,9 +175,21 @@ class MyProfileFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.logout_item -> logOut()
+            R.id.logout_item -> orderDialog()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun orderDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage(getString(R.string.log_out_dialog))
+        builder.setPositiveButton(getString(R.string.proceed_off_work_time)) { _, _ ->
+            logOut()
+        }
+        builder.setNegativeButton(getString(R.string.close_dialog_perm)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
     }
 
     private fun logOut() {
