@@ -91,6 +91,7 @@ class FirebaseRepository {
                 item?.documentId = document.id
                 item?.let { itemList.add(it) }
             }
+            itemList.sortByDescending { it.nameItem }
             return itemList
         } catch (e: Exception) {
             throw e
@@ -237,6 +238,8 @@ class FirebaseRepository {
                 order?.orderedId = document.id
                 order?.let { myOrderList.add(it) }
             }
+            // Sort orders by date in descending order
+            myOrderList.sortByDescending { it.date }
             return myOrderList
         } catch (e: Exception) {
             throw e
