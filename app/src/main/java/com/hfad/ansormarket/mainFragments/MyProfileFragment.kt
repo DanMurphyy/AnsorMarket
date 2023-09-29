@@ -17,11 +17,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.AdRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.databinding.FragmentMyProfileBinding
 import com.hfad.ansormarket.firebase.FirebaseViewModel
+import com.hfad.ansormarket.lanChange.MyPreference
 import com.hfad.ansormarket.logInScreens.LogMainActivity
 import com.hfad.ansormarket.models.Constants
 import com.hfad.ansormarket.models.User
@@ -36,11 +38,11 @@ class MyProfileFragment : Fragment() {
     private val mSharedViewModel: SharedViewModel by viewModels()
     private var mSelectedImageFileUri: Uri? = null
     val TAG = "MyProfileLog"
-
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (!isGranted) showImageChooserPermissionDeniedDialog()
         }
+    lateinit var myPreference: MyPreference
 
 
     override fun onCreateView(
@@ -49,9 +51,9 @@ class MyProfileFragment : Fragment() {
     ): View {
         _binding = FragmentMyProfileBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-        mFirebaseViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
-            setUserDataInUI(user)
-        }
+        val adRequest = AdRequest.Builder().build()
+        binding.adView4.loadAd(adRequest)
+        myPreference = MyPreference(requireContext())
 
         mFirebaseViewModel.loadUserData(requireContext())
 
@@ -65,7 +67,6 @@ class MyProfileFragment : Fragment() {
                 permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
-
         binding.btnUpdateProfile.setOnClickListener {
             if (mSelectedImageFileUri != null) {
                 if (mSelectedImageFileUri.toString().isNotEmpty()) {
@@ -94,12 +95,32 @@ class MyProfileFragment : Fragment() {
                 updateUserProfileData()
             }
         }
-
         binding.lifecycleOwner = viewLifecycleOwner // Important for LiveData binding
         binding.viewModel = mFirebaseViewModel // Set the ViewModel
+
+        var lang: String? = myPreference.getLoginCount()
+        when (lang) {
+            "en" -> binding.rbLotincha.isChecked = true
+            "uz" -> binding.rbKirilcha.isChecked = true
+            else -> binding.rbLotincha.isChecked = true
+        }
+
+        binding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            lang = when (checkedId) {
+                R.id.rb_lotincha -> "en"
+                R.id.rb_kirilcha -> "uz"
+                else -> "en"
+            }
+            // Save the selected language in SharedPreferences
+            myPreference.setLoginCount(lang!!)
+            activity?.recreate()
+        }
+
         return (binding.root)
     }
 
+
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == Constants.PICK_IMAGE_REQUEST_CODE && data!!.data != null) {
@@ -115,12 +136,6 @@ class MyProfileFragment : Fragment() {
                 e.printStackTrace()
             }
         }
-    }
-
-    private fun setUserDataInUI(user: User) {
-        val loginUser = user.login
-        val userLogin = loginUser.replace("@market.com", "").trim()
-        binding.etUserLogin.setText(userLogin)
     }
 
     private fun updateUserProfileData() {
@@ -169,10 +184,12 @@ class MyProfileFragment : Fragment() {
         builder.show()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.quit_menu, menu)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout_item -> orderDialog()

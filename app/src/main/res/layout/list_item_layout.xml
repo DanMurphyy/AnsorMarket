@@ -77,7 +77,7 @@
                     android:layout_gravity="bottom"
                     android:layout_margin="1dp"
                     android:fontFamily="@font/chelsea_market"
-                    android:text="So\'m"
+                    android:text="@string/sample_currency"
                     android:textColor="@color/colorPrimary"
                     android:textSize="11sp" />
             </LinearLayout>

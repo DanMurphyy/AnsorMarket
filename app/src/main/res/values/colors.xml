@@ -23,6 +23,7 @@
 
     <color name="icon_selected_color">#35F500</color>
     <color name="icon_unselected_color">#FFFFFFFF</color>
+    <color name="edit_text_color">#FFD6CF</color>
 
 
 </resources>

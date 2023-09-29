@@ -6,19 +6,16 @@ import android.os.Parcelable
 data class User(
     val id: String = "",
     var name: String = "",
-    val login: String = "",
+    var mobile: Long = 0,
     var address: String = "",
     var image: String = "",
-    var mobile: Long = 0,
     val fcmToken: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
         parcel.readLong(),
+        parcel.readString()!!,
         parcel.readString()!!
     ) {
     }
@@ -26,10 +23,9 @@ data class User(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(id)
         writeString(name)
-        writeString(login)
+        writeLong(mobile)
         writeString(address)
         writeString(image)
-        writeLong(mobile)
         writeString(fcmToken)
     }
 

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.AdRequest
 import com.google.android.material.chip.Chip
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
@@ -46,6 +47,8 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         mFirebaseViewModel.loadUserData(requireContext())
         mFirebaseViewModel.fetchAllItems()
         showRecyclerView()
+        val adRequest = AdRequest.Builder().build()
+        binding.adView3.loadAd(adRequest)
 
         return (binding.root)
     }
@@ -271,7 +274,7 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         filteredItems?.let {
-            this.filteredItems = it // Update the filteredItems property
+            this.filteredItems = it //
             adapter.setItems(it)
             Log.d("chips", "Selected category items: $it")
         }
@@ -280,7 +283,7 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun toCart(currentItem: Item, quantity: Int) {
         val newAmount = currentItem.price * quantity
 
-        val userId = mFirebaseViewModel.getCurrentUserId() // Assuming userId is not empty here
+        val userId = mFirebaseViewModel.getCurrentUserId()
 
         val myCart = MyCart(
             currentItem,

@@ -4,15 +4,12 @@ import android.app.Application
 import android.app.Dialog
 import android.content.Context
 import android.net.Uri
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.logInScreens.IntroFragment
 import com.hfad.ansormarket.models.*
@@ -25,7 +22,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
 
     private val repository: FirebaseRepository
     val registrationResult: MutableLiveData<Boolean> = MutableLiveData()
-    val signInResult: MutableLiveData<Boolean> = MutableLiveData()
     val userLiveData: MutableLiveData<User> = MutableLiveData()
     val contactUsLiveData: MutableLiveData<ContactUs> = MutableLiveData()
     val imageUploadLive: MutableLiveData<String?> = MutableLiveData()
@@ -49,52 +45,29 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         orderNowResult.value = null
     }
 
-    fun registerUser(view: View, name: String, login: String, password: String) {
+    fun registerUser(view: View, name: String, phoneNumber: String) {
         showProgress(view.context)
         viewModelScope.launch {
-            val validation = validateForm(view, name, login, password)
-            if (validation) {
-                try {
-                    val isSuccess = repository.registerUser(name, login, password)
-                    if (isSuccess) {
-                        signInUser(
-                            view,
-                            login,
-                            password
-                        )  // Automatically sign in the registered user
-                        IntroFragment().success() // Call the success function for navigation
-                    } else {
-                        hideProgress()
-                        registrationResult.value = false
-                    }
-                } catch (e: Exception) {
-                    hideProgress()    // Handle exceptions here
+            try {
+                Log.d("TAG", "being called3")
+                val isSuccess = repository.registerUser(name, phoneNumber)
+                if (isSuccess) {
+                    IntroFragment().success() // Call the success function for navigation
+                    Log.d("TAG", "being called4")
+
+                } else {
+                    hideProgress()
                     registrationResult.value = false
                 }
-                hideProgress()
+            } catch (e: Exception) {
+                hideProgress()    // Handle exceptions here
+                registrationResult.value = false
             }
             hideProgress()
         }
+        hideProgress()
     }
 
-    fun signInUser(view: View, login: String, password: String) {
-        showProgress(view.context)
-        viewModelScope.launch {
-            val validation = validateSignInForm(view, login, password)
-            if (validation) {
-                try {
-                    val isSuccess = repository.signInUser(login, password)
-                    loadUserData(view.context)
-                    hideProgress()
-                    signInResult.value = isSuccess
-                } catch (e: Exception) {
-                    hideProgress()
-                    signInResult.value = false
-                }
-            }
-            hideProgress()
-        }
-    }
 
     fun loadUserData(context: Context) {
         showProgress(context)
@@ -157,6 +130,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             hideProgress()
         }
     }
+
     fun getContactUsOrder() {
         viewModelScope.launch {
             try {
@@ -335,41 +309,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
             .getExtensionFromMimeType(context.contentResolver?.getType(uri!!))
     }
 
-    private fun validateForm(view: View, name: String, login: String, password: String): Boolean {
-        return when {
-            TextUtils.isEmpty(name) -> {
-                showErrorSnackBar(view, view.context.getString(R.string.please_enter_name))
-                false
-            }
-            TextUtils.isEmpty(login) -> {
-                showErrorSnackBar(view, view.context.getString(R.string.please_enter_login))
-                false
-            }
-            TextUtils.isEmpty(password) -> {
-                showErrorSnackBar(view, view.context.getString(R.string.please_enter_password))
-                false
-            }
-            else -> {
-                true
-            }
-        }
-    }
-
-    private fun validateSignInForm(view: View, login: String, password: String): Boolean {
-        return when {
-            TextUtils.isEmpty(login) -> {
-                showErrorSnackBar(view, view.context.getString(R.string.please_enter_login))
-                false
-            }
-            TextUtils.isEmpty(password) -> {
-                showErrorSnackBar(view, view.context.getString(R.string.please_enter_log_password))
-                false
-            }
-            else -> {
-                true
-            }
-        }
-    }
 
     fun showProgress(context: Context) {
         mProgressDialog = Dialog(context)
@@ -380,19 +319,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
 
     fun hideProgress() {
         mProgressDialog!!.dismiss()
-    }
-
-    fun showErrorSnackBar(view: View, message: String) {
-        val snackBar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
-            .setAnchorView(R.id.rg_signings)
-        snackBar.view.setBackgroundColor(
-            ContextCompat.getColor(
-                view.context,
-                R.color.snackbar_error_color
-            )
-        )
-        //        snackBar.animationMode = BaseTransientBottomBar.ANIMATION_MODE_SLIDE
-        snackBar.show()
     }
 
 }

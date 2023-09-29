@@ -12,17 +12,14 @@ import kotlinx.coroutines.tasks.await
 class FirebaseRepository {
 
     private val mFireStore = FirebaseFirestore.getInstance()
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    suspend fun registerUser(name: String, login: String, password: String): Boolean {
+    suspend fun registerUser(name: String, phoneNumber: String): Boolean {
         try {
-            // Firebase Authentication
-            val authResult = FirebaseAuth.getInstance()
-                .createUserWithEmailAndPassword(login, password)
-                .await()
-            // User registration in Firestore
-            val userId = authResult.user?.uid ?: ""
-            val user = User(userId, name, login)
+
+            // Save user data to Firestore
+            val userId = auth.currentUser?.uid ?: ""
+            val user = User(userId, name, phoneNumber.toLong())
             mFireStore.collection(Constants.USERS)
                 .document(userId)
                 .set(user, SetOptions.merge())
@@ -34,15 +31,6 @@ class FirebaseRepository {
             return true
         } catch (e: Exception) {
             return false
-        }
-    }
-
-    suspend fun signInUser(login: String, password: String): Boolean {
-        return try {
-            auth.signInWithEmailAndPassword(login, password).await()
-            true
-        } catch (e: Exception) {
-            false
         }
     }
 
@@ -198,7 +186,7 @@ class FirebaseRepository {
 
             val orderId = mFireStore.collection(Constants.ORDERS).document().id
             order.orderedId = orderId
-            Log.d("YourTag", "Before creating orderDocumentRef: ${orderId}")
+            Log.d("YourTag", "Before creating orderDocumentRef: $orderId")
 
             val userDocumentRef = mFireStore.collection(Constants.USERS).document(userId)
             val myOrderCollectionRef = userDocumentRef.collection(Constants.MY_ORDERS)

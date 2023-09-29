@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdRequest
 import com.google.gson.Gson
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
@@ -44,8 +45,11 @@ class CartFragment : Fragment() {
     ): View {
         _binding = FragmentCartBinding.inflate(inflater, container, false)
         showRecyclerView()
+        val adRequest = AdRequest.Builder().build()
+        binding.adView2.loadAd(adRequest)
         mFirebaseViewModel.fetchAllItems()
         mFirebaseViewModel.fetchMyCart()
+        mFirebaseViewModel.loadUserData(requireContext())
         updateAmount()
         mFirebaseViewModel.getContactUsOrder()
 
@@ -118,19 +122,29 @@ class CartFragment : Fragment() {
     private fun checkTime() {
         val workingHoursFrom = mFirebaseViewModel.contactUsLiveData.value?.WorkingHoursFrom
         val workingHoursTill = mFirebaseViewModel.contactUsLiveData.value?.WorkingHoursTill
+        val address = mFirebaseViewModel.userLiveData.value?.address
 
-        if (workingHoursFrom != null && workingHoursTill != null) {
-            val currentTime: String = SimpleDateFormat("HH", Locale.ENGLISH).format(
-                Date()
-            )
-            if (currentTime.toInt() in (workingHoursFrom) until workingHoursTill) {
-                orderDialog()
-            } else {
-                offTimeDialog()
-            }
+        if (address.isNullOrEmpty()) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.insert_address),
+                Toast.LENGTH_LONG
+            ).show()
         } else {
-            orderDialog()
+            if (workingHoursFrom != null && workingHoursTill != null) {
+                val currentTime: String = SimpleDateFormat("HH", Locale.ENGLISH).format(
+                    Date()
+                )
+                if (currentTime.toInt() in (workingHoursFrom) until workingHoursTill) {
+                    orderDialog()
+                } else {
+                    offTimeDialog()
+                }
+            } else {
+                orderDialog()
+            }
         }
+
     }
 
     private fun offTimeDialog() {
@@ -267,4 +281,4 @@ class CartFragment : Fragment() {
 
 }
 
-private val TAG = "SendNotification"
+private const val TAG = "SendNotification"

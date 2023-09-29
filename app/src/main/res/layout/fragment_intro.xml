@@ -32,10 +32,10 @@
         <FrameLayout
             android:id="@+id/frame_slide_photos"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginStart="10dp"
+            android:layout_height="250dp"
+            android:layout_marginStart="40dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="40dp"
             android:background="@drawable/white_border_shape_button_rounded">
 
             <ImageView
@@ -49,6 +49,7 @@
         </FrameLayout>
 
         <TextView
+            android:id="@+id/sub_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -77,113 +78,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <RadioGroup
-                    android:id="@+id/rg_signings"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/drawable_radio_group_tab_background"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/rb_sign_in"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.50"
-                        android:background="@drawable/drawable_units_tab_selector"
-                        android:button="@null"
-                        android:checked="true"
-                        android:gravity="center"
-                        android:text="@string/intro_sign_in"
-                        android:textColor="@drawable/drawable_units_tab_text_color_selector"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <RadioButton
-                        android:id="@+id/rb_sign_up"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.50"
-                        android:background="@drawable/drawable_units_tab_selector"
-                        android:button="@null"
-                        android:checked="false"
-                        android:gravity="center"
-                        android:text="@string/intro_sign_up"
-                        android:textColor="@drawable/drawable_units_tab_text_color_selector"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                </RadioGroup>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:id="@+id/signIn_lo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="5dp"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="2dp">
-
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/et_login_in"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:backgroundTint="@android:color/transparent"
-                                android:hint="@string/login"
-                                android:inputType="textEmailAddress"
-                                android:maxLength="25" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="2dp">
-
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/et_password_in"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:backgroundTint="@android:color/transparent"
-                                android:hint="@string/password"
-                                android:inputType="numberPassword" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-
-                        <Button
-                            android:id="@+id/btn_intro_in"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginStart="30dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="30dp"
-                            android:background="@drawable/shape_button_rounded"
-                            android:foreground="@drawable/custom_ripple"
-                            android:gravity="center"
-                            android:text="@string/submit"
-                            android:textColor="@android:color/white"
-                            android:textSize="15sp"
-                            app:backgroundTint="@null" />
-                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/signUp_lo"
@@ -192,7 +90,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="5dp"
                         android:orientation="vertical"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -216,47 +114,77 @@
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.textfield.TextInputLayout
+                        <LinearLayout
+                            android:id="@+id/lo_mobile_verify"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="2dp">
+                            android:orientation="vertical">
 
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/et_login_up"
+                            <ProgressBar
+                                android:id="@+id/phoneProgressBar"
+                                style="?android:attr/progressBarStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:indeterminateTint="@color/colorAccent"
+                                android:visibility="gone"
+                                app:layout_constraintBottom_toTopOf="@+id/textView2"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.5"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:backgroundTint="@android:color/transparent"
-                                android:hint="@string/login"
-                                android:inputType="textEmailAddress"
-                                android:maxLength="25" />
+                                android:orientation="horizontal">
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="2dp">
+                                    <androidx.appcompat.widget.AppCompatEditText
+                                        android:id="@+id/et_country_code"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:backgroundTint="@android:color/transparent"
+                                        android:focusable="false"
+                                        android:focusableInTouchMode="false"
+                                        android:inputType="text"
+                                        android:text="@string/uz_code"
+                                        android:textSize="@dimen/progress_text_size" />
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/et_password_up"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:backgroundTint="@android:color/transparent"
-                                android:hint="@string/password"
-                                android:inputType="numberPassword" />
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="3">
 
+                                    <androidx.appcompat.widget.AppCompatEditText
+                                        android:id="@+id/verify_mobile_number"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:backgroundTint="@android:color/transparent"
+                                        android:hint="@string/phone"
+                                        android:inputType="phone"
+                                        android:maxLength="9"
+                                        android:textSize="@dimen/progress_text_size" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
 
                         <Button
-                            android:id="@+id/btn_intro_up"
+                            android:id="@+id/sendOTPBtn"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="30dp"
                             android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
                             android:layout_marginEnd="30dp"
                             android:background="@drawable/shape_button_rounded"
                             android:foreground="@drawable/custom_ripple"
@@ -271,6 +199,16 @@
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:adSize = "BANNER"
+            app:adUnitId="ca-app-pub-8558811277281829/2084461687">
+
+        </com.google.android.gms.ads.AdView>
 
     </LinearLayout>
 

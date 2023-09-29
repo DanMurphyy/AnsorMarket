@@ -54,7 +54,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Ichimliklar"
+                    android:text="@string/ichimliklar"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -66,7 +66,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Qandolat mahsulotlari"
+                    android:text="@string/qandolat_mahsulotlari"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -78,7 +78,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Sut Mahsulotlari"
+                    android:text="@string/sut_mahsulotlari"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -90,7 +90,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Tortlar va Pishiriqlar"
+                    android:text="@string/tortlar_va_pishiriqlar"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -102,7 +102,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Konservalar"
+                    android:text="@string/konservalar"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -114,7 +114,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Snaklar"
+                    android:text="@string/snaklar"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -126,7 +126,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Mevalar"
+                    android:text="@string/mevalar"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -138,7 +138,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Bolalar Ovqatlari"
+                    android:text="@string/bolalar_ovqatlari"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -150,7 +150,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Un Mahsulotlari"
+                    android:text="@string/un_mahsulotlari"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -162,7 +162,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Souslar"
+                    android:text="@string/souslar"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -174,7 +174,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Go\'sht"
+                    android:text="@string/gosht"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -186,7 +186,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Gigiena vositalari"
+                    android:text="@string/gigiena_vositalari"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -199,7 +199,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:padding="5dp"
-                    android:text="Oshxona"
+                    android:text="@string/oshxona"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -211,7 +211,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="5dp"
                     android:padding="5dp"
-                    android:text="Yog\'lar"
+                    android:text="@string/yoglar"
                     android:textColor="@color/black"
                     app:chipCornerRadius="10dp" />
 
@@ -223,9 +223,23 @@
         android:id="@+id/recyclerViewList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/adView3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scrollCategory" />
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:adSize = "BANNER"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewList"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:adUnitId="ca-app-pub-8558811277281829/2084461687">
+    </com.google.android.gms.ads.AdView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

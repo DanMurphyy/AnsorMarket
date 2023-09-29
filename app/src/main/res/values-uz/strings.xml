@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Home Market</string>
+
+    <string name="splash_desc">Арзон, Сифатли ва Ишончли!</string>
+    <string name="please_wait">Илтимос кутинг…</string>
+    <string name="error_message">Хатолик юз берди</string>
+    <string name="intro_sign_in">Кириш</string>
+    <string name="intro_sign_up">Рўйхатдан ўтиш</string>
+    <string name="image_content">image_content</string>
+    <string name="intro_text_description">Шаҳрихон шаҳри бўйича Озиқ-овқат маҳсулотлари етказиб бериш хизмати</string>
+    <string name="sign_up_description_text">Рўйхатдан ўтиш учун исмингизни, Телефон ва паролингизни киритинг.</string>
+    <string name="name">Исмингиз</string>
+    <string name="login">Логин</string>
+    <string name="password">Парол</string>
+    <string name="phone">Телефон рақамингиз</string>
+    <string name="submit">Тасдиқлаш</string>
+    <string name="registration_successful"> Рўйхатдан ўтилди!</string>
+    <string name="registration_failed">Хатолик рўй берди \nИлтимос, Логин ни ўгартиринг </string>
+    <string name="authentication_failed">Логин ёки парол нотўғри.</string>
+    <string name="login_successful">Кириш муваффақиятли бажарилди</string>
+    <string name="please_enter_name">Илтимос, Исм киритинг</string>
+    <string name="please_enter_number">Илтимос, Рақам  киритинг</string>
+    <string name="please_enter_correct_number">Илтимос, Тўғри рақам киритинг</string>
+    <string name="please_click_back_again_to_exit">Чиқиш учун орқага қайтиш тугмасини яна босинг</string>
+    <string name="goods">Маҳсулотлар</string>
+    <string name="cart">Харид савати</string>
+    <string name="profile">Профилим</string>
+    <string name="myOrders">Буюртмаларим</string>
+    <string name="address">Манзил</string>
+    <string name="update">Таҳрирлаш</string>
+    <string name="logout">Чиқиш</string>
+    <string name="denied_permission">"Сиз хотирага киришга рухсатини рад этдингиз, бунга Телефон созламаларидан ҳам рухсат беришингиз мумкин."</string>
+    <string name="image_uploaded">Расм муваффақиятли юкланди</string>
+    <string name="image_error">Расмни юклашда хатолик!</string>
+    <string name="denied_permissions">Иловага керакли рухсатлар берилмаган, Илтимос, созламаларга кириб рухсат беринг.</string>
+    <string name="off_work_time">Ҳозирда иш вақти тугаган, буюртмангиз эрталаб етказиб берилади</string>
+    <string name="order_off_work_time">Буюртма бериш</string>
+    <string name="proceed_off_work_time">Давом эттирш</string>
+    <string name="go_to_settings">Созламаларга ўтиш</string>
+    <string name="close_dialog_perm">Бекор қилиш</string>
+    <string name="add">Қўшиш</string>
+    <string name="item_name">Номи</string>
+    <string name="create">Қўшиш</string>
+    <string name="item_weight">Вазни</string>
+    <string name="item_price">Нархи</string>
+    <string name="invalid_item_type">Илтимос, барча жойларни тўлдиринг</string>
+    <string name="image_not_selected">Расм танланг!</string>
+    <string name="board_created">Маҳсулот қўшилди</string>
+    <string name="cart_removed">Маҳсулот саватдан олиб ташланди</string>
+    <string name="item_already_created">Маҳсулот аллақачон қўшилган</string>
+    <string name="board_creating_error">Маҳсулот киритишда ҳатолик</string>
+    <string name="add_cart">Саватга</string>
+    <string name="sample_price">0</string>
+    <string name="sample_currency">Сўм</string>
+    <string name="sample_item_name">Кока-Кола</string>
+    <string name="sample_weight">1.5 л</string>
+    <string name="sample_minus">-</string>
+    <string name="sample_quantity">22</string>
+    <string name="sample_add">+</string>
+    <string name="payment_method">Етказиб берилганда НАҚД пулда тўланади</string>
+    <string name="log_out_dialog">Профилингиздан чиқмоқчимисиз?</string>
+    <string name="cash_method">НАҚД пул</string>
+    <string name="payment_amount">Нархи :</string>
+    <string name="delivery_fee">Бепул етказиб бериш учун енг кам Буюртма нархи 100 000 сўм</string>
+    <string name="deliver_charge">Етказиб бериш :</string>
+    <string name="deliver_charge_amount">10000</string>
+    <string name="fee_grand_info">Тўланадигон сумма :</string>
+    <string name="make_order">Буюртма бериш</string>
+    <string name="subtotal">Буюртма нархи :</string>
+    <string name="subtotal_amount">0</string>
+    <string name="ordered_placed">Буюртма жўнатилди</string>
+    <string name="ordering_error">Буюртма беришда хатолик!!</string>
+    <string name="order_number">Буюртма рақами :</string>
+    <string name="ordered_date">Вақти :</string>
+    <string name="sample_quantity_dona">дона</string>
+    <string name="order_status">Буюртма ҳолати :</string>
+    <string name="active_order_status">Ҳолати :</string>
+    <string name="order_user">Исми :</string>
+    <string name="order_address">Етказиладигон манзил :</string>
+    <string name="empty_cart_text">Саватингиз Бўш !!</string>
+    <string name="order_in_process">Жараёнда\.\.\.</string>
+    <string name="order_getting_ready">Терилмоқда</string>
+    <string name="order_delivering">Йўлда</string>
+    <string name="order_delivered">Етказиб берилди!</string>
+    <string name="order_cancelled">Бекор қилинган</string>
+    <string name="contact_us">Биз билан боғланинг</string>
+    <string name="back_to">Ортга</string>
+    <string name="ilovada_xatolik">Иловада хатолик борми ? :</string>
+    <string name="deliver_contact">Етказиб бериш :</string>
+    <string name="deliver_market_contact">Сотув бўлими :</string>
+    <string name="working_hours">Иш вақти:</string>
+    <string name="empty_order_text">Буюртмалар мавжуд эмас</string>
+    <string name="active_orders">Фаол Буюртмалар</string>
+    <string name="active_phone">Телефон рақами</string>
+    <string name="completed_orders">Тугалланган буюртмалар</string>
+    <string name="work_from">дан</string>
+    <string name="work_till">гача</string>
+    <string name="search">Қидирув</string>
+    <string name="new_Order">Янги Буюртма</string>
+    <string name="uz_code">+998</string>
+    <string name="insert_address">Илтимос, Профилингизга ўтиб манзилни киритинг</string>
+    <string name="resend_otp">Қайтадан жўнатиш</string>
+    <string name="register_error_message">Хатолик юз берди. Илтимос кейинроқ қайта уриниб кўринг</string>
+    <string name="change_language_style">Илова ёзувини ўзгартиринг</string>
+    <string name="lotincha">LOTINCHA</string>
+    <string name="kirilcha">КИРИЛЧА</string>
+    <string name="ichimliklar">Ичимликлар</string>
+    <string name="qandolat_mahsulotlari">Қандолат маҳсулотлари</string>
+    <string name="sut_mahsulotlari">Сут Маҳсулотлари</string>
+    <string name="tortlar_va_pishiriqlar">Тортлар ва Пишириқлар</string>
+    <string name="konservalar">Консервалар</string>
+    <string name="snaklar">Снаклар</string>
+    <string name="mevalar">Мевалар</string>
+    <string name="bolalar_ovqatlari">Болалар Овқатлари</string>
+    <string name="un_mahsulotlari">Ун Маҳсулотлари</string>
+    <string name="souslar">Соуслар</string>
+    <string name="gosht">Гўшт</string>
+    <string name="gigiena_vositalari">Гигиена воситалари</string>
+    <string name="oshxona">Ошxона</string>
+    <string name="yoglar">Ёғлар</string>
+
+    <string-array name="item_type">
+        <item>Ичимликлар</item>
+        <item>Қандолат маҳсулотлари</item>
+        <item>Сут Маҳсулотлари</item>
+        <item>Тортлар ва Пишириқлар</item>
+        <item>Консервалар</item>
+        <item>Снаклар</item>
+        <item>Мевалар</item>
+        <item>Болалар Овқатлари</item>
+        <item>Ун Маҳсулотлари</item>
+        <item>Соуслар</item>
+        <item>Гўшт</item>
+        <item>Гигиена воситалари</item>
+        <item>Ошхона</item>
+        <item>Ёглар</item>
+    </string-array>
+
+    <string-array name="update_order_status">
+        <item>Жараёнда\.\.\.</item>
+        <item>Терилмоқда</item>
+        <item>Йўлда</item>
+        <item>Етказиб берилди!</item>
+        <item>Бекор қилинган</item>
+    </string-array>
+
+</resources>

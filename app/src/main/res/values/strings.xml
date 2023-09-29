@@ -2,16 +2,10 @@
     <string name="app_name">Home Market</string>
 
     <string name="splash_desc">Arzon,Sifatli va Ishonchli!</string>
-
     <string name="please_wait">Iltimos kuting…</string>
     <string name="error_message">Xatolik yuz berdi</string>
     <string name="intro_sign_in">Kirish</string>
     <string name="intro_sign_up">Ro\'yxatdan o\'tish</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="image_content">image_content</string>
     <string name="intro_text_description">Shahrixon shahri bo\'yicha Oziq-ovqat mahsulotlari yetkazib berish xizmati</string>
     <string name="sign_up_description_text">Ro\'yxatdan o\'tish uchun ismingizni, Telephone va parolingizni kiriting.</string>
@@ -21,14 +15,12 @@
     <string name="phone">Telefon raqamingiz</string>
     <string name="submit">Tasdiqlash</string>
     <string name="registration_successful"> Ro\'yxatdan o\'tildi!</string>
-    <string name="registration_failed">Xatolik ro\'y berdi \nIltimos, Login ni o\'gartiring </string>
+    <string name="registration_failed">Xatolik ro\'y berdi \nIltimos, Login ni o\'zgartiring </string>
     <string name="authentication_failed">Login yoki parol noto\'g\'ri.</string>
     <string name="login_successful">Kirish muvaffaqiyatli bajarildi</string>
     <string name="please_enter_name">Iltimos, Ism kiriting</string>
-    <string name="please_enter_login">Iltimos, Login  kiriting</string>
-    <string name="please_enter_password">Iltimos, parol kiriting</string>
-    <string name="please_enter_log_password">Iltimos, Login va Parol kiriting</string>
-    <string name="please_minimum_password">Kamida 6 ta raqam</string>
+    <string name="please_enter_number">Iltimos, Raqam  kiriting</string>
+    <string name="please_enter_correct_number">Iltimos, To\'g\'ri raqam kiriting</string>
     <string name="please_click_back_again_to_exit">Chiqish uchun orqaga qaytish tugmasini yana bosing</string>
     <string name="goods">Mahsulotlar</string>
     <string name="cart">Xarid savati</string>
@@ -105,6 +97,29 @@
     <string name="work_till">gacha</string>
     <string name="search">Qidiruv</string>
     <string name="new_Order">Yangi Buyurtma</string>
+    <string name="uz_code">+998</string>
+    <string name="insert_address">Iltimos, Profilingizga o\'tib manzilni kiriting</string>
+    <string name="resend_otp">Qaytadan jo\'natish</string>
+    <string name="register_error_message">Xatolik yuz berdi. Iltimos keyinroq qayta urinib ko\'ring</string>
+    <string name="change_language_style">Ilova yozuvini o\'zgartiring</string>
+    <string name="lotincha">LOTINCHA</string>
+    <string name="kirilcha">КИРИЛЧА</string>
+    <string name="ichimliklar">Ichimliklar</string>
+    <string name="qandolat_mahsulotlari">Qandolat mahsulotlari</string>
+    <string name="sut_mahsulotlari">Sut Mahsulotlari</string>
+    <string name="tortlar_va_pishiriqlar">Tortlar va Pishiriqlar</string>
+    <string name="konservalar">Konservalar</string>
+    <string name="snaklar">Snaklar</string>
+    <string name="mevalar">Mevalar</string>
+    <string name="bolalar_ovqatlari">Bolalar Ovqatlari</string>
+    <string name="un_mahsulotlari">Un Mahsulotlari</string>
+    <string name="souslar">Souslar</string>
+    <string name="gosht">Go\'sht</string>
+    <string name="gigiena_vositalari">Gigiena vositalari</string>
+    <string name="oshxona">Oshxona</string>
+    <string name="yoglar">Yog\'lar</string>
+
+
     <string-array name="item_type">
         <item>Ichimliklar</item>
         <item>Qandolat mahsulotlari</item>
@@ -122,7 +137,6 @@
         <item>Yog\'lar</item>
     </string-array>
 
-
     <string-array name="update_order_status">
         <item>Jarayonda\.\.\.</item>
         <item>Terilmoqda</item>
@@ -130,5 +144,6 @@
         <item>Yetkazib berilgan!</item>
         <item>Bekor qilingan</item>
     </string-array>
+
 
 </resources>

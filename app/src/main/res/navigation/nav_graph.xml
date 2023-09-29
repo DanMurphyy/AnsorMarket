@@ -19,7 +19,9 @@
         android:id="@+id/myProfileFragment"
         android:name="com.hfad.ansormarket.mainFragments.MyProfileFragment"
         android:label="@string/profile"
-        tools:layout="@layout/fragment_my_profile" />
+        tools:layout="@layout/fragment_my_profile">
+
+    </fragment>
     <fragment
         android:id="@+id/ordersFragment"
         android:name="com.hfad.ansormarket.mainFragments.OrdersFragment"
