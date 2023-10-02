@@ -4,12 +4,15 @@ import android.app.Application
 import android.app.Dialog
 import android.content.Context
 import android.net.Uri
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.snackbar.Snackbar
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.logInScreens.IntroFragment
 import com.hfad.ansormarket.models.*
@@ -45,12 +48,12 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         orderNowResult.value = null
     }
 
-    fun registerUser(view: View, name: String, phoneNumber: String) {
+    fun registerUser(view: View, name: String, phoneNumber: String, address: String) {
         showProgress(view.context)
         viewModelScope.launch {
             try {
                 Log.d("TAG", "being called3")
-                val isSuccess = repository.registerUser(name, phoneNumber)
+                val isSuccess = repository.registerUser(name, phoneNumber, address)
                 if (isSuccess) {
                     IntroFragment().success() // Call the success function for navigation
                     Log.d("TAG", "being called4")
@@ -87,23 +90,33 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     fun updateUserProfileData(view: View, updatedUser: User) {
         showProgress(view.context)
         viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                val user = userLiveData.value
-                if (user != null) {
-                    // Update the user object fields based on the updatedUser object
-                    user.name = updatedUser.name
-                    user.address = updatedUser.address
-                    user.mobile = updatedUser.mobile
-                    if (updatedUser.image.isNotEmpty() && updatedUser.image != user.image) {
-                        user.image = updatedUser.image
+            val validation = validateForm(
+                view,
+                updatedUser.name,
+                updatedUser.address,
+                updatedUser.mobile
+            )
+            if (validation) {
+                try {
+                    val userId = getCurrentUserId()
+                    val user = userLiveData.value
+                    if (user != null) {
+                        // Update the user object fields based on the updatedUser object
+                        user.name = updatedUser.name
+                        user.address = updatedUser.address
+                        user.mobile = updatedUser.mobile
+                        if (updatedUser.image.isNotEmpty() && updatedUser.image != user.image) {
+                            user.image = updatedUser.image
+                        }
+                        repository.updateUserData(userId, user)
+                        userLiveData.postValue(user!!)
                     }
-                    repository.updateUserData(userId, user)
-                    userLiveData.postValue(user!!)
+                    hideProgress()
+                } catch (e: Exception) {
+                    hideProgress()
+                } finally {
+                    hideProgress()
                 }
-                hideProgress()
-            } catch (e: Exception) {
-                hideProgress()
             }
             hideProgress()
         }
@@ -127,7 +140,6 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 contactUsLiveData.postValue(contact)
             } catch (e: Exception) {
             }
-            hideProgress()
         }
     }
 
@@ -281,7 +293,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
 
     fun uploadImage(context: Context, uri: Uri) {
         showProgress(context)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 val extension = getFileExtension(uri)
                 if (extension != null && extension.isNotEmpty()) {
@@ -315,6 +327,39 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         mProgressDialog?.setContentView(R.layout.dialog_progress)
         mProgressDialog?.window!!.setBackgroundDrawableResource(com.google.android.material.R.color.mtrl_btn_transparent_bg_color)
         mProgressDialog?.show()
+    }
+
+    fun validateForm(view: View, name: String, address: String, number: String): Boolean {
+        return when {
+            TextUtils.isEmpty(name) -> {
+                showErrorSnackBar(view, view.context.getString(R.string.please_enter_name))
+                false
+            }
+            TextUtils.isEmpty(address) -> {
+                showErrorSnackBar(view, view.context.getString(R.string.please_enter_address))
+                false
+            }
+            TextUtils.isEmpty(number) -> {
+                showErrorSnackBar(view, view.context.getString(R.string.please_enter_number))
+                false
+            }
+            else -> {
+                true
+            }
+        }
+    }
+
+    private fun showErrorSnackBar(view: View, message: String) {
+        val snackBar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
+            .setAnchorView(R.id.lo_radio)
+        snackBar.view.setBackgroundColor(
+            ContextCompat.getColor(
+                view.context,
+                R.color.snackbar_error_color
+            )
+        )
+        //        snackBar.animationMode = BaseTransientBottomBar.ANIMATION_MODE_SLIDE
+        snackBar.show()
     }
 
     fun hideProgress() {

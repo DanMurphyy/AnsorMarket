@@ -8,13 +8,15 @@ data class ContactUs(
     var MarketMobile: String = "",
     var DeliveryMobile: String = "",
     var WorkingHoursFrom: Int = 0,
-    var WorkingHoursTill: Int = 0
+    var WorkingHoursTill: Int = 0,
+    var DeliveryAmount: Int = 10000
 
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
     ) {
@@ -26,6 +28,7 @@ data class ContactUs(
         writeString(DeliveryMobile)
         writeInt(WorkingHoursFrom)
         writeInt(WorkingHoursTill)
+        writeInt(DeliveryAmount)
     }
 
     override fun describeContents() = 0

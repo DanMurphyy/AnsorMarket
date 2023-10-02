@@ -2,6 +2,9 @@ package com.hfad.ansormarket.mainFragments
 
 import android.app.ActionBar
 import android.app.Dialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -28,7 +31,6 @@ class OrdersFragment : Fragment() {
     private var mDialog: Dialog? = null
     private var contactUsInfoBinding: ContactUsLayoutBinding? = null
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,7 +40,7 @@ class OrdersFragment : Fragment() {
         showRecyclerView()
 
         binding.refreshOrder.setOnClickListener {
-            mFirebaseViewModel.getMyOrders(requireView())
+            regOrNot()
         }
 
         return (binding.root)
@@ -51,7 +53,7 @@ class OrdersFragment : Fragment() {
             Log.d("OrdersFragment", "Received ${myOrderList.size} orders")
             adapter.setMyCartData(myOrderList)
         }
-        mFirebaseViewModel.getMyOrders(requireView())
+        regOrNot()
         mFirebaseViewModel.getContactUs()
 
         binding.lifecycleOwner = this
@@ -120,12 +122,42 @@ class OrdersFragment : Fragment() {
             hideInfoDialog()
         }
 
+        contactUsInfoBinding!!.loAppMarket.setOnClickListener {
+            openTelegramChat(contactUs)
+        }
+        contactUsInfoBinding!!.loDelivery.setOnClickListener {
+            openPhoneDialerDelivery(contactUs)
+        }
+        contactUsInfoBinding!!.loMarket.setOnClickListener {
+            openPhoneDialerMarket(contactUs)
+        }
+
         mDialog!!.setContentView(contactUsInfoBinding!!.root)
         mDialog!!.setCancelable(true)
         mDialog!!.setCanceledOnTouchOutside(true)
         mDialog!!.show()
         window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
 
+    }
+
+    private fun openPhoneDialerDelivery(contactUs: ContactUs) {
+        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${contactUs.DeliveryMobile}"))
+        startActivity(intent)
+    }
+
+    private fun openPhoneDialerMarket(contactUs: ContactUs) {
+        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${contactUs.MarketMobile}"))
+        startActivity(intent)
+    }
+
+    private fun openTelegramChat(contactUs: ContactUs) {
+        val tlgLink = contactUs.AppMobile
+        try {
+            val telegramUri = Uri.parse("tg://resolve?domain=$tlgLink")
+            val intent = Intent(Intent.ACTION_VIEW, telegramUri)
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+        }
     }
 
     private fun hideInfoDialog() {
@@ -146,6 +178,19 @@ class OrdersFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    private fun regOrNot() {
+        val userId = mFirebaseViewModel.getCurrentUserId()
+
+        if (userId != null && userId.isNotEmpty()) {
+            mFirebaseViewModel.getMyOrders(requireView())
+            binding.emptyOrderView.visibility =
+                View.GONE // Hide emptyCartView when user is logged in
+        } else {
+            binding.emptyOrderView.visibility =
+                View.VISIBLE // Show emptyCartView when user is not logged in
+        }
     }
 
 }

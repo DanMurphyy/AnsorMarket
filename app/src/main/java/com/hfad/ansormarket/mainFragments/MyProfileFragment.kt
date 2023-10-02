@@ -16,18 +16,23 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.*
 import com.hfad.ansormarket.R
 import com.hfad.ansormarket.SharedViewModel
 import com.hfad.ansormarket.databinding.FragmentMyProfileBinding
+import com.hfad.ansormarket.firebase.FirebaseRepository
 import com.hfad.ansormarket.firebase.FirebaseViewModel
 import com.hfad.ansormarket.lanChange.MyPreference
 import com.hfad.ansormarket.logInScreens.LogMainActivity
 import com.hfad.ansormarket.models.Constants
 import com.hfad.ansormarket.models.User
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 
 class MyProfileFragment : Fragment() {
@@ -37,12 +42,16 @@ class MyProfileFragment : Fragment() {
     private val mFirebaseViewModel: FirebaseViewModel by viewModels()
     private val mSharedViewModel: SharedViewModel by viewModels()
     private var mSelectedImageFileUri: Uri? = null
-    val TAG = "MyProfileLog"
+    private val TAG = "MyProfileLog"
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (!isGranted) showImageChooserPermissionDeniedDialog()
         }
-    lateinit var myPreference: MyPreference
+    private lateinit var myPreference: MyPreference
+    private lateinit var number: String
+    private lateinit var address: String
+    private lateinit var name: String
+    private lateinit var mAuth: FirebaseAuth
 
 
     override fun onCreateView(
@@ -54,7 +63,8 @@ class MyProfileFragment : Fragment() {
         val adRequest = AdRequest.Builder().build()
         binding.adView4.loadAd(adRequest)
         myPreference = MyPreference(requireContext())
-
+        mAuth = FirebaseRepository().auth
+        regOrNot()
         mFirebaseViewModel.loadUserData(requireContext())
 
         binding.imageUser.setOnClickListener {
@@ -116,13 +126,36 @@ class MyProfileFragment : Fragment() {
             activity?.recreate()
         }
 
+        binding.regBtnProfile.setOnClickListener {
+            number = binding.verifyMobileNumber.text!!.trim().toString()
+            name = binding.regEtUserName.text.toString()
+            address = binding.regEtAddressName.text.toString()
+            val validation = mFirebaseViewModel.validateForm(requireView(), name, address, number)
+            if (validation) {
+                if (number.length == 9) {
+                    number = "+998$number"
+                    binding.phoneProgressBar.visibility = View.VISIBLE
+                    val options = PhoneAuthOptions.newBuilder(mAuth)
+                        .setPhoneNumber(number)       // Phone number to verify
+                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                        .setActivity(requireActivity())                 // Activity (for callback binding)
+                        .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
+                        .build()
+                    Log.d("TAG", "phone number: $number")
+                    PhoneAuthProvider.verifyPhoneNumber(options)
+                }
+            }
+        }
+
         return (binding.root)
     }
 
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION")
         super.onActivityResult(requestCode, resultCode, data)
+        @Suppress("DEPRECATION")
         if (resultCode == Activity.RESULT_OK && requestCode == Constants.PICK_IMAGE_REQUEST_CODE && data!!.data != null) {
             mSelectedImageFileUri = data.data
             try {
@@ -146,7 +179,7 @@ class MyProfileFragment : Fragment() {
             User(
                 name = binding.etUserName.text.toString(),
                 address = binding.etAddressName.text.toString(),
-                mobile = binding.etMobileNumber.text.toString().toLong(),
+                mobile = binding.etMobileNumber.text.toString(),
                 image = mProfileImageUrl
             )
         } else {
@@ -154,7 +187,7 @@ class MyProfileFragment : Fragment() {
             User(
                 name = binding.etUserName.text.toString(),
                 address = binding.etAddressName.text.toString(),
-                mobile = binding.etMobileNumber.text.toString().toLong(),
+                mobile = binding.etMobileNumber.text.toString(),
                 image = mFirebaseViewModel.userLiveData.value?.image ?: ""
             )
         }
@@ -194,6 +227,7 @@ class MyProfileFragment : Fragment() {
         when (item.itemId) {
             R.id.logout_item -> orderDialog()
         }
+        @Suppress("DEPRECATION")
         return super.onOptionsItemSelected(item)
     }
 
@@ -217,6 +251,102 @@ class MyProfileFragment : Fragment() {
         activity?.finish()
     }
 
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        mAuth.signInWithCredential(credential)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.registration_successful),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    regAndRef()
+                } else {
+                    // Sign in failed, display a message and update the UI
+                    Log.d("TAG", "signInWithPhoneAuthCredential: ${task.exception.toString()}")
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        // The verification code entered was invalid
+                        Log.d("TAG", "signInWithPhoneAuthCredential: ${task.exception.toString()}")
+                    }
+                    // Update UI
+                }
+                binding.phoneProgressBar.visibility = View.INVISIBLE
+            }
+    }
+
+    private fun regAndRef() {
+        mFirebaseViewModel.registerUser(requireView(), name, number, address)
+        Log.d("TAG", "being called1")
+        activity?.recreate()
+    }
+
+    private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+            // This callback will be invoked in two situations:
+            // 1 - Instant verification. In some cases the phone number can be instantly
+            //     verified without needing to send or enter a verification code.
+            // 2 - Auto-retrieval. On some devices Google Play services can automatically
+            //     detect the incoming verification SMS and perform verification without
+            //     user action.
+            signInWithPhoneAuthCredential(credential)
+        }
+
+        override fun onVerificationFailed(e: FirebaseException) {
+            // This callback is invoked in an invalid request for verification is made,
+            // for instance if the the phone number format is not valid.
+
+            if (e is FirebaseAuthInvalidCredentialsException) {
+                // Invalid request
+                Log.d("TAG", "onVerificationFailed: $e")
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.register_error_message),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else if (e is FirebaseTooManyRequestsException) {
+                // The SMS quota for the project has been exceeded
+                Log.d("TAG", "onVerificationFailed: $e")
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.register_error_message),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            binding.phoneProgressBar.visibility = View.VISIBLE
+            // Show a message and update the UI
+        }
+
+        override fun onCodeSent(
+            verificationId: String,
+            token: PhoneAuthProvider.ForceResendingToken
+        ) {
+            // The SMS verification code has been sent to the provided phone number, we
+            // now need to ask the user to enter the code and then construct a credential
+            // by combining the code with a verification ID.
+            // Save verification ID and resending token so we can use them later
+            Log.d("TAG", "phone number sent")
+            val action = MyProfileFragmentDirections.actionMyProfileFragmentToOTPFragment(
+                verificationId,
+                token, number, name, address
+            )
+            findNavController().navigate(action)
+            binding.phoneProgressBar.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun regOrNot() {
+        val userId = mFirebaseViewModel.getCurrentUserId()
+
+        if (userId.isNotEmpty()) {
+            binding.loReg.visibility = View.GONE
+            binding.loUpdate.visibility = View.VISIBLE
+        } else {
+            binding.loReg.visibility = View.VISIBLE
+            binding.loUpdate.visibility = View.GONE
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()

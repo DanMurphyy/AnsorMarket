@@ -34,7 +34,7 @@ class OrderListAdapter : RecyclerView.Adapter<OrderListAdapter.MyViewHolder>() {
         binding.orderAmount.text = currentItem.totalAmount.toString()
         binding.orderDate.text = currentItem.date
         binding.orderAddress.text = currentItem.orderUser.address
-        binding.orderPhone.text = currentItem.orderUser.mobile.toString()
+        binding.orderPhone.text = currentItem.orderUser.mobile
 
         when (currentItem.orderStatus) {
             0 -> statusPending(binding)

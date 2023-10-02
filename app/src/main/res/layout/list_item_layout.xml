@@ -90,6 +90,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:text="Coca-Cola"
+                android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@id/item_list_weight"

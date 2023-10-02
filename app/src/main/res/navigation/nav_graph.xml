@@ -21,10 +21,40 @@
         android:label="@string/profile"
         tools:layout="@layout/fragment_my_profile">
 
+        <action
+            android:id="@+id/action_myProfileFragment_to_OTPFragment"
+            app:destination="@id/OTPFragment"
+            app:popUpTo="@id/myProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/ordersFragment"
         android:name="com.hfad.ansormarket.mainFragments.OrdersFragment"
         android:label="@string/myOrders"
         tools:layout="@layout/fragment_orders" />
+
+    <fragment
+        android:id="@+id/OTPFragment"
+        android:name="com.hfad.ansormarket.logInScreens.OTPFragment"
+        android:label="@string/fragment_o_t_p"
+        tools:layout="@layout/fragment_o_t_p">
+        <argument
+            android:name="OTP"
+            app:argType="string" />
+        <argument
+            android:name="resendToken"
+            app:argType="com.google.firebase.auth.PhoneAuthProvider$ForceResendingToken" />
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+        <argument
+            android:name="userName"
+            app:argType="string" />
+        <argument
+            android:name="userAddress"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_OTPFragment_to_myProfileFragment"
+            app:destination="@id/myProfileFragment"
+            app:popUpTo="@id/mainPageFragment" />
+    </fragment>
 </navigation>

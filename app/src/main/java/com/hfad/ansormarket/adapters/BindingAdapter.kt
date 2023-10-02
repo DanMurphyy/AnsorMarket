@@ -6,6 +6,7 @@ import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.hfad.ansormarket.R
+import com.hfad.ansormarket.firebase.FirebaseRepository
 import com.hfad.ansormarket.mainFragments.OrdersFragment
 import com.hfad.ansormarket.models.MyCart
 import com.hfad.ansormarket.models.Order
@@ -30,11 +31,17 @@ class BindingAdapter {
         @BindingAdapter("android:emptyMyOrder")
         fun emptyMyOrder(view: View, orderNowLiveData: MutableLiveData<List<Order>>?) {
             val isEmpty = orderNowLiveData?.value?.isEmpty() ?: false
-            view.visibility = if (isEmpty) {
-                OrdersFragment.gif1(view)
-                View.VISIBLE
+            val userId = FirebaseRepository().getCurrentUserId()
+            if (userId.isNotEmpty()) {
+                view.visibility = if (isEmpty) {
+                    OrdersFragment.gif1(view)
+                    View.VISIBLE
+                } else {
+                    View.INVISIBLE
+                }
             } else {
-                View.INVISIBLE
+                OrdersFragment.gif1(view)
+                view.visibility = View.VISIBLE // Show emptyCartView when user is not logged in
             }
         }
 
@@ -42,10 +49,16 @@ class BindingAdapter {
         @BindingAdapter("android:emptyMyCart")
         fun emptyMyCart(view: View, myCartsLiveData: MutableLiveData<List<MyCart>>?) {
             val isEmpty = myCartsLiveData?.value?.isEmpty() ?: false
-            view.visibility = if (isEmpty) {
-                View.VISIBLE
+
+            val userId = FirebaseRepository().getCurrentUserId()
+            if (userId.isNotEmpty()) {
+                view.visibility = if (isEmpty) {
+                    View.VISIBLE
+                } else {
+                    View.INVISIBLE
+                }
             } else {
-                View.INVISIBLE
+                view.visibility = View.VISIBLE // Show emptyCartView when user is not logged in
             }
         }
 

@@ -14,12 +14,12 @@ class FirebaseRepository {
     private val mFireStore = FirebaseFirestore.getInstance()
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    suspend fun registerUser(name: String, phoneNumber: String): Boolean {
+    suspend fun registerUser(name: String, phoneNumber: String, address: String): Boolean {
         try {
 
             // Save user data to Firestore
             val userId = auth.currentUser?.uid ?: ""
-            val user = User(userId, name, phoneNumber.toLong())
+            val user = User(userId, name, phoneNumber, address)
             mFireStore.collection(Constants.USERS)
                 .document(userId)
                 .set(user, SetOptions.merge())
@@ -247,6 +247,7 @@ class FirebaseRepository {
             throw e
         }
     }
+
 
     fun getCurrentUserId(): String {
         val currentUser = FirebaseAuth.getInstance().currentUser

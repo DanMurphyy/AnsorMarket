@@ -32,8 +32,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
     private var itemInfoBinding: ItemInfoLayoutBinding? = null
     private var mDialog: Dialog? = null
     private val adapter: ItemListAdapter by lazy { ItemListAdapter() }
-
-    private var currentSearchQuery: String? = null
     private var currentCategory: String? = null
 
 
@@ -76,7 +74,12 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
             R.id.Gosht,
             R.id.Gigiena_vositalari,
             R.id.Oshxona,
-            R.id.Yoglar
+            R.id.Yoglar,
+            R.id.Choy_va_kofelar,
+            R.id.Yarim_tayyor,
+            R.id.Guruch_va_don,
+            R.id.Ziravorlar,
+            R.id.Boshqalar,
         )
 
 
@@ -96,7 +99,7 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
                     currentCategory = null
                     allItem()
                 } else {
-                    val categoryText = (view as Chip).text.toString()
+                    val categoryText = (view as Chip).hint.toString()
                     currentCategory = categoryText
                     category(categoryText)
                     applyCategoryFilter(categoryText)
@@ -144,7 +147,12 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
             adapter.setMyCartData(myCartList)
             mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
-        mFirebaseViewModel.fetchMyCart()
+
+        val userId = mFirebaseViewModel.getCurrentUserId()
+
+        if (userId.isNotEmpty()) {
+            mFirebaseViewModel.fetchMyCart()
+        }
     }
 
     private fun showRecyclerView() {
@@ -171,15 +179,17 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun showInfoDialog(currentItem: Item, quantity: Int) {
         var newQuantity = quantity
-        val myCartList = mFirebaseViewModel.myCartsLiveData.value!!
+        val myCartList = mFirebaseViewModel.myCartsLiveData.value
         var isItemInCart = false
         var myCartCurrentItem = ""
 
-        for (i in myCartList) {
-            if (currentItem.documentId == i.itemProd.documentId) {
-                isItemInCart = true
-                myCartCurrentItem = i.documentId
-                break
+        if (myCartList != null) {
+            for (i in myCartList) {
+                if (currentItem.documentId == i.itemProd.documentId) {
+                    isItemInCart = true
+                    myCartCurrentItem = i.documentId
+                    break
+                }
             }
         }
 
@@ -320,11 +330,7 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.main_add_item -> Toast.makeText(
-                requireContext(),
-                "nimadur boladi",
-                Toast.LENGTH_SHORT
-            ).show()
+            R.id.main_add_item -> mFirebaseViewModel.fetchAllItems()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -338,7 +344,7 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         if (!query.isNullOrBlank()) {
             searchThroughDatabase(query)
         }
-
+        filteredItems
         return true
     }
 
@@ -346,17 +352,21 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(query: String?): Boolean {
         if (!query.isNullOrBlank()) {
             searchThroughDatabase(query)
-        } else if (!currentSearchQuery.isNullOrBlank()) {
-            searchThroughDatabase(currentSearchQuery!!)
         }
-
+        filteredItems
         return true
     }
 
-    private fun searchThroughDatabase(query: String) {
-        currentSearchQuery = query.trim()
-        val filteredItems = mFirebaseViewModel.itemList.value?.filter { item ->
-            item.nameItem.contains(currentSearchQuery ?: "", ignoreCase = true)
+    private fun searchThroughDatabase(query: String?) {
+        val searchQuery = query?.trim()
+        val filteredItems = if (searchQuery.isNullOrBlank()) {
+            // If the search query is blank, show items based on the currentCategory
+            filteredItems
+        } else {
+            // If the search query is not blank, filter items by name
+            mFirebaseViewModel.itemList.value?.filter { item ->
+                item.nameItem.contains(searchQuery, ignoreCase = true)
+            }
         }
 
         filteredItems?.let {

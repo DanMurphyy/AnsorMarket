@@ -48,13 +48,21 @@ class CartFragment : Fragment() {
         val adRequest = AdRequest.Builder().build()
         binding.adView2.loadAd(adRequest)
         mFirebaseViewModel.fetchAllItems()
-        mFirebaseViewModel.fetchMyCart()
+        regOrNot()
         mFirebaseViewModel.loadUserData(requireContext())
         updateAmount()
         mFirebaseViewModel.getContactUsOrder()
 
         binding.btnMakeOrder.setOnClickListener {
             checkTime()
+            mFirebaseViewModel.fetchAllItems()
+            mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
+                adapter.setMyCartData(myCartList)
+                updateAmount()
+                mSharedViewModel.cartItemCount(requireView(), myCartList)
+                updateItemPriceDifference(myCartList)
+            }
+
         }
 
         return binding.root
@@ -69,7 +77,7 @@ class CartFragment : Fragment() {
             mSharedViewModel.cartItemCount(requireView(), myCartList)
             updateItemPriceDifference(myCartList)
         }
-        mFirebaseViewModel.fetchMyCart()
+        regOrNot()
         mFirebaseViewModel.loadUserDataForOrder()
         binding.lifecycleOwner = this
         binding.mFirebaseViewModel = mFirebaseViewModel
@@ -100,13 +108,20 @@ class CartFragment : Fragment() {
     private fun updateAmount() {
         val totalAmount = adapter.calculateTotalAmount()
         binding.subtotalPrice.text = totalAmount.toString()
+        val deliveryAmount = mFirebaseViewModel.contactUsLiveData.value?.DeliveryAmount
 
         if (totalAmount <= 99999) {
-            val withDelivery = totalAmount + 10000
-            binding.deliveryFeePrice.text = getString(R.string.deliver_charge_amount)
-            grandTotal = withDelivery
-            binding.priceTotalGrand.text = grandTotal.toString()
-
+            if (deliveryAmount != null) {
+                val withDelivery = totalAmount + deliveryAmount
+                binding.deliveryFeePrice.text = deliveryAmount.toString()
+                grandTotal = withDelivery
+                binding.priceTotalGrand.text = grandTotal.toString()
+            } else {
+                val withDelivery = totalAmount + 10000
+                binding.deliveryFeePrice.text = getString(R.string.deliver_charge_amount)
+                grandTotal = withDelivery
+                binding.priceTotalGrand.text = grandTotal.toString()
+            }
         } else {
             binding.deliveryFeePrice.text = "0"
             grandTotal = totalAmount
@@ -177,18 +192,16 @@ class CartFragment : Fragment() {
         val myCartList = mFirebaseViewModel.myCartsLiveData.value
 
         if (user != null && myCartList != null) {
-            // Create an Order object with valid user and cart data
             val order = Order(
                 orderStatus = 0,
                 orderUser = user,
                 orderProducts = myCartList,
                 totalAmount = grandTotal
             )
-            // Call the orderNow function in FirebaseViewModel
             mFirebaseViewModel.orderNow(requireView(), order)
 
             mFirebaseViewModel.orderNowResult.observe(viewLifecycleOwner) { isSuccess ->
-                if (isSuccess != null) { // Check for null before showing the Toast
+                if (isSuccess != null) {
                     if (isSuccess) {
                         updateAfterDelete()
                         Toast.makeText(
@@ -206,7 +219,6 @@ class CartFragment : Fragment() {
             }
 
         } else {
-            // If user or myCartList is null, display a message
             Toast.makeText(
                 requireContext(), "User or Cart data is null", Toast.LENGTH_SHORT
             ).show()
@@ -219,23 +231,40 @@ class CartFragment : Fragment() {
             mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
         updateAmount()
-        mFirebaseViewModel.fetchMyCart()
+        regOrNot()
     }
 
     private fun updateItemPriceDifference(listOfCart: List<MyCart>) {
-
         val items = mFirebaseViewModel.itemList.value
 
         if (items != null) {
-            for (i in items) {
-                for (j in listOfCart)
+            val cartItemsToDelete = mutableListOf<String>()
+
+            for (j in listOfCart) {
+                var itemFound = false // Flag to check if a match is found in items
+
+                for (i in items) {
                     if (j.itemProd.documentId == i.documentId) {
-                        if (j.itemProd != i)
+                        if (j.itemProd != i) {
                             Log.d("CartFragment", "cart: $j")
+                        }
                         Log.d("CartFragment", "cart: $i")
                         mFirebaseViewModel.updateCartItemPrice(j.documentId, i)
                         Log.d("CartFragment", "cart: $j.documentId and $i.price")
+                        itemFound = true // Mark that a match is found
+                        break // No need to check further
                     }
+                }
+
+                // If no match is found for the cart item, mark it for deletion
+                if (!itemFound) {
+                    cartItemsToDelete.add(j.documentId)
+                }
+            }
+
+            // Delete items from the cart that are marked for deletion
+            for (itemIdToDelete in cartItemsToDelete) {
+                mFirebaseViewModel.deleteMyCart(itemIdToDelete)
             }
         }
     }
@@ -277,6 +306,19 @@ class CartFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    private fun regOrNot() {
+        val userId = mFirebaseViewModel.getCurrentUserId()
+
+        if (userId != null && userId.isNotEmpty()) {
+            mFirebaseViewModel.fetchMyCart()
+            binding.emptyCartView.visibility =
+                View.GONE // Hide emptyCartView when user is logged in
+        } else {
+            binding.emptyCartView.visibility =
+                View.VISIBLE // Show emptyCartView when user is not logged in
+        }
     }
 
 }

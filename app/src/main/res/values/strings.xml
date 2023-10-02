@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Home Market</string>
+    <string name="app_name">Ansor Market</string>
 
     <string name="splash_desc">Arzon,Sifatli va Ishonchli!</string>
     <string name="please_wait">Iltimos kuting…</string>
     <string name="error_message">Xatolik yuz berdi</string>
-    <string name="intro_sign_in">Kirish</string>
+    <string name="intro_sign_in">Tushunarli</string>
     <string name="intro_sign_up">Ro\'yxatdan o\'tish</string>
     <string name="image_content">image_content</string>
     <string name="intro_text_description">Shahrixon shahri bo\'yicha Oziq-ovqat mahsulotlari yetkazib berish xizmati</string>
@@ -104,39 +104,30 @@
     <string name="change_language_style">Ilova yozuvini o\'zgartiring</string>
     <string name="lotincha">LOTINCHA</string>
     <string name="kirilcha">КИРИЛЧА</string>
-    <string name="ichimliklar">Ichimliklar</string>
-    <string name="qandolat_mahsulotlari">Qandolat mahsulotlari</string>
-    <string name="sut_mahsulotlari">Sut Mahsulotlari</string>
-    <string name="tortlar_va_pishiriqlar">Tortlar va Pishiriqlar</string>
-    <string name="konservalar">Konservalar</string>
-    <string name="snaklar">Snaklar</string>
-    <string name="mevalar">Mevalar</string>
-    <string name="bolalar_ovqatlari">Bolalar Ovqatlari</string>
-    <string name="un_mahsulotlari">Un Mahsulotlari</string>
-    <string name="souslar">Souslar</string>
-    <string name="gosht">Go\'sht</string>
-    <string name="gigiena_vositalari">Gigiena vositalari</string>
-    <string name="oshxona">Oshxona</string>
-    <string name="yoglar">Yog\'lar</string>
-
-
+    <string name="reg_text_description">Mahsulot buyurtma berish uchun ro\'yhatdan o\'tish kerak bo\'ladi</string>
+    <string name="please_enter_address">Iltimos manzil kiriting</string>
+    <string name="fragment_o_t_p">Raqamni tasdiqlash</string>
     <string-array name="item_type">
         <item>Ichimliklar</item>
         <item>Qandolat mahsulotlari</item>
         <item>Sut Mahsulotlari</item>
         <item>Tortlar va Pishiriqlar</item>
         <item>Konservalar</item>
-        <item>Snaklar</item>
+        <item>Sneklar</item>
         <item>Mevalar</item>
-        <item>Bolalar Ovqatlari</item>
+        <item>Bolalar uchun</item>
         <item>Un Mahsulotlari</item>
         <item>Souslar</item>
-        <item>Go\'sht</item>
+        <item>Go\'sht Mahsulotlari</item>
         <item>Gigiena vositalari</item>
         <item>Oshxona</item>
         <item>Yog\'lar</item>
+        <item>Choy va Kofelar</item>
+        <item>Yarim Tayyor</item>
+        <item>Guruch va Don</item>
+        <item>Ziravorlar</item>
+        <item>Boshqalar</item>
     </string-array>
-
     <string-array name="update_order_status">
         <item>Jarayonda\.\.\.</item>
         <item>Terilmoqda</item>
@@ -144,6 +135,47 @@
         <item>Yetkazib berilgan!</item>
         <item>Bekor qilingan</item>
     </string-array>
+    <string name="all_types">Barchasi</string>
+    <string name="ichimliklar">Ichimliklar</string>
+    <string name="qandolat_mahsulotlari">Qandolat mahsulotlari</string>
+    <string name="sut_mahsulotlari">Sut Mahsulotlari</string>
+    <string name="tortlar_va_pishiriqlar">Tortlar va Pishiriqlar</string>
+    <string name="konservalar">Konservalar</string>
+    <string name="sneklar">Sneklar</string>
+    <string name="mevalar">Mevalar</string>
+    <string name="bolalar_uchun">Bolalar uchun</string>
+    <string name="un_mahsulotlari">Un Mahsulotlari</string>
+    <string name="souslar">Souslar</string>
+    <string name="gosht">Go\'sht Mahsulotlari</string>
+    <string name="gigiena_vositalari">Gigiena vositalari</string>
+    <string name="oshxona">Oshxona</string>
+    <string name="yoglar">Yog\'lar</string>
+    <string name="choy_va_kofelar">Choy va Kofelar</string>
+    <string name="yarim_tayyor">Yarim Tayyor</string>
+    <string name="guruch_va_don">Guruch va Don</string>
+    <string name="ziravorlar">Ziravorlar</string>
+    <string name="boshqalar">Boshqalar</string>
+
+    <string name="hint_all_types">Barchasi</string>
+    <string name="hint_ichimliklar">Ichimliklar</string>
+    <string name="hint_qandolat_mahsulotlari">Qandolat mahsulotlari</string>
+    <string name="hint_sut_mahsulotlari">Sut Mahsulotlari</string>
+    <string name="hint_tortlar_va_pishiriqlar">Tortlar va Pishiriqlar</string>
+    <string name="hint_konservalar">Konservalar</string>
+    <string name="hint_sneklar">Sneklar</string>
+    <string name="hint_mevalar">Mevalar</string>
+    <string name="hint_bolalar_uchun">Bolalar uchun</string>
+    <string name="hint_un_mahsulotlari">Un Mahsulotlari</string>
+    <string name="hint_souslar">Souslar</string>
+    <string name="hint_gosht">Go\'sht Mahsulotlari</string>
+    <string name="hint_gigiena_vositalari">Gigiena vositalari</string>
+    <string name="hint_oshxona">Oshxona</string>
+    <string name="hint_yoglar">Yog\'lar</string>
+    <string name="hint_choy_va_kofelar">Choy va Kofelar</string>
+    <string name="hint_yarim_tayyor">Yarim Tayyor</string>
+    <string name="hint_guruch_va_don">Guruch va Don</string>
+    <string name="hint_ziravorlar">Ziravorlar</string>
+    <string name="hint_boshqalar">Boshqalar</string>
 
 
 </resources>

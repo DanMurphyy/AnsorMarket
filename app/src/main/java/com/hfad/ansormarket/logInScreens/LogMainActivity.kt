@@ -34,6 +34,14 @@ class LogMainActivity : AppCompatActivity() {
         }
     }
 
+    fun intentRegLog() {
+
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+
+        finish()
+    }
+
     fun intentLog() {
         val currentUserID = mFirebaseViewModel.getCurrentUserId()
         if (currentUserID.isNotEmpty()) {

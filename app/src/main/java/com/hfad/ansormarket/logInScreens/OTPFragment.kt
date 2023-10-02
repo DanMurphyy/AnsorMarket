@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -37,6 +38,7 @@ class OTPFragment : Fragment() {
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var phoneNumber: String
     private lateinit var name: String
+    private lateinit var address: String
 
     private val args by navArgs<OTPFragmentArgs>()
 
@@ -51,6 +53,7 @@ class OTPFragment : Fragment() {
         resendToken = args.resendToken
         phoneNumber = args.phoneNumber
         name = args.userName
+        address = args.userAddress
 
         init()
         progressBar.visibility = View.INVISIBLE
@@ -130,7 +133,7 @@ class OTPFragment : Fragment() {
     }
 
     private fun navigate() {
-        mFirebaseViewModel.registerUser(requireView(), name, phoneNumber)
+        mFirebaseViewModel.registerUser(requireView(), name, phoneNumber, address)
         success()
     }
 
@@ -222,10 +225,7 @@ class OTPFragment : Fragment() {
     }
 
     fun success() {
-        if (activity is LogMainActivity) {
-            (activity as LogMainActivity).intentLog()
-            Log.d("TAG", "being called2")
-        }
+        findNavController().navigate(R.id.action_OTPFragment_to_myProfileFragment)
     }
 
     override fun onDestroyView() {

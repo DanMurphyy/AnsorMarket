@@ -25,6 +25,7 @@
             android:textSize="25sp" />
 
         <LinearLayout
+            android:id="@+id/lo_delivery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
@@ -56,6 +57,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lo_market"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
@@ -88,6 +90,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lo_appMarket"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
