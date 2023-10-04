@@ -150,7 +150,6 @@ class MyProfileFragment : Fragment() {
         return (binding.root)
     }
 
-
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         @Suppress("DEPRECATION")
@@ -173,7 +172,6 @@ class MyProfileFragment : Fragment() {
 
     private fun updateUserProfileData() {
         val mProfileImageUrl = mFirebaseViewModel.imageUploadLive.value
-
         // Check if an image was uploaded successfully
         val updatedUser = if (!mProfileImageUrl.isNullOrEmpty()) {
             User(
@@ -188,15 +186,13 @@ class MyProfileFragment : Fragment() {
                 name = binding.etUserName.text.toString(),
                 address = binding.etAddressName.text.toString(),
                 mobile = binding.etMobileNumber.text.toString(),
-                image = mFirebaseViewModel.userLiveData.value?.image ?: ""
+//                image = mFirebaseViewModel.userLiveData.value?.image ?: ""
             )
         }
-
         // Call the ViewModel function to update the user profile data
         mFirebaseViewModel.updateUserProfileData(requireView(), updatedUser)
         Log.d(TAG, "User data updated")
     }
-
 
     private fun showImageChooserPermissionDeniedDialog() {
         val builder = AlertDialog.Builder(requireContext())
@@ -225,13 +221,13 @@ class MyProfileFragment : Fragment() {
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.logout_item -> orderDialog()
+            R.id.logout_item -> quitDialog()
         }
         @Suppress("DEPRECATION")
         return super.onOptionsItemSelected(item)
     }
 
-    private fun orderDialog() {
+    private fun quitDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setMessage(getString(R.string.log_out_dialog))
         builder.setPositiveButton(getString(R.string.proceed_off_work_time)) { _, _ ->
@@ -338,7 +334,6 @@ class MyProfileFragment : Fragment() {
 
     private fun regOrNot() {
         val userId = mFirebaseViewModel.getCurrentUserId()
-
         if (userId.isNotEmpty()) {
             binding.loReg.visibility = View.GONE
             binding.loUpdate.visibility = View.VISIBLE

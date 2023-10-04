@@ -55,7 +55,6 @@ class OrdersFragment : Fragment() {
         }
         regOrNot()
         mFirebaseViewModel.getContactUs()
-
         binding.lifecycleOwner = this
         binding.mFirebaseViewModel = mFirebaseViewModel
 
@@ -74,7 +73,6 @@ class OrdersFragment : Fragment() {
             override fun onDeleteMyOrderClick(currentItem: String) {
                 mFirebaseViewModel.deleteMyOrder(requireView(), currentItem)
             }
-
         })
     }
 
@@ -103,7 +101,6 @@ class OrdersFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
     private fun showInfoDialog(contactUs: ContactUs) {
 
@@ -137,7 +134,6 @@ class OrdersFragment : Fragment() {
         mDialog!!.setCanceledOnTouchOutside(true)
         mDialog!!.show()
         window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
-
     }
 
     private fun openPhoneDialerDelivery(contactUs: ContactUs) {
@@ -175,22 +171,19 @@ class OrdersFragment : Fragment() {
         }
     }
 
+    private fun regOrNot() {
+        val userId = mFirebaseViewModel.getCurrentUserId()
+        if (userId != null && userId.isNotEmpty()) {
+            mFirebaseViewModel.getMyOrders(requireView())
+            binding.emptyOrderView.visibility = View.GONE
+        } else {
+            binding.emptyOrderView.visibility = View.VISIBLE
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    private fun regOrNot() {
-        val userId = mFirebaseViewModel.getCurrentUserId()
-
-        if (userId != null && userId.isNotEmpty()) {
-            mFirebaseViewModel.getMyOrders(requireView())
-            binding.emptyOrderView.visibility =
-                View.GONE // Hide emptyCartView when user is logged in
-        } else {
-            binding.emptyOrderView.visibility =
-                View.VISIBLE // Show emptyCartView when user is not logged in
-        }
     }
 
 }

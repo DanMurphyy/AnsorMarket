@@ -30,6 +30,8 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val imageUploadLive: MutableLiveData<String?> = MutableLiveData()
     val imageUploadResult: MutableLiveData<Boolean?> = MutableLiveData()
     val itemList: MutableLiveData<List<Item>> = MutableLiveData()
+    var isListShuffled: Boolean = false // Add a flag to track whether the list is shuffled
+    val itemListForCart: MutableLiveData<List<Item>> = MutableLiveData()
     val toCartResult: MutableLiveData<Boolean> = MutableLiveData()
     val myCartsLiveData: MutableLiveData<List<MyCart>> = MutableLiveData()
     val orderNowResult: MutableLiveData<Boolean?> = MutableLiveData()
@@ -156,8 +158,21 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     fun fetchAllItems() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val items = repository.getAllItems()
+                val items = repository.getAllItems().shuffled()
                 itemList.postValue(items)
+                isListShuffled = true
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)
+            }
+        }
+    }
+
+    fun fetchAllItemsForCart() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val items = repository.getAllItems()
+                itemListForCart.postValue(items)
             } catch (e: Exception) {
                 // Handle the error
                 Log.e("FirebaseViewModel", "Error fetching items: ${e.message}", e)

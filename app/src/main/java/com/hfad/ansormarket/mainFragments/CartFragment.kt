@@ -30,6 +30,8 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
+private const val TAG = "SendNotification"
+
 class CartFragment : Fragment() {
 
     private var _binding: FragmentCartBinding? = null
@@ -47,22 +49,21 @@ class CartFragment : Fragment() {
         showRecyclerView()
         val adRequest = AdRequest.Builder().build()
         binding.adView2.loadAd(adRequest)
-        mFirebaseViewModel.fetchAllItems()
+        mFirebaseViewModel.fetchAllItemsForCart()
         regOrNot()
         mFirebaseViewModel.loadUserData(requireContext())
         updateAmount()
         mFirebaseViewModel.getContactUsOrder()
 
         binding.btnMakeOrder.setOnClickListener {
+            mFirebaseViewModel.fetchAllItemsForCart()
             checkTime()
-            mFirebaseViewModel.fetchAllItems()
             mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
                 adapter.setMyCartData(myCartList)
                 updateAmount()
                 mSharedViewModel.cartItemCount(requireView(), myCartList)
                 updateItemPriceDifference(myCartList)
             }
-
         }
 
         return binding.root
@@ -190,7 +191,6 @@ class CartFragment : Fragment() {
         // Ensure that userLiveData and myCartsLiveData are not null
         val user = mFirebaseViewModel.userLiveData.value
         val myCartList = mFirebaseViewModel.myCartsLiveData.value
-
         if (user != null && myCartList != null) {
             val order = Order(
                 orderStatus = 0,
@@ -199,7 +199,6 @@ class CartFragment : Fragment() {
                 totalAmount = grandTotal
             )
             mFirebaseViewModel.orderNow(requireView(), order)
-
             mFirebaseViewModel.orderNowResult.observe(viewLifecycleOwner) { isSuccess ->
                 if (isSuccess != null) {
                     if (isSuccess) {
@@ -217,10 +216,9 @@ class CartFragment : Fragment() {
                     }
                 }
             }
-
         } else {
             Toast.makeText(
-                requireContext(), "User or Cart data is null", Toast.LENGTH_SHORT
+                requireContext(), getString(R.string.error_message), Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -235,14 +233,11 @@ class CartFragment : Fragment() {
     }
 
     private fun updateItemPriceDifference(listOfCart: List<MyCart>) {
-        val items = mFirebaseViewModel.itemList.value
-
+        val items = mFirebaseViewModel.itemListForCart.value
         if (items != null) {
             val cartItemsToDelete = mutableListOf<String>()
-
             for (j in listOfCart) {
                 var itemFound = false // Flag to check if a match is found in items
-
                 for (i in items) {
                     if (j.itemProd.documentId == i.documentId) {
                         if (j.itemProd != i) {
@@ -255,13 +250,11 @@ class CartFragment : Fragment() {
                         break // No need to check further
                     }
                 }
-
                 // If no match is found for the cart item, mark it for deletion
                 if (!itemFound) {
                     cartItemsToDelete.add(j.documentId)
                 }
             }
-
             // Delete items from the cart that are marked for deletion
             for (itemIdToDelete in cartItemsToDelete) {
                 mFirebaseViewModel.deleteMyCart(itemIdToDelete)
@@ -299,18 +292,11 @@ class CartFragment : Fragment() {
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "sendNotification: Exception occurred: $e")
-
             }
         }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
     private fun regOrNot() {
         val userId = mFirebaseViewModel.getCurrentUserId()
-
         if (userId != null && userId.isNotEmpty()) {
             mFirebaseViewModel.fetchMyCart()
             binding.emptyCartView.visibility =
@@ -321,6 +307,9 @@ class CartFragment : Fragment() {
         }
     }
 
-}
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 
-private const val TAG = "SendNotification"
+}

@@ -34,7 +34,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
     private val adapter: ItemListAdapter by lazy { ItemListAdapter() }
     private var currentCategory: String? = null
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,7 +42,10 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         @Suppress("DEPRECATION", "DEPRECATION", "DEPRECATION")
         setHasOptionsMenu(true)
         mFirebaseViewModel.loadUserData(requireContext())
-        mFirebaseViewModel.fetchAllItems()
+        if (!mFirebaseViewModel.isListShuffled) {
+            mFirebaseViewModel.fetchAllItems()
+        }
+
         showRecyclerView()
         val adRequest = AdRequest.Builder().build()
         binding.adView3.loadAd(adRequest)
@@ -82,8 +84,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
             R.id.Boshqalar,
         )
 
-
-        // Set click listeners for each chip to handle the selection manually
         // Set click listeners for each chip to handle the selection manually
         for (chipId in chipIds) {
             val chip = chipGroup.findViewById<Chip>(chipId)
@@ -149,7 +149,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         val userId = mFirebaseViewModel.getCurrentUserId()
-
         if (userId.isNotEmpty()) {
             mFirebaseViewModel.fetchMyCart()
         }
@@ -174,7 +173,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
                 liveUpdates()
             }
         })
-
     }
 
     private fun showInfoDialog(currentItem: Item, quantity: Int) {
@@ -271,7 +269,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var filteredItems: List<Item> = emptyList()
 
-
     private fun applyCategoryFilter(categoryText: String) {
         val filteredItems = mFirebaseViewModel.itemList.value?.filter { item ->
             val itemCategory = item.category.trim()
@@ -292,9 +289,7 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun toCart(currentItem: Item, quantity: Int) {
         val newAmount = currentItem.price * quantity
-
         val userId = mFirebaseViewModel.getCurrentUserId()
-
         val myCart = MyCart(
             currentItem,
             quantity,
@@ -303,7 +298,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         )
 
         mFirebaseViewModel.toCart(requireView(), myCart)
-
         mFirebaseViewModel.toCartResult.observe(viewLifecycleOwner) { isSuccess ->
             if (isSuccess) {
 //                Toast.makeText(
@@ -335,11 +329,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
     override fun onQueryTextSubmit(query: String?): Boolean {
         if (!query.isNullOrBlank()) {
             searchThroughDatabase(query)
@@ -347,7 +336,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         filteredItems
         return true
     }
-
 
     override fun onQueryTextChange(query: String?): Boolean {
         if (!query.isNullOrBlank()) {
@@ -368,11 +356,14 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
                 item.nameItem.contains(searchQuery, ignoreCase = true)
             }
         }
-
         filteredItems?.let {
             adapter.setItems(it)
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 
 }
