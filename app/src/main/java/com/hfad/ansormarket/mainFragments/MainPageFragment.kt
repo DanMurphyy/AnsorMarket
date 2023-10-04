@@ -115,10 +115,10 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun category(categoryText: String) {
-        val categoryText = categoryText.trim()
+        val categoryText1 = categoryText.trim()
         val filteredItems = mFirebaseViewModel.itemList.value?.filter { item ->
             val itemCategory = item.category.trim()
-            val isCategoryMatch = itemCategory.equals(categoryText, ignoreCase = true)
+            val isCategoryMatch = itemCategory.equals(categoryText1, ignoreCase = true)
             // Log the item's name, category, and match status
             Log.d(
                 "chips",

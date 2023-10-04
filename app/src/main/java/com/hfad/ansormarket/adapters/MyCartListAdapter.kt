@@ -28,6 +28,8 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = myCartList[position] // Access items directly from itemList
         val binding = holder.binding
+        var newQuantityMain = currentItem.quantity
+        val updateAmount = currentItem.itemProd.price * newQuantityMain
 
         Glide
             .with(binding.root.context)
@@ -39,35 +41,26 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         binding.infoListName.text = currentItem.itemProd.nameItem
         binding.infoListPrice.text = currentItem.itemProd.price.toString()
         binding.infoListWeight.text = currentItem.itemProd.weight
-        binding.quantityInfo.text = currentItem.quantity.toString()
-        val updateQuantity = currentItem.quantity
-        val updateAmount = currentItem.itemProd.price * updateQuantity
+        binding.quantityInfo.text = newQuantityMain.toString()
 
         binding.quantityPlus.setOnClickListener {
             if (onClickListener != null) {
-                val newQuantity = currentItem.quantity + 1
-                val newAmount = currentItem.itemProd.price * newQuantity
+                newQuantityMain++
                 onClickListener!!.onUpdateCartQuantityClick(
                     currentItem.documentId,
-                    newQuantity,
-                    newAmount
+                    newQuantityMain,
+                    updateAmount
                 )
             }
         }
-        onClickListener!!.onUpdateCartQuantityClick(
-            currentItem.documentId,
-            updateQuantity,
-            updateAmount
-        )
 
         binding.quantityMinus.setOnClickListener {
-            if (onClickListener != null && currentItem.quantity > 1) {
-                val newQuantity = currentItem.quantity - 1
-                val newAmount = currentItem.itemProd.price * newQuantity
+            if (onClickListener != null && newQuantityMain > 1) {
+                newQuantityMain--
                 onClickListener!!.onUpdateCartQuantityClick(
                     currentItem.documentId,
-                    newQuantity,
-                    newAmount
+                    newQuantityMain,
+                    updateAmount
                 )
             } else {
                 onClickListener!!.onDeleteCartClick(currentItem.documentId)
@@ -87,7 +80,6 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         }
         return totalAmount
     }
-
 
     @SuppressLint("NotifyDataSetChanged")
     fun setMyCartData(myCart: List<MyCart>) {

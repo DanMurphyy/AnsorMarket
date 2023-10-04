@@ -4,6 +4,8 @@ import android.app.Application
 import android.app.Dialog
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
@@ -36,6 +38,9 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val myCartsLiveData: MutableLiveData<List<MyCart>> = MutableLiveData()
     val orderNowResult: MutableLiveData<Boolean?> = MutableLiveData()
     val orderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
+
+    private var handler: Handler = Handler(Looper.getMainLooper())
+    private var runnable: Runnable? = null
 
 
     init {
@@ -226,16 +231,20 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun updateCartItemQuantity(documentId: String, newQuantity: Int, newAmount: Int) {
-        viewModelScope.launch {
-            try {
-                val userId = getCurrentUserId()
-                repository.updateCartItemQuantity(userId, documentId, newQuantity, newAmount)
-                val userCart = repository.getUserCart(userId)
-                myCartsLiveData.postValue(userCart)
-            } catch (e: Exception) {
-                // Handle the error
+        handler.removeCallbacks(runnable!!)
+        runnable = Runnable {
+            viewModelScope.launch {
+                try {
+                    val userId = getCurrentUserId()
+                    repository.updateCartItemQuantity(userId, documentId, newQuantity, newAmount)
+                    val userCart = repository.getUserCart(userId)
+                    myCartsLiveData.postValue(userCart)
+                } catch (e: Exception) {
+                    // Handle the error
+                }
             }
         }
+        handler.postDelayed(runnable!!, 1300)
     }
 
     fun updateCartItemPrice(documentId: String, newItem: Item) {
@@ -381,4 +390,9 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         mProgressDialog!!.dismiss()
     }
 
+    override fun onCleared() {
+        // Remove the runnable callbacks and prevent it from executing
+        handler.removeCallbacks(runnable!!)
+        super.onCleared()
+    }
 }

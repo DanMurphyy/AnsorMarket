@@ -54,6 +54,9 @@ class CartFragment : Fragment() {
         mFirebaseViewModel.loadUserData(requireContext())
         updateAmount()
         mFirebaseViewModel.getContactUsOrder()
+        mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
+            updateItemPriceDifference(myCartList)
+        }
 
         binding.btnMakeOrder.setOnClickListener {
             mFirebaseViewModel.fetchAllItemsForCart()
@@ -233,31 +236,17 @@ class CartFragment : Fragment() {
     }
 
     private fun updateItemPriceDifference(listOfCart: List<MyCart>) {
-        val items = mFirebaseViewModel.itemListForCart.value
+        val items = mFirebaseViewModel.itemList.value
         if (items != null) {
-            val cartItemsToDelete = mutableListOf<String>()
-            for (j in listOfCart) {
-                var itemFound = false // Flag to check if a match is found in items
-                for (i in items) {
+            for (i in items) {
+                for (j in listOfCart)
                     if (j.itemProd.documentId == i.documentId) {
-                        if (j.itemProd != i) {
+                        if (j.itemProd != i)
                             Log.d("CartFragment", "cart: $j")
-                        }
                         Log.d("CartFragment", "cart: $i")
                         mFirebaseViewModel.updateCartItemPrice(j.documentId, i)
                         Log.d("CartFragment", "cart: $j.documentId and $i.price")
-                        itemFound = true // Mark that a match is found
-                        break // No need to check further
                     }
-                }
-                // If no match is found for the cart item, mark it for deletion
-                if (!itemFound) {
-                    cartItemsToDelete.add(j.documentId)
-                }
-            }
-            // Delete items from the cart that are marked for deletion
-            for (itemIdToDelete in cartItemsToDelete) {
-                mFirebaseViewModel.deleteMyCart(itemIdToDelete)
             }
         }
     }
