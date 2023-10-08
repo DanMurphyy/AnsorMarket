@@ -51,11 +51,8 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.annotation:annotation:1.6.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation "androidx.activity:activity-ktx:1.4.0"
-    implementation "androidx.fragment:fragment-ktx:1.4.0"
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.2.1'
-
+    implementation 'com.google.android.gms:play-services-ads-lite:22.2.0'
 
     // Testing Libraries
     testImplementation 'junit:junit:4.13.2'
@@ -66,10 +63,14 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+
 
     // AndroidX Navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation "androidx.fragment:fragment-ktx:1.4.0"
+
 
     // JCIP Annotations
     implementation 'net.jcip:jcip-annotations:1.0'
@@ -93,15 +94,14 @@ dependencies {
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:32.2.3')
-    implementation 'com.google.firebase:firebase-auth:22.1.2'
+    implementation 'com.google.firebase:firebase-auth:22.1.1'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation'com.google.firebase:firebase-firestore:24.7.0'
-    implementation 'com.firebaseui:firebase-ui-firestore:8.0.2'
     implementation'de.hdodenhof:circleimageview:3.1.0'
     implementation'com.google.firebase:firebase-storage:20.2.1'
     implementation'com.google.firebase:firebase-messaging:23.2.1'
-    implementation 'com.google.android.gms:play-services-ads:22.2.0'
-    implementation "com.google.android.gms:play-services-games-v2:+"
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.2.1'
+
 
     // Google Libraries
     implementation 'com.google.android.gms:play-services-ads-base:22.2.0'

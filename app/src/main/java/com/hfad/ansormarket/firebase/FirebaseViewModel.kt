@@ -40,8 +40,7 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     val orderNowLiveData: MutableLiveData<List<Order>> = MutableLiveData()
 
     private var handler: Handler = Handler(Looper.getMainLooper())
-    private var runnable: Runnable? = null
-
+    private var runnable: Runnable = Runnable { /* ... */ }
 
     init {
         repository = FirebaseRepository()
@@ -193,6 +192,8 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
                 // Update the user's cart in Firestore
                 repository.toCart(userId, myCart)
                 toCartResult.postValue(true) // Set the value to true when item is added to the cart successfully
+                val userCart = repository.getUserCart(userId)
+                myCartsLiveData.postValue(userCart)
                 hideProgress()
             } catch (e: Exception) {
                 // Handle the error
@@ -231,20 +232,28 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun updateCartItemQuantity(documentId: String, newQuantity: Int, newAmount: Int) {
-        handler.removeCallbacks(runnable!!)
-        runnable = Runnable {
-            viewModelScope.launch {
-                try {
-                    val userId = getCurrentUserId()
-                    repository.updateCartItemQuantity(userId, documentId, newQuantity, newAmount)
-                    val userCart = repository.getUserCart(userId)
-                    myCartsLiveData.postValue(userCart)
-                } catch (e: Exception) {
-                    // Handle the error
+        handler.removeCallbacks(runnable)
+        if (runnable != null) {
+            runnable = Runnable {
+                viewModelScope.launch {
+                    try {
+                        val userId = getCurrentUserId()
+                        repository.updateCartItemQuantity(
+                            userId,
+                            documentId,
+                            newQuantity,
+                            newAmount
+                        )
+                        val userCart = repository.getUserCart(userId)
+                        myCartsLiveData.postValue(userCart)
+                    } catch (e: Exception) {
+                        // Handle the error
+                    }
                 }
             }
+            runnable?.let { handler.postDelayed(it, 1300) }
         }
-        handler.postDelayed(runnable!!, 1300)
+
     }
 
     fun updateCartItemPrice(documentId: String, newItem: Item) {
@@ -390,9 +399,4 @@ class FirebaseViewModel(application: Application) : AndroidViewModel(application
         mProgressDialog!!.dismiss()
     }
 
-    override fun onCleared() {
-        // Remove the runnable callbacks and prevent it from executing
-        handler.removeCallbacks(runnable!!)
-        super.onCleared()
-    }
 }

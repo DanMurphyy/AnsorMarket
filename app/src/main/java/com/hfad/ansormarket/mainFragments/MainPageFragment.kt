@@ -49,6 +49,10 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
         showRecyclerView()
         val adRequest = AdRequest.Builder().build()
         binding.adView3.loadAd(adRequest)
+        val userId = mFirebaseViewModel.getCurrentUserId()
+        if (userId.isNotEmpty()) {
+            mFirebaseViewModel.fetchMyCart()
+        }
 
         return (binding.root)
     }
@@ -148,10 +152,6 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
             mSharedViewModel.cartItemCount(requireView(), myCartList)
         }
 
-        val userId = mFirebaseViewModel.getCurrentUserId()
-        if (userId.isNotEmpty()) {
-            mFirebaseViewModel.fetchMyCart()
-        }
     }
 
     private fun showRecyclerView() {
@@ -170,6 +170,9 @@ class MainPageFragment : Fragment(), SearchView.OnQueryTextListener {
 
             override fun onAddToCartClick(currentItem: Item, quantity: Int) {
                 toCart(currentItem, quantity)
+                if (!mFirebaseViewModel.isListShuffled) {
+                    mFirebaseViewModel.fetchAllItems()
+                }
                 liveUpdates()
             }
         })

@@ -57,6 +57,7 @@ class CartFragment : Fragment() {
         mFirebaseViewModel.myCartsLiveData.observe(viewLifecycleOwner) { myCartList ->
             updateItemPriceDifference(myCartList)
         }
+        mFirebaseViewModel.loadUserDataForOrder()
 
         binding.btnMakeOrder.setOnClickListener {
             mFirebaseViewModel.fetchAllItemsForCart()
@@ -81,8 +82,6 @@ class CartFragment : Fragment() {
             mSharedViewModel.cartItemCount(requireView(), myCartList)
             updateItemPriceDifference(myCartList)
         }
-        regOrNot()
-        mFirebaseViewModel.loadUserDataForOrder()
         binding.lifecycleOwner = this
         binding.mFirebaseViewModel = mFirebaseViewModel
     }

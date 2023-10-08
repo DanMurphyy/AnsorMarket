@@ -29,7 +29,6 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         val currentItem = myCartList[position] // Access items directly from itemList
         val binding = holder.binding
         var newQuantityMain = currentItem.quantity
-        val updateAmount = currentItem.itemProd.price * newQuantityMain
 
         Glide
             .with(binding.root.context)
@@ -41,11 +40,15 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         binding.infoListName.text = currentItem.itemProd.nameItem
         binding.infoListPrice.text = currentItem.itemProd.price.toString()
         binding.infoListWeight.text = currentItem.itemProd.weight
-        binding.quantityInfo.text = newQuantityMain.toString()
+        binding.quantityInfoCart.text = newQuantityMain.toString()
 
         binding.quantityPlus.setOnClickListener {
             if (onClickListener != null) {
                 newQuantityMain++
+                val updateAmount = currentItem.itemProd.price * newQuantityMain
+                // Update UI immediately
+                binding.quantityInfoCart.text = newQuantityMain.toString()
+                // Call Firebase update
                 onClickListener!!.onUpdateCartQuantityClick(
                     currentItem.documentId,
                     newQuantityMain,
@@ -57,6 +60,10 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
         binding.quantityMinus.setOnClickListener {
             if (onClickListener != null && newQuantityMain > 1) {
                 newQuantityMain--
+                val updateAmount = currentItem.itemProd.price * newQuantityMain
+                // Update UI immediately
+                binding.quantityInfoCart.text = newQuantityMain.toString()
+                // Call Firebase update
                 onClickListener!!.onUpdateCartQuantityClick(
                     currentItem.documentId,
                     newQuantityMain,
@@ -71,6 +78,7 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
                 ).show()
             }
         }
+
     }
 
     fun calculateTotalAmount(): Int {
@@ -97,7 +105,6 @@ class MyCartListAdapter : RecyclerView.Adapter<MyCartListAdapter.MyViewHolder>()
     interface OnClickListenerCart {
         fun onDeleteCartClick(currentItem: String)
         fun onUpdateCartQuantityClick(currentItem: String, newQuantity: Int, newAmount: Int)
-
     }
 
     fun setOnClickListener(onClickListener: OnClickListenerCart) {
